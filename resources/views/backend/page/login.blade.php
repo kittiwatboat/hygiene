@@ -27,5 +27,6 @@
             <button type="submit">เข้าสู่ระบบ</button>
         </form>
     </div>
+        @include("$prefix.layout.script")
 </body>
 </html>
