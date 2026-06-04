@@ -6,9 +6,9 @@
 <body>
     <div class="login-card">
         <h1>เข้าสู่ระบบ</h1>
-        {{-- @if(session('error'))
+        @if(session('error'))
             <div class="error">{{ session('error') }}</div>
-        @endif --}}
+        @endif
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <label for="email">อีเมล</label>
