@@ -10,57 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          node-version: 22
-          cache: npm
+          host: ${{ secrets.DA_HOST }}
+          username: ${{ secrets.DA_USERNAME }}
+          key: ${{ secrets.DA_SSH_KEY }}
+          port: ${{ secrets.DA_PORT }}
+          script: |
+            cd /home/zboat/domains/hygiene.boat.orangeworkshop.info/project
 
-      - name: Build frontend assets
-        run: |
-          npm ci
-          npm run build
+            git pull origin main
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DA_SSH_KEY }}" > ~/.ssh/directadmin_key
-          chmod 600 ~/.ssh/directadmin_key
-          ssh-keyscan -p ${{ secrets.DA_PORT }} ${{ secrets.DA_HOST }} >> ~/.ssh/known_hosts
+            composer install --no-dev --optimize-autoloader
 
-      - name: Deploy Laravel backend via SSH
-        run: |
-          ssh -i ~/.ssh/directadmin_key -p ${{ secrets.DA_PORT }} ${{ secrets.DA_USERNAME }}@${{ secrets.DA_HOST }} '
-            cd ~/domains/hygiene.boat.orangeworkshop.info/project &&
-            git fetch origin main &&
-            git reset --hard origin/main &&
-            git clean -fd &&
-            composer install --no-dev --optimize-autoloader &&
-            php artisan up &&
-            php artisan migrate --force &&
-            php artisan config:clear &&
-            php artisan cache:clear &&
-            php artisan route:clear &&
-            php artisan view:clear &&
-            php artisan config:cache &&
-            php artisan route:cache &&
+            php artisan up
+            php artisan migrate --force
+
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+
+            php artisan config:cache
+            php artisan route:cache
             php artisan view:cache
-          '
 
-      - name: Upload built assets to project/public/build
-        run: |
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/directadmin_key -p ${{ secrets.DA_PORT }}" \
-            public/build/ \
-            ${{ secrets.DA_USERNAME }}@${{ secrets.DA_HOST }}:~/domains/hygiene.boat.orangeworkshop.info/project/public/build/
-
-      - name: Sync public folder to public_html
-        run: |
-          ssh -i ~/.ssh/directadmin_key -p ${{ secrets.DA_PORT }} ${{ secrets.DA_USERNAME }}@${{ secrets.DA_HOST }} '
-            cd ~/domains/hygiene.boat.orangeworkshop.info &&
-            rm -f public_html/index.html &&
-            rsync -av --delete --exclude=index.php --exclude=storage project/public/public_html/
-          '
+            cd /home/zboat/domains/hygiene.boat.orangeworkshop.info
+            rm -f public_html/index.html
+            rsync -av --delete --exclude=index.php --exclude=storage project/public/ public_html/
