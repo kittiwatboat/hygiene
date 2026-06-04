@@ -36,4 +36,5 @@ jobs:
             php artisan view:cache
 
             cd ..
-            rsync -av --delete --exclude=index.php project/public/ public_html/
+            rm -f public_html/index.html
+            rsync -av --delete --exclude=index.php --exclude=storage project/public/ public_html/
