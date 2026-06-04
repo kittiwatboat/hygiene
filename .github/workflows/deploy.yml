@@ -35,7 +35,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/directadmin_key -p ${{ secrets.DA_PORT }} ${{ secrets.DA_USERNAME }}@${{ secrets.DA_HOST }} '
             cd ~/domains/hygiene.boat.orangeworkshop.info/project &&
-            git pull origin main &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
+            git clean -fd &&
             composer install --no-dev --optimize-autoloader &&
             php artisan up &&
             php artisan migrate --force &&
