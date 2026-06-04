@@ -24,6 +24,8 @@ jobs:
 
             composer install --no-dev --optimize-autoloader
 
+            php artisan up
+
             php artisan migrate --force
 
             php artisan config:clear
