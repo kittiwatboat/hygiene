@@ -60,5 +60,5 @@ jobs:
           ssh -i ~/.ssh/directadmin_key -p ${{ secrets.DA_PORT }} ${{ secrets.DA_USERNAME }}@${{ secrets.DA_HOST }} '
             cd ~/domains/hygiene.boat.orangeworkshop.info &&
             rm -f public_html/index.html &&
-            rsync -av --delete --exclude=index.php --exclude=storage project/public/ public_html/
+            rsync -av --delete --exclude=index.php --exclude=storage project/public/public_html/
           '
