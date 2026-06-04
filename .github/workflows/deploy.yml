@@ -1,0 +1,39 @@
+name: Deploy Laravel to DirectAdmin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DA_HOST }}
+          username: ${{ secrets.DA_USERNAME }}
+          key: ${{ secrets.DA_SSH_KEY }}
+          port: ${{ secrets.DA_PORT }}
+          script: |
+            cd ~/domains/hygiene.boat.orangeworkshop.info/project
+
+            git pull origin main
+
+            composer install --no-dev --optimize-autoloader
+
+            php artisan migrate --force
+
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            cd ..
+            rsync -av --delete --exclude=index.php project/public/ public_html/
