@@ -14,6 +14,7 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
+        dd('aaa');
         $navs = [
             '0' => ['url' => "javascript:void(0)", 'name' => "Dashboard", "last" => 0],
         ];
