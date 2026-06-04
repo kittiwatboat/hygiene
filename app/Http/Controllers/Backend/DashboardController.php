@@ -7,8 +7,21 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    protected $prefix = 'backend';
+    protected $segment = 'webpanel';
+    protected $controller = 'dashboard';
+    protected $folder = 'dashboard';
+
+    public function index(Request $request)
     {
-        return view('backend.page.dashboard.index');
+        $navs = [
+            '0' => ['url' => "javascript:void(0)", 'name' => "Dashboard", "last" => 0],
+        ];
+        return view("$this->prefix.pages.$this->folder.index", [
+            'prefix' => $this->prefix,
+            'folder' => $this->folder,
+            'segment' => $this->segment,
+            'navs' => $navs,
+        ]);
     }
 }
