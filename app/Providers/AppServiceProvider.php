@@ -2,34 +2,31 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Register any application services.
+     */
     public function register(): void
     {
         //
     }
 
+    /**
+     * Bootstrap any application services.
+     */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
-            $menuData = [];
-
-            $verticalMenuPath = resource_path('menu/verticalMenu.json');
-
-            if (File::exists($verticalMenuPath)) {
-                $menuJson = File::get($verticalMenuPath);
-                $decodedMenu = json_decode($menuJson);
-
-                if (json_last_error() === JSON_ERROR_NONE && !empty($decodedMenu)) {
-                    $menuData = $decodedMenu;
-                }
+        Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
+            if ($src !== null) {
+                return [
+                    'class' => preg_match("/(resources\/assets\/vendor\/scss\/(rtl\/)?core)-?.*/i", $src) ? 'template-customizer-core-css' : (preg_match("/(resources\/assets\/vendor\/scss\/(rtl\/)?theme)-?.*/i", $src) ? 'template-customizer-theme-css' : '')
+                ];
             }
-
-            $view->with('menuData', $menuData);
+            return [];
         });
     }
 }

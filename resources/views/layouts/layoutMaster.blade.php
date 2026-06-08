@@ -1,8 +1,8 @@
 @isset($pageConfigs)
-  {!! app(\App\Helpers\Helpers::class)->updatePageConfig($pageConfigs) !!}
+  {!! Helper::updatePageConfig($pageConfigs) !!}
 @endisset
 @php
-  $configData = app(\App\Helpers\Helpers::class)->appClasses();
+  $configData = Helper::appClasses();
 @endphp
 
 @isset($configData['layout'])

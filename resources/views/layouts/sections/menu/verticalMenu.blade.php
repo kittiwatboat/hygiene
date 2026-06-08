@@ -1,19 +1,11 @@
 @php
 use Illuminate\Support\Facades\Route;
-
-$configData = app(\App\Helpers\Helpers::class)->appClasses();
-
-if (is_object($configData)) {
-    $configData = json_decode(json_encode($configData), true);
-}
-
-$menuAttributes = $configData['menuAttributes'] ?? [];
+$configData = Helper::appClasses();
 @endphp
 
-<aside id="layout-menu" class="layout-menu menu-vertical menu"
-  @foreach ($menuAttributes as $attribute => $value)
-    {{ $attribute }}="{{ $value }}"
-  @endforeach>
+<aside id="layout-menu" class="layout-menu menu-vertical menu" @foreach ($configData['menuAttributes'] as $attribute=>
+  $value)
+  {{ $attribute }}="{{ $value }}" @endforeach>
 
   <!-- ! Hide app brand if navbar-full -->
   @if (!isset($navbarFull))
@@ -33,7 +25,7 @@ $menuAttributes = $configData['menuAttributes'] ?? [];
   <div class="menu-inner-shadow"></div>
 
   <ul class="menu-inner py-1">
-    @foreach (($menuData[0]->menu ?? []) as $menu)
+    @foreach ($menuData[0]->menu as $menu)
     {{-- adding active and open class if child is active --}}
 
     {{-- menu headers --}}
