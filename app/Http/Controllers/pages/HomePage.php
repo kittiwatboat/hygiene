@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 class HomePage extends Controller
 {
   public function index()
-  {
-    dd('a');
-    return view('content.pages.pages-home');
-  }
+{
+    return 'home works';
+}
 }
