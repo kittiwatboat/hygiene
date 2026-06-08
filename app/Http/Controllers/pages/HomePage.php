@@ -9,6 +9,6 @@ class HomePage extends Controller
 {
   public function index()
 {
-    return 'home works';
+    return view('test');
 }
 }
