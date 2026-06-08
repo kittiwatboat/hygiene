@@ -4,34 +4,61 @@
       "url": "/",
       "name": "Dashboard",
       "icon": "menu-icon icon-base ti tabler-smart-home",
-      "slug": "pages-home"
+      "slug": "dashboard"
     },
     {
-      "url": "/page-2",
-      "icon": "menu-icon icon-base ti tabler-file",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "url": "/machines",
+      "name": "จัดการตู้",
+      "icon": "menu-icon icon-base ti tabler-wash-machine",
+      "slug": "machines"
     },
     {
-      "url": "/pages/misc-error",
-      "name": "Error",
-      "icon": "menu-icon icon-base ti tabler-alert-triangle",
-      "slug": "pages-misc-error",
-      "target": "_blank"
+      "url": "/locations",
+      "name": "จุดติดตั้ง",
+      "icon": "menu-icon icon-base ti tabler-map-pin",
+      "slug": "locations"
     },
     {
-      "url": "/auth/login-basic",
-      "name": "Login",
-      "icon": "menu-icon icon-base ti tabler-login",
-      "slug": "auth-login-basic",
-      "target": "_blank"
+      "url": "/stock",
+      "name": "Stock น้ำยา",
+      "icon": "menu-icon icon-base ti tabler-droplet",
+      "slug": "stock"
     },
     {
-      "url": "/auth/register-basic",
-      "name": "Register",
-      "icon": "menu-icon icon-base ti tabler-user",
-      "slug": "auth-register-basic",
-      "target": "_blank"
+      "url": "/refills",
+      "name": "บันทึกเติมน้ำยา",
+      "icon": "menu-icon icon-base ti tabler-droplet-plus",
+      "slug": "refills"
+    },
+    {
+      "url": "/sales",
+      "name": "รายการขาย",
+      "icon": "menu-icon icon-base ti tabler-receipt",
+      "slug": "sales"
+    },
+    {
+      "url": "/reports",
+      "name": "รายงาน",
+      "icon": "menu-icon icon-base ti tabler-chart-bar",
+      "slug": "reports"
+    },
+    {
+      "url": "/alerts",
+      "name": "แจ้งเตือน",
+      "icon": "menu-icon icon-base ti tabler-bell-ringing",
+      "slug": "alerts"
+    },
+    {
+      "url": "/users",
+      "name": "ผู้ใช้งาน",
+      "icon": "menu-icon icon-base ti tabler-users",
+      "slug": "users"
+    },
+    {
+      "url": "/settings",
+      "name": "ตั้งค่าระบบ",
+      "icon": "menu-icon icon-base ti tabler-settings",
+      "slug": "settings"
     }
   ]
 }

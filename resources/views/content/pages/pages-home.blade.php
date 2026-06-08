@@ -2,16 +2,6 @@
 
 @section('title', 'Dashboard ระบบตู้กดน้ำยา')
 
-@section('vendor-style')
-@vite([
-  'resources/assets/vendor/libs/apex-charts/apex-charts.scss'
-])
-@endsection
-
-@section('vendor-script')
-@vite('resources/assets/vendor/libs/apex-charts/apexcharts.js')
-@endsection
-
 @section('page-style')
 <style>
   :root {
@@ -31,15 +21,6 @@
       radial-gradient(circle at top right, rgba(0, 127, 196, .16), transparent 32%),
       linear-gradient(135deg, #ffffff 0%, #f5fbff 100%);
     box-shadow: 0 8px 24px rgba(67, 89, 113, .06);
-  }
-
-  .hygiene-title {
-    color: #1f2937;
-    font-weight: 700;
-  }
-
-  .hygiene-subtitle {
-    color: #6b7280;
   }
 
   .hygiene-card {
@@ -123,35 +104,18 @@
     background: rgba(108, 117, 125, .14);
   }
 
-  .hygiene-location-item {
+  .hygiene-location-card {
     border: 1px solid rgba(67, 89, 113, .10);
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 16px;
+    padding: 16px;
+    height: 100%;
+    background: #fff;
     transition: all .2s ease;
   }
 
-  .hygiene-location-item:hover {
+  .hygiene-location-card:hover {
     border-color: rgba(0, 127, 196, .35);
     box-shadow: 0 8px 20px rgba(0, 127, 196, .08);
-  }
-
-  .hygiene-machine-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-  }
-
-  .hygiene-dot-online {
-    background: #28c76f;
-  }
-
-  .hygiene-dot-offline {
-    background: #ea5455;
-  }
-
-  .hygiene-dot-warning {
-    background: #ff9f43;
   }
 
   .hygiene-table th {
@@ -168,29 +132,8 @@
     border-radius: 999px;
   }
 
-  .hygiene-filter-btn.active {
-    background: var(--hygiene-primary);
-    color: #ffffff;
-    border-color: var(--hygiene-primary);
-  }
-
-  .hygiene-map-placeholder {
-    min-height: 280px;
-    border-radius: 16px;
-    background:
-      linear-gradient(135deg, rgba(0, 127, 196, .12), rgba(0, 207, 232, .08)),
-      repeating-linear-gradient(
-        45deg,
-        rgba(0, 127, 196, .04),
-        rgba(0, 127, 196, .04) 10px,
-        rgba(255, 255, 255, .8) 10px,
-        rgba(255, 255, 255, .8) 20px
-      );
-    border: 1px dashed rgba(0, 127, 196, .35);
-  }
-
   .hygiene-alert-list {
-    max-height: 352px;
+    max-height: 420px;
     overflow-y: auto;
   }
 
@@ -203,312 +146,36 @@
     border-radius: 999px;
   }
 
-  .hygiene-timeline {
-    position: relative;
-    padding-left: 0;
+  .hygiene-summary-box {
+    border: 1px solid rgba(67, 89, 113, .10);
+    border-radius: 16px;
+    padding: 16px;
+    background: #fff;
   }
 
-  .hygiene-timeline .timeline-item:not(:last-child) {
-    padding-bottom: 22px;
+  .hygiene-status-dot {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 50%;
+  }
+
+  .hygiene-dot-success {
+    background: #28c76f;
+  }
+
+  .hygiene-dot-danger {
+    background: #ea5455;
+  }
+
+  .hygiene-dot-warning {
+    background: #ff9f43;
+  }
+
+  .hygiene-dot-secondary {
+    background: #6c757d;
   }
 </style>
-@endsection
-
-@section('page-script')
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const hygienePrimary = '#007FC4';
-    const hygieneSuccess = '#28C76F';
-    const hygieneWarning = '#FF9F43';
-    const hygieneDanger = '#EA5455';
-    const hygieneInfo = '#00CFE8';
-    const hygieneMuted = '#A8AAAE';
-
-    const cardColor = window.Helpers ? window.Helpers.getCssVar('card-bg') : '#ffffff';
-    const headingColor = window.Helpers ? window.Helpers.getCssVar('heading-color') : '#566a7f';
-    const labelColor = window.Helpers ? window.Helpers.getCssVar('body-color') : '#6f6b7d';
-    const borderColor = window.Helpers ? window.Helpers.getCssVar('border-color') : '#dbdade';
-
-    const chartFontFamily = 'Public Sans, sans-serif';
-
-    if (document.querySelector('#salesOverviewChart')) {
-      const salesOverviewChart = new ApexCharts(document.querySelector('#salesOverviewChart'), {
-        chart: {
-          height: 330,
-          type: 'area',
-          parentHeightOffset: 0,
-          toolbar: { show: false },
-          fontFamily: chartFontFamily
-        },
-        series: [
-          {
-            name: 'ยอดขาย',
-            data: [1450, 1880, 2140, 1760, 2590, 3120, 2840]
-          },
-          {
-            name: 'จำนวนการกด',
-            data: [92, 118, 132, 101, 158, 196, 181]
-          }
-        ],
-        colors: [hygienePrimary, hygieneInfo],
-        dataLabels: { enabled: false },
-        stroke: {
-          width: 3,
-          curve: 'smooth'
-        },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: .6,
-            opacityFrom: .32,
-            opacityTo: .06,
-            stops: [0, 90, 100]
-          }
-        },
-        grid: {
-          borderColor: borderColor,
-          strokeDashArray: 5,
-          padding: {
-            top: 0,
-            right: 8,
-            bottom: 0,
-            left: 8
-          }
-        },
-        legend: {
-          show: true,
-          position: 'top',
-          horizontalAlign: 'right',
-          labels: {
-            colors: labelColor
-          }
-        },
-        xaxis: {
-          categories: ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'],
-          labels: {
-            style: {
-              colors: labelColor
-            }
-          },
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: labelColor
-            },
-            formatter: function (value) {
-              return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value;
-            }
-          }
-        },
-        tooltip: {
-          y: {
-            formatter: function (value, options) {
-              if (options.seriesIndex === 0) {
-                return '฿' + value.toLocaleString();
-              }
-
-              return value.toLocaleString() + ' ครั้ง';
-            }
-          }
-        }
-      });
-
-      salesOverviewChart.render();
-    }
-
-    if (document.querySelector('#machineStatusChart')) {
-      const machineStatusChart = new ApexCharts(document.querySelector('#machineStatusChart'), {
-        chart: {
-          height: 260,
-          type: 'donut',
-          fontFamily: chartFontFamily
-        },
-        labels: ['ออนไลน์', 'ออฟไลน์', 'น้ำยาใกล้หมด', 'ซ่อมบำรุง'],
-        series: [28, 4, 6, 2],
-        colors: [hygieneSuccess, hygieneDanger, hygieneWarning, hygieneMuted],
-        stroke: {
-          width: 0
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: function (val) {
-            return Math.round(val) + '%';
-          }
-        },
-        legend: {
-          position: 'bottom',
-          labels: {
-            colors: labelColor
-          }
-        },
-        plotOptions: {
-          pie: {
-            donut: {
-              size: '68%',
-              labels: {
-                show: true,
-                name: {
-                  color: labelColor
-                },
-                value: {
-                  color: headingColor,
-                  fontSize: '22px',
-                  fontWeight: 700
-                },
-                total: {
-                  show: true,
-                  label: 'ตู้ทั้งหมด',
-                  color: labelColor,
-                  formatter: function () {
-                    return '40';
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
-
-      machineStatusChart.render();
-    }
-
-    if (document.querySelector('#liquidUsageChart')) {
-      const liquidUsageChart = new ApexCharts(document.querySelector('#liquidUsageChart'), {
-        chart: {
-          height: 280,
-          type: 'bar',
-          parentHeightOffset: 0,
-          toolbar: { show: false },
-          fontFamily: chartFontFamily
-        },
-        series: [
-          {
-            name: 'น้ำยาซักผ้า',
-            data: [18.5, 22.2, 19.8, 24.4, 28.1, 31.5, 29.2]
-          },
-          {
-            name: 'น้ำยาปรับผ้านุ่ม',
-            data: [9.2, 10.8, 9.7, 12.1, 13.8, 15.4, 14.6]
-          }
-        ],
-        colors: [hygienePrimary, hygieneInfo],
-        plotOptions: {
-          bar: {
-            borderRadius: 8,
-            columnWidth: '42%'
-          }
-        },
-        dataLabels: { enabled: false },
-        grid: {
-          borderColor: borderColor,
-          strokeDashArray: 5
-        },
-        legend: {
-          position: 'top',
-          horizontalAlign: 'right',
-          labels: {
-            colors: labelColor
-          }
-        },
-        xaxis: {
-          categories: ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'],
-          labels: {
-            style: {
-              colors: labelColor
-            }
-          },
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: labelColor
-            },
-            formatter: function (value) {
-              return value + 'L';
-            }
-          }
-        },
-        tooltip: {
-          y: {
-            formatter: function (value) {
-              return value + ' ลิตร';
-            }
-          }
-        }
-      });
-
-      liquidUsageChart.render();
-    }
-
-    if (document.querySelector('#topLocationChart')) {
-      const topLocationChart = new ApexCharts(document.querySelector('#topLocationChart'), {
-        chart: {
-          height: 300,
-          type: 'bar',
-          parentHeightOffset: 0,
-          toolbar: { show: false },
-          fontFamily: chartFontFamily
-        },
-        series: [
-          {
-            name: 'ยอดขายวันนี้',
-            data: [8450, 6230, 4280, 3180, 1840]
-          }
-        ],
-        colors: [hygienePrimary],
-        plotOptions: {
-          bar: {
-            horizontal: true,
-            borderRadius: 8,
-            barHeight: '48%'
-          }
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: function (value) {
-            return '฿' + value.toLocaleString();
-          }
-        },
-        grid: {
-          borderColor: borderColor,
-          strokeDashArray: 5
-        },
-        xaxis: {
-          categories: ['คอนโด B', 'หอพัก A', 'ร้านซักผ้า C', 'อพาร์ตเมนต์ D', 'หอพัก E'],
-          labels: {
-            style: {
-              colors: labelColor
-            },
-            formatter: function (value) {
-              return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value;
-            }
-          }
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: labelColor
-            }
-          }
-        },
-        tooltip: {
-          y: {
-            formatter: function (value) {
-              return '฿' + value.toLocaleString();
-            }
-          }
-        }
-      });
-
-      topLocationChart.render();
-    }
-  });
-</script>
 @endsection
 
 @section('content')
@@ -518,35 +185,44 @@
       'title' => 'ยอดขายวันนี้',
       'subtitle' => 'รวมทุกจุดติดตั้ง',
       'value' => '฿12,450',
-      'trend' => '+18.2%',
-      'trend_class' => 'text-success',
+      'detail' => '+18.2% จากเมื่อวาน',
+      'detail_class' => 'text-success',
       'icon' => 'tabler-currency-baht',
       'icon_class' => 'hygiene-icon-primary'
     ],
     [
       'title' => 'จำนวนการกดวันนี้',
-      'subtitle' => 'น้ำยาออกจากตู้ทั้งหมด',
+      'subtitle' => 'จำนวนครั้งที่ลูกค้าใช้งาน',
       'value' => '312 ครั้ง',
-      'trend' => '+9.4%',
-      'trend_class' => 'text-success',
+      'detail' => '+29 ครั้ง',
+      'detail_class' => 'text-success',
       'icon' => 'tabler-hand-click',
       'icon_class' => 'hygiene-icon-info'
     ],
     [
+      'title' => 'ตู้ทั้งหมด',
+      'subtitle' => 'ทุกสาขา / ทุกจุด',
+      'value' => '40 เครื่อง',
+      'detail' => 'ติดตั้งแล้วทั้งหมด',
+      'detail_class' => 'text-body-secondary',
+      'icon' => 'tabler-wash-machine',
+      'icon_class' => 'hygiene-icon-primary'
+    ],
+    [
       'title' => 'ตู้ออนไลน์',
-      'subtitle' => 'เครื่องที่เชื่อมต่ออยู่',
-      'value' => '28 / 40',
-      'trend' => '70%',
-      'trend_class' => 'text-success',
+      'subtitle' => 'เชื่อมต่อระบบอยู่',
+      'value' => '28 เครื่อง',
+      'detail' => '70% ของตู้ทั้งหมด',
+      'detail_class' => 'text-success',
       'icon' => 'tabler-plug-connected',
       'icon_class' => 'hygiene-icon-success'
     ],
     [
-      'title' => 'ตู่ออฟไลน์',
+      'title' => 'ตู้ออฟไลน์',
       'subtitle' => 'ขาดการเชื่อมต่อ',
       'value' => '4 เครื่อง',
-      'trend' => 'ต้องตรวจสอบ',
-      'trend_class' => 'text-danger',
+      'detail' => 'ต้องตรวจสอบ',
+      'detail_class' => 'text-danger',
       'icon' => 'tabler-plug-connected-x',
       'icon_class' => 'hygiene-icon-danger'
     ],
@@ -554,8 +230,8 @@
       'title' => 'น้ำยาใกล้หมด',
       'subtitle' => 'ต่ำกว่าเกณฑ์ขั้นต่ำ',
       'value' => '6 เครื่อง',
-      'trend' => 'ควรเติมวันนี้',
-      'trend_class' => 'text-warning',
+      'detail' => 'ควรเติมวันนี้',
+      'detail_class' => 'text-warning',
       'icon' => 'tabler-droplet-half-2',
       'icon_class' => 'hygiene-icon-warning'
     ],
@@ -563,11 +239,55 @@
       'title' => 'แจ้งเตือนค้างอยู่',
       'subtitle' => 'Offline / Low Stock / Error',
       'value' => '12 รายการ',
-      'trend' => '3 รายการด่วน',
-      'trend_class' => 'text-danger',
+      'detail' => '3 รายการด่วน',
+      'detail_class' => 'text-danger',
       'icon' => 'tabler-bell-ringing',
       'icon_class' => 'hygiene-icon-danger'
-    ]
+    ],
+    [
+      'title' => 'รายได้เดือนนี้',
+      'subtitle' => 'สะสมตั้งแต่ต้นเดือน',
+      'value' => '฿186,720',
+      'detail' => '+12.7% จากเดือนก่อน',
+      'detail_class' => 'text-success',
+      'icon' => 'tabler-report-money',
+      'icon_class' => 'hygiene-icon-success'
+    ],
+  ];
+
+  $statusOverview = [
+    [
+      'label' => 'ออนไลน์',
+      'value' => 28,
+      'total' => 40,
+      'percent' => 70,
+      'dot' => 'hygiene-dot-success',
+      'progress' => 'bg-success'
+    ],
+    [
+      'label' => 'ออฟไลน์',
+      'value' => 4,
+      'total' => 40,
+      'percent' => 10,
+      'dot' => 'hygiene-dot-danger',
+      'progress' => 'bg-danger'
+    ],
+    [
+      'label' => 'น้ำยาใกล้หมด',
+      'value' => 6,
+      'total' => 40,
+      'percent' => 15,
+      'dot' => 'hygiene-dot-warning',
+      'progress' => 'bg-warning'
+    ],
+    [
+      'label' => 'ซ่อมบำรุง',
+      'value' => 2,
+      'total' => 40,
+      'percent' => 5,
+      'dot' => 'hygiene-dot-secondary',
+      'progress' => 'bg-secondary'
+    ],
   ];
 
   $locationSummaries = [
@@ -579,7 +299,9 @@
       'offline' => 0,
       'sales' => '฿1,250',
       'press_count' => 48,
-      'low_stock' => 1
+      'low_stock' => 1,
+      'status' => 'ปกติ',
+      'status_class' => 'bg-label-success'
     ],
     [
       'name' => 'คอนโด B',
@@ -589,7 +311,9 @@
       'offline' => 1,
       'sales' => '฿2,840',
       'press_count' => 83,
-      'low_stock' => 2
+      'low_stock' => 2,
+      'status' => 'ควรตรวจสอบ',
+      'status_class' => 'bg-label-warning'
     ],
     [
       'name' => 'ร้านซักผ้า C',
@@ -599,7 +323,9 @@
       'offline' => 1,
       'sales' => '฿890',
       'press_count' => 26,
-      'low_stock' => 0
+      'low_stock' => 0,
+      'status' => 'มีตู้ Offline',
+      'status_class' => 'bg-label-danger'
     ],
     [
       'name' => 'อพาร์ตเมนต์ D',
@@ -609,8 +335,10 @@
       'offline' => 1,
       'sales' => '฿1,640',
       'press_count' => 52,
-      'low_stock' => 2
-    ]
+      'low_stock' => 2,
+      'status' => 'ควรเติมน้ำยา',
+      'status_class' => 'bg-label-warning'
+    ],
   ];
 
   $machineRows = [
@@ -685,7 +413,7 @@
       'sales' => '฿0',
       'press_count' => 0,
       'last_update' => '1 ชั่วโมงที่แล้ว'
-    ]
+    ],
   ];
 
   $stockAlerts = [
@@ -724,7 +452,7 @@
       'min' => '5 ลิตร',
       'level' => 'ต้องเติมด่วน',
       'class' => 'hygiene-badge-error'
-    ]
+    ],
   ];
 
   $transactions = [
@@ -777,10 +505,41 @@
       'price' => '฿5',
       'status' => 'สำเร็จ',
       'class' => 'bg-label-success'
-    ]
+    ],
   ];
 
-  $timelines = [
+  $topMachines = [
+    [
+      'rank' => 1,
+      'machine' => 'HY-007',
+      'location' => 'คอนโด B',
+      'sales' => '฿8,450',
+      'press_count' => 390
+    ],
+    [
+      'rank' => 2,
+      'machine' => 'HY-002',
+      'location' => 'หอพัก A',
+      'sales' => '฿6,230',
+      'press_count' => 284
+    ],
+    [
+      'rank' => 3,
+      'machine' => 'HY-014',
+      'location' => 'อพาร์ตเมนต์ D',
+      'sales' => '฿4,280',
+      'press_count' => 198
+    ],
+    [
+      'rank' => 4,
+      'machine' => 'HY-012',
+      'location' => 'ร้านซักผ้า C',
+      'sales' => '฿3,180',
+      'press_count' => 144
+    ],
+  ];
+
+  $activities = [
     [
       'type' => 'danger',
       'title' => 'HY-009 ขาดการเชื่อมต่อ',
@@ -805,12 +564,6 @@
       'description' => 'HY-001 รับรายการน้ำยาซักผ้า ฿10 สำเร็จ',
       'time' => '42 นาทีที่แล้ว'
     ],
-    [
-      'type' => 'info',
-      'title' => 'HY-007 กลับมาออนไลน์',
-      'description' => 'ตู้คอนโด B โซนซักผ้ากลับมาเชื่อมต่อระบบแล้ว',
-      'time' => '1 ชั่วโมงที่แล้ว'
-    ]
   ];
 @endphp
 
@@ -823,16 +576,16 @@
             <span class="badge rounded-pill" style="background:#007FC4;color:#fff;">Hygiene Dashboard</span>
             <span class="badge bg-label-success rounded-pill">Real-time Monitoring</span>
           </div>
-          <h4 class="hygiene-title mb-1">ภาพรวมระบบตู้กดน้ำยาซักผ้า</h4>
-          <p class="hygiene-subtitle mb-0">
-            ติดตามยอดขาย สถานะตู้ ปริมาณน้ำยา และแจ้งเตือนเติม Stock จากทุกจุดติดตั้ง
+          <h4 class="mb-1 fw-bold">ภาพรวมระบบตู้กดน้ำยาซักผ้า</h4>
+          <p class="text-body-secondary mb-0">
+            ติดตามยอดขาย สถานะตู้ ปริมาณน้ำยา แจ้งเตือนเติม Stock และธุรกรรมล่าสุดจากทุกจุดติดตั้ง
           </p>
         </div>
 
         <div class="d-flex flex-wrap align-items-center gap-2">
-          <button type="button" class="btn btn-outline-secondary hygiene-filter-btn active">วันนี้</button>
-          <button type="button" class="btn btn-outline-secondary hygiene-filter-btn">7 วัน</button>
-          <button type="button" class="btn btn-outline-secondary hygiene-filter-btn">เดือนนี้</button>
+          <button type="button" class="btn btn-outline-secondary">วันนี้</button>
+          <button type="button" class="btn btn-outline-secondary">7 วัน</button>
+          <button type="button" class="btn btn-outline-secondary">เดือนนี้</button>
           <button type="button" class="btn btn-primary" style="background:#007FC4;border-color:#007FC4;">
             <i class="icon-base ti tabler-refresh me-1"></i>
             รีเฟรชข้อมูล
@@ -843,7 +596,7 @@
   </div>
 
   @foreach ($summaryCards as $card)
-    <div class="col-xxl-2 col-lg-4 col-md-4 col-sm-6 col-12">
+    <div class="col-xxl-3 col-lg-4 col-md-6 col-12">
       <div class="card hygiene-card hygiene-stat-card h-100">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-4">
@@ -855,98 +608,100 @@
           <small class="text-body-secondary d-block mb-3">{{ $card['subtitle'] }}</small>
           <div class="d-flex justify-content-between align-items-end gap-2">
             <h4 class="mb-0">{{ $card['value'] }}</h4>
-            <small class="{{ $card['trend_class'] }} fw-medium">{{ $card['trend'] }}</small>
+            <small class="{{ $card['detail_class'] }} fw-medium">{{ $card['detail'] }}</small>
           </div>
         </div>
       </div>
     </div>
   @endforeach
 
-  <div class="col-xxl-8 col-xl-8 col-12">
-    <div class="card hygiene-card h-100">
-      <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
-        <div>
-          <h5 class="card-title mb-1">ยอดขายและจำนวนการกด</h5>
-          <p class="card-subtitle mb-0">เปรียบเทียบยอดขายรวมกับจำนวนครั้งที่ลูกค้ากดใช้งาน</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-label-primary">ยอดขายรวม ฿12,450</span>
-          <span class="badge bg-label-info">312 ครั้ง</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div id="salesOverviewChart"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-xxl-4 col-xl-4 col-12">
+  <div class="col-xl-4 col-12">
     <div class="card hygiene-card h-100">
       <div class="card-header">
-        <h5 class="card-title mb-1">สถานะตู้ทั้งหมด</h5>
-        <p class="card-subtitle mb-0">ภาพรวมสถานะเครื่องจากทุกจุดติดตั้ง</p>
+        <h5 class="card-title mb-1">สถานะตู้โดยรวม</h5>
+        <p class="card-subtitle mb-0">สรุปจำนวนตู้ตามสถานะ</p>
       </div>
       <div class="card-body">
-        <div id="machineStatusChart"></div>
+        @foreach ($statusOverview as $status)
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="hygiene-status-dot {{ $status['dot'] }}"></span>
+                <span class="fw-medium">{{ $status['label'] }}</span>
+              </div>
+              <span class="fw-medium">{{ $status['value'] }} / {{ $status['total'] }} เครื่อง</span>
+            </div>
+            <div class="progress hygiene-progress-sm">
+              <div
+                class="progress-bar {{ $status['progress'] }}"
+                role="progressbar"
+                style="width: {{ $status['percent'] }}%;"
+                aria-valuenow="{{ $status['percent'] }}"
+                aria-valuemin="0"
+                aria-valuemax="100">
+              </div>
+            </div>
+            <small class="text-body-secondary">{{ $status['percent'] }}% ของตู้ทั้งหมด</small>
+          </div>
+        @endforeach
       </div>
     </div>
   </div>
 
-  <div class="col-xl-7 col-12">
+  <div class="col-xl-8 col-12">
     <div class="card hygiene-card h-100">
       <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
         <div>
           <h5 class="card-title mb-1">สถานะตามจุดติดตั้ง</h5>
           <p class="card-subtitle mb-0">ดูยอดขายและสถานะตู้แยกตามสถานที่</p>
         </div>
-        <a href="javascript:void(0);" class="btn btn-sm btn-outline-primary">
+        <a href="javascript:void(0);" class="btn btn-sm btn-outline-primary align-self-md-start">
           ดูทุกจุดติดตั้ง
         </a>
       </div>
+
       <div class="card-body">
         <div class="row g-4">
           @foreach ($locationSummaries as $location)
             <div class="col-md-6">
-              <div class="hygiene-location-item">
+              <div class="hygiene-location-card">
                 <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                   <div>
                     <h6 class="mb-1">{{ $location['name'] }}</h6>
                     <small class="text-body-secondary">{{ $location['address'] }}</small>
                   </div>
-                  <span class="badge bg-label-primary">{{ $location['machines'] }} ตู้</span>
+                  <span class="badge {{ $location['status_class'] }}">{{ $location['status'] }}</span>
                 </div>
 
                 <div class="row g-3">
                   <div class="col-6">
-                    <small class="text-body-secondary d-block">ออนไลน์</small>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="hygiene-machine-dot hygiene-dot-online"></span>
-                      <span class="fw-medium">{{ $location['online'] }} เครื่อง</span>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <small class="text-body-secondary d-block">ออฟไลน์</small>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="hygiene-machine-dot hygiene-dot-offline"></span>
-                      <span class="fw-medium">{{ $location['offline'] }} เครื่อง</span>
-                    </div>
+                    <small class="text-body-secondary d-block">จำนวนตู้</small>
+                    <span class="fw-medium">{{ $location['machines'] }} เครื่อง</span>
                   </div>
                   <div class="col-6">
                     <small class="text-body-secondary d-block">ยอดขายวันนี้</small>
                     <span class="fw-medium">{{ $location['sales'] }}</span>
                   </div>
                   <div class="col-6">
+                    <small class="text-body-secondary d-block">ออนไลน์</small>
+                    <span class="text-success fw-medium">{{ $location['online'] }} เครื่อง</span>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-body-secondary d-block">ออฟไลน์</small>
+                    <span class="text-danger fw-medium">{{ $location['offline'] }} เครื่อง</span>
+                  </div>
+                  <div class="col-6">
                     <small class="text-body-secondary d-block">จำนวนการกด</small>
                     <span class="fw-medium">{{ $location['press_count'] }} ครั้ง</span>
                   </div>
+                  <div class="col-6">
+                    <small class="text-body-secondary d-block">น้ำยาใกล้หมด</small>
+                    <span class="text-warning fw-medium">{{ $location['low_stock'] }} เครื่อง</span>
+                  </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                  <small class="text-warning">
-                    <i class="icon-base ti tabler-alert-triangle me-1"></i>
-                    น้ำยาใกล้หมด {{ $location['low_stock'] }} เครื่อง
-                  </small>
-                  <a href="javascript:void(0);" class="small fw-medium">รายละเอียด</a>
+                <div class="mt-3 pt-3 border-top text-end">
+                  <a href="javascript:void(0);" class="small fw-medium">ดูรายละเอียด</a>
                 </div>
               </div>
             </div>
@@ -958,12 +713,90 @@
 
   <div class="col-xl-5 col-12">
     <div class="card hygiene-card h-100">
-      <div class="card-header">
-        <h5 class="card-title mb-1">ปริมาณน้ำยาที่ใช้งาน</h5>
-        <p class="card-subtitle mb-0">สรุปการใช้น้ำยาซักผ้าและน้ำยาปรับผ้านุ่มรายวัน</p>
+      <div class="card-header d-flex justify-content-between gap-3">
+        <div>
+          <h5 class="card-title mb-1">แจ้งเตือนเติมน้ำยา</h5>
+          <p class="card-subtitle mb-0">รายการที่ต่ำกว่าเกณฑ์ขั้นต่ำ</p>
+        </div>
+        <span class="badge bg-label-warning align-self-start">{{ count($stockAlerts) }} รายการ</span>
       </div>
-      <div class="card-body">
-        <div id="liquidUsageChart"></div>
+
+      <div class="card-body hygiene-alert-list">
+        @foreach ($stockAlerts as $alert)
+          <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
+            <div class="hygiene-icon-box hygiene-icon-warning flex-shrink-0">
+              <i class="icon-base ti tabler-droplet-exclamation icon-24px"></i>
+            </div>
+
+            <div class="w-100">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <div>
+                  <h6 class="mb-1">{{ $alert['machine'] }} - {{ $alert['liquid_type'] }}</h6>
+                  <small class="text-body-secondary">{{ $alert['location'] }}</small>
+                </div>
+                <span class="badge rounded-pill {{ $alert['class'] }}">{{ $alert['level'] }}</span>
+              </div>
+
+              <div class="d-flex justify-content-between mt-3">
+                <small>คงเหลือ: <span class="fw-medium">{{ $alert['remain'] }}</span></small>
+                <small>ขั้นต่ำ: <span class="fw-medium">{{ $alert['min'] }}</span></small>
+              </div>
+            </div>
+          </div>
+        @endforeach
+
+        <button type="button" class="btn btn-outline-primary w-100">
+          ดูแจ้งเตือนทั้งหมด
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-7 col-12">
+    <div class="card hygiene-card h-100">
+      <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
+        <div>
+          <h5 class="card-title mb-1">รายการใช้งานล่าสุด</h5>
+          <p class="card-subtitle mb-0">ประวัติการกดน้ำยาและสถานะรายการล่าสุด</p>
+        </div>
+        <a href="javascript:void(0);" class="btn btn-sm btn-outline-primary align-self-md-start">
+          ดูรายการขายทั้งหมด
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover hygiene-table mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>เวลา</th>
+              <th>รหัสตู้</th>
+              <th>จุดติดตั้ง</th>
+              <th>รายการ</th>
+              <th>ปริมาณ</th>
+              <th>ราคา</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($transactions as $transaction)
+              <tr>
+                <td>{{ $transaction['time'] }}</td>
+                <td>
+                  <span class="fw-medium">{{ $transaction['machine'] }}</span>
+                </td>
+                <td>{{ $transaction['location'] }}</td>
+                <td>{{ $transaction['item'] }}</td>
+                <td>{{ $transaction['volume'] }}</td>
+                <td>
+                  <span class="fw-medium">{{ $transaction['price'] }}</span>
+                </td>
+                <td>
+                  <span class="badge {{ $transaction['class'] }}">{{ $transaction['status'] }}</span>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -975,6 +808,7 @@
           <h5 class="card-title mb-1">รายการตู้ทั้งหมด</h5>
           <p class="card-subtitle mb-0">ติดตามสถานะตู้ น้ำยาคงเหลือ ยอดขาย และเวลาอัปเดตล่าสุด</p>
         </div>
+
         <div class="d-flex flex-wrap gap-2">
           <button type="button" class="btn btn-sm btn-outline-secondary">
             <i class="icon-base ti tabler-filter me-1"></i>
@@ -1093,84 +927,38 @@
     </div>
   </div>
 
-  <div class="col-xl-5 col-12">
+  <div class="col-xl-6 col-12">
     <div class="card hygiene-card h-100">
-      <div class="card-header d-flex justify-content-between gap-3">
-        <div>
-          <h5 class="card-title mb-1">แจ้งเตือนเติมน้ำยา</h5>
-          <p class="card-subtitle mb-0">รายการที่ต่ำกว่าเกณฑ์ขั้นต่ำ</p>
-        </div>
-        <span class="badge bg-label-warning align-self-start">{{ count($stockAlerts) }} รายการ</span>
+      <div class="card-header">
+        <h5 class="card-title mb-1">อันดับตู้ขายดีวันนี้</h5>
+        <p class="card-subtitle mb-0">เรียงจากยอดขายสูงสุด</p>
       </div>
-      <div class="card-body hygiene-alert-list">
-        @foreach ($stockAlerts as $alert)
-          <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
-            <div class="hygiene-icon-box hygiene-icon-warning flex-shrink-0">
-              <i class="icon-base ti tabler-droplet-exclamation icon-24px"></i>
-            </div>
-            <div class="w-100">
-              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-                <div>
-                  <h6 class="mb-1">{{ $alert['machine'] }} - {{ $alert['liquid_type'] }}</h6>
-                  <small class="text-body-secondary">{{ $alert['location'] }}</small>
-                </div>
-                <span class="badge rounded-pill {{ $alert['class'] }}">{{ $alert['level'] }}</span>
-              </div>
-              <div class="d-flex justify-content-between mt-3">
-                <small>คงเหลือ: <span class="fw-medium">{{ $alert['remain'] }}</span></small>
-                <small>ขั้นต่ำ: <span class="fw-medium">{{ $alert['min'] }}</span></small>
-              </div>
-            </div>
-          </div>
-        @endforeach
 
-        <button type="button" class="btn btn-outline-primary w-100">
-          ดูแจ้งเตือนทั้งหมด
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-xl-7 col-12">
-    <div class="card hygiene-card h-100">
-      <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
-        <div>
-          <h5 class="card-title mb-1">รายการใช้งานล่าสุด</h5>
-          <p class="card-subtitle mb-0">ประวัติการกดน้ำยาและสถานะรายการล่าสุด</p>
-        </div>
-        <a href="javascript:void(0);" class="btn btn-sm btn-outline-primary align-self-md-start">
-          ดูรายการขายทั้งหมด
-        </a>
-      </div>
       <div class="table-responsive">
         <table class="table table-hover hygiene-table mb-0">
           <thead class="table-light">
             <tr>
-              <th>เวลา</th>
+              <th>อันดับ</th>
               <th>รหัสตู้</th>
               <th>จุดติดตั้ง</th>
-              <th>รายการ</th>
-              <th>ปริมาณ</th>
-              <th>ราคา</th>
-              <th>สถานะ</th>
+              <th>ยอดขาย</th>
+              <th>จำนวนการกด</th>
             </tr>
           </thead>
           <tbody>
-            @foreach ($transactions as $transaction)
+            @foreach ($topMachines as $machine)
               <tr>
-                <td>{{ $transaction['time'] }}</td>
                 <td>
-                  <span class="fw-medium">{{ $transaction['machine'] }}</span>
-                </td>
-                <td>{{ $transaction['location'] }}</td>
-                <td>{{ $transaction['item'] }}</td>
-                <td>{{ $transaction['volume'] }}</td>
-                <td>
-                  <span class="fw-medium">{{ $transaction['price'] }}</span>
+                  <span class="badge bg-label-primary">#{{ $machine['rank'] }}</span>
                 </td>
                 <td>
-                  <span class="badge {{ $transaction['class'] }}">{{ $transaction['status'] }}</span>
+                  <span class="fw-medium">{{ $machine['machine'] }}</span>
                 </td>
+                <td>{{ $machine['location'] }}</td>
+                <td>
+                  <span class="fw-medium">{{ $machine['sales'] }}</span>
+                </td>
+                <td>{{ $machine['press_count'] }} ครั้ง</td>
               </tr>
             @endforeach
           </tbody>
@@ -1179,62 +967,24 @@
     </div>
   </div>
 
-  <div class="col-xl-4 col-12">
-    <div class="card hygiene-card h-100">
-      <div class="card-header">
-        <h5 class="card-title mb-1">อันดับจุดขายดี</h5>
-        <p class="card-subtitle mb-0">ยอดขายวันนี้แยกตามจุดติดตั้ง</p>
-      </div>
-      <div class="card-body">
-        <div id="topLocationChart"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-xl-4 col-12">
-    <div class="card hygiene-card h-100">
-      <div class="card-header">
-        <h5 class="card-title mb-1">ภาพรวมจุดติดตั้ง</h5>
-        <p class="card-subtitle mb-0">ตำแหน่งตู้และสถานะแต่ละพื้นที่</p>
-      </div>
-      <div class="card-body">
-        <div class="hygiene-map-placeholder d-flex align-items-center justify-content-center text-center p-4">
-          <div>
-            <div class="hygiene-icon-box hygiene-icon-primary mx-auto mb-3">
-              <i class="icon-base ti tabler-map-pin icon-26px"></i>
-            </div>
-            <h6 class="mb-1">แผนที่จุดติดตั้ง</h6>
-            <p class="text-body-secondary mb-3">
-              สามารถเชื่อม Google Maps เพื่อแสดง Marker สีตามสถานะตู้
-            </p>
-            <div class="d-flex justify-content-center flex-wrap gap-2">
-              <span class="badge bg-label-success">ปกติ 28</span>
-              <span class="badge bg-label-warning">น้ำยาใกล้หมด 6</span>
-              <span class="badge bg-label-danger">ออฟไลน์ 4</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-xl-4 col-12">
+  <div class="col-xl-6 col-12">
     <div class="card hygiene-card h-100">
       <div class="card-header">
         <h5 class="card-title mb-1">Activity Timeline</h5>
         <p class="card-subtitle mb-0">เหตุการณ์ล่าสุดของระบบ</p>
       </div>
+
       <div class="card-body">
-        <ul class="timeline hygiene-timeline mb-0">
-          @foreach ($timelines as $timeline)
+        <ul class="timeline mb-0">
+          @foreach ($activities as $activity)
             <li class="timeline-item timeline-item-transparent">
-              <span class="timeline-point timeline-point-{{ $timeline['type'] }}"></span>
+              <span class="timeline-point timeline-point-{{ $activity['type'] }}"></span>
               <div class="timeline-event">
                 <div class="timeline-header mb-2">
-                  <h6 class="mb-0">{{ $timeline['title'] }}</h6>
-                  <small class="text-body-secondary">{{ $timeline['time'] }}</small>
+                  <h6 class="mb-0">{{ $activity['title'] }}</h6>
+                  <small class="text-body-secondary">{{ $activity['time'] }}</small>
                 </div>
-                <p class="mb-0 text-body-secondary">{{ $timeline['description'] }}</p>
+                <p class="mb-0 text-body-secondary">{{ $activity['description'] }}</p>
               </div>
             </li>
           @endforeach

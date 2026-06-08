@@ -4,7 +4,7 @@ $customizerHidden = 'customizer-hide';
 
 @extends('layouts/layoutMaster')
 
-@section('title', 'Login Basic - Pages')
+@section('title', 'Login')
 
 @section('vendor-style')
 @vite(['resources/assets/vendor/libs/@form-validation/form-validation.scss'])
@@ -73,7 +73,7 @@ $customizerHidden = 'customizer-hide';
             </div>
           </form>
 
-          <p class="text-center">
+          {{-- <p class="text-center">
             <span>New on our platform?</span>
             <a href="{{ url('auth/register-basic') }}">
               <span>Create an account</span>
@@ -100,7 +100,7 @@ $customizerHidden = 'customizer-hide';
             <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-google-plus">
               <i class="icon-base ti tabler-brand-google-filled icon-20px"></i>
             </a>
-          </div>
+          </div> --}}
         </div>
       </div>
       <!-- /Login -->
