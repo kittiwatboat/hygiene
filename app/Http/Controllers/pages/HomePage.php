@@ -9,6 +9,7 @@ class HomePage extends Controller
 {
   public function index()
   {
+    dd('q');
     return view('content.pages.pages-home');
   }
 }
