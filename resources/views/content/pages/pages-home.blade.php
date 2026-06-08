@@ -2,7 +2,7 @@
 $configData = \App\Helpers\Helpers::appClasses();
 @endphp
 
-@extends('layouts/session/layoutMaster')
+{{-- @extends('layouts/session/layoutMaster') --}}
 
 @section('title', 'Home')
 
