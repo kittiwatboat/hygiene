@@ -1,5 +1,5 @@
 @php
-$configData = Helpers::appClasses();
+$configData = app()->make('App\Helpers')->appClasses();
 @endphp
 
 @extends('layouts/session/layoutMaster')
