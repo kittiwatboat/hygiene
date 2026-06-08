@@ -1,6 +1,6 @@
 @php
 use Illuminate\Support\Facades\Route;
-$configData = Helper::appClasses();
+$configData = app(\App\Helpers\Helpers::class)->appClasses();
 @endphp
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu" @foreach ($configData['menuAttributes'] as $attribute=>
