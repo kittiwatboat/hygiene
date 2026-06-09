@@ -97,11 +97,19 @@ $customizerHidden = 'customizer-hide';
           <div id="loginErrorBox" class="alert alert-danger login-error-box mb-4"></div>
           <div id="loginSuccessBox" class="alert alert-success login-error-box mb-4"></div>
 
-         <form id="form_submit" class="mb-4" method="POST" autocomplete="off">
+<form
+  id="form_submit"
+  class="mb-4"
+  method="POST"
+  action="{{ route('login.post') }}"
+  autocomplete="off">
+
   @csrf
 
   <div class="mb-6 form-control-validation">
-    <label for="email" class="form-label">Email</label>
+    <label for="email" class="form-label">
+      Email <span class="text-danger">*</span>
+    </label>
     <input
       type="email"
       class="form-control"
@@ -115,7 +123,10 @@ $customizerHidden = 'customizer-hide';
   </div>
 
   <div class="mb-6 form-password-toggle form-control-validation">
-    <label class="form-label" for="password">Password</label>
+    <label class="form-label" for="password">
+      Password <span class="text-danger">*</span>
+    </label>
+
     <div class="input-group input-group-merge">
       <input
         type="password"
@@ -158,9 +169,12 @@ $customizerHidden = 'customizer-hide';
     <button
       id="loginButton"
       class="btn btn-primary d-grid w-100 hygiene-login-btn"
-      type="button"
-      onclick="check_login()">
-      Login
+      type="submit">
+      <span id="loginButtonText">Login</span>
+      <span id="loginButtonLoading" class="d-none">
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        กำลังตรวจสอบ...
+      </span>
     </button>
   </div>
 </form>
@@ -176,131 +190,204 @@ $customizerHidden = 'customizer-hide';
   </div>
 </div>
 @endsection
-
 @section('page-script')
 <script>
-  function clearLoginErrors() {
-    $('#email').removeClass('is-invalid');
-    $('#password').removeClass('is-invalid');
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form_submit');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
 
-    $('#emailError').removeClass('show').html('');
-    $('#passwordError').removeClass('show').html('');
-  }
+    const loginButton = document.getElementById('loginButton');
+    const loginButtonText = document.getElementById('loginButtonText');
+    const loginButtonLoading = document.getElementById('loginButtonLoading');
 
-  function showFieldErrors(errors) {
-    if (!errors) {
+    if (!form) {
+      console.error('ไม่พบ form id="form_submit"');
       return;
     }
 
-    if (errors.email && errors.email.length > 0) {
-      $('#email').addClass('is-invalid');
-      $('#emailError').addClass('show').html(errors.email[0]);
+    function clearErrors() {
+      emailInput.classList.remove('is-invalid');
+      passwordInput.classList.remove('is-invalid');
+
+      emailError.classList.remove('show');
+      passwordError.classList.remove('show');
+
+      emailError.innerHTML = '';
+      passwordError.innerHTML = '';
     }
 
-    if (errors.password && errors.password.length > 0) {
-      $('#password').addClass('is-invalid');
-      $('#passwordError').addClass('show').html(errors.password[0]);
-    }
-  }
+    function setLoading(isLoading) {
+      loginButton.disabled = isLoading;
 
-  function check_login() {
-    clearLoginErrors();
-
-    var email = $('#email').val();
-    var password = $('#password').val();
-
-    if (email === '' || password === '') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'เกิดข้อผิดพลาด',
-        html: "กรุณากรอกข้อมูลที่มี <span class='text-danger'>*</span> ให้ครบถ้วน !",
-        showCancelButton: false,
-        confirmButtonText: 'Close',
-      });
-
-      return false;
+      if (isLoading) {
+        loginButtonText.classList.add('d-none');
+        loginButtonLoading.classList.remove('d-none');
+      } else {
+        loginButtonText.classList.remove('d-none');
+        loginButtonLoading.classList.add('d-none');
+      }
     }
 
-    Swal.fire({
-      icon: 'warning',
-      html: 'กรุณากด <b>ยืนยัน</b> เพื่อเข้าสู่ระบบ',
-      showCancelButton: true,
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var formData = new FormData($('#form_submit')[0]);
+    function showAlert(options) {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire(options);
+        return;
+      }
 
-        $('#loginButton').prop('disabled', true).html(
-          '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>กำลังตรวจสอบ...'
-        );
+      alert(options.text || options.title || 'เกิดข้อผิดพลาด');
+    }
 
-        $.ajax({
-          type: 'POST',
-          url: "{{ route('login.post') }}",
-          data: formData,
-          processData: false,
-          contentType: false,
-          dataType: 'json',
+    function showValidationErrors(errors) {
+      if (!errors) {
+        return;
+      }
+
+      if (errors.email && errors.email.length > 0) {
+        emailInput.classList.add('is-invalid');
+        emailError.innerHTML = errors.email[0];
+        emailError.classList.add('show');
+      }
+
+      if (errors.password && errors.password.length > 0) {
+        passwordInput.classList.add('is-invalid');
+        passwordError.innerHTML = errors.password[0];
+        passwordError.classList.add('show');
+      }
+    }
+
+    async function submitLogin() {
+      clearErrors();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (email === '' || password === '') {
+        showAlert({
+          icon: 'warning',
+          title: 'เกิดข้อผิดพลาด',
+          html: "กรุณากรอกข้อมูลที่มี <span class='text-danger'>*</span> ให้ครบถ้วน !",
+          confirmButtonText: 'ปิด'
+        });
+
+        return;
+      }
+
+      let confirmed = true;
+
+      if (typeof Swal !== 'undefined') {
+        const result = await Swal.fire({
+          icon: 'warning',
+          html: 'กรุณากด <b>ยืนยัน</b> เพื่อเข้าสู่ระบบ',
+          showCancelButton: true,
+          confirmButtonText: 'ยืนยัน',
+          cancelButtonText: 'ยกเลิก'
+        });
+
+        confirmed = result.isConfirmed;
+      } else {
+        confirmed = confirm('ยืนยันการเข้าสู่ระบบ?');
+      }
+
+      if (!confirmed) {
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const formData = new FormData(form);
+
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
           headers: {
-            'X-CSRF-TOKEN': $('input[name="_token"]').val(),
+            'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
           },
-          success: function (data) {
-            Swal.fire({
-              icon: 'success',
-              title: data.title || 'สำเร็จ',
-              text: data.text || 'เข้าสู่ระบบสำเร็จ',
-              showConfirmButton: false,
-              timer: 900
-            }).then(function () {
-              window.location.href = data.redirect_url || "{{ route('dashboard') }}";
-            });
-          },
-          error: function (xhr) {
-            $('#loginButton').prop('disabled', false).html('Login');
-
-            if (xhr.status === 419) {
-              Swal.fire({
-                title: 'Session หมดอายุ',
-                text: 'กรุณารีเฟรชหน้าแล้วลองเข้าสู่ระบบใหม่อีกครั้ง',
-                icon: 'error',
-                confirmButtonText: 'รีเฟรชหน้า',
-              }).then(function () {
-                window.location.reload();
-              });
-
-              return;
-            }
-
-            var errorMessage = xhr.responseJSON;
-
-            if (errorMessage && errorMessage.errors) {
-              showFieldErrors(errorMessage.errors);
-            }
-
-            Swal.fire({
-              title: errorMessage && errorMessage.title ? errorMessage.title : 'เกิดข้อผิดพลาด',
-              text: errorMessage && errorMessage.text ? errorMessage.text : 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง',
-              icon: 'error',
-              showCancelButton: false,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'ปิด',
-              customClass: {
-                confirmButton: 'btn btn-danger waves-effect waves-light'
-              },
-            });
-          }
+          credentials: 'same-origin'
         });
-      }
-    });
-  }
 
-  $(document).on('keypress', '#email, #password', function (event) {
-    if (event.which === 13) {
-      check_login();
+        let data = null;
+
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          data = null;
+        }
+
+        if (response.status === 419) {
+          showAlert({
+            icon: 'error',
+            title: 'Session หมดอายุ',
+            text: 'กรุณารีเฟรชหน้าแล้วลองเข้าสู่ระบบใหม่อีกครั้ง',
+            confirmButtonText: 'รีเฟรชหน้า'
+          });
+
+          setTimeout(function () {
+            window.location.reload();
+          }, 800);
+
+          return;
+        }
+
+        if (!response.ok) {
+          if (data && data.errors) {
+            showValidationErrors(data.errors);
+          }
+
+          showAlert({
+            icon: 'error',
+            title: data && data.title ? data.title : 'เข้าสู่ระบบไม่สำเร็จ',
+            text: data && data.text ? data.text : 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+            confirmButtonText: 'ปิด'
+          });
+
+          return;
+        }
+
+        if (!data || data.success !== true) {
+          showAlert({
+            icon: 'error',
+            title: 'เข้าสู่ระบบไม่สำเร็จ',
+            text: data && data.text ? data.text : 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง',
+            confirmButtonText: 'ปิด'
+          });
+
+          return;
+        }
+
+        if (typeof Swal !== 'undefined') {
+          await Swal.fire({
+            icon: 'success',
+            title: data.title || 'สำเร็จ',
+            text: data.text || 'เข้าสู่ระบบสำเร็จ',
+            showConfirmButton: false,
+            timer: 900
+          });
+        }
+
+        window.location.href = data.redirect_url || "{{ route('dashboard') }}";
+      } catch (error) {
+        console.error(error);
+
+        showAlert({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถเชื่อมต่อ Server ได้ กรุณาลองใหม่อีกครั้ง',
+          confirmButtonText: 'ปิด'
+        });
+      } finally {
+        setLoading(false);
+      }
     }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      submitLogin();
+    });
   });
 </script>
 @endsection

@@ -23,58 +23,58 @@ class LoginBasic extends Controller
     }
 
     public function login(Request $request)
-    {
-        try {
-            $request->validate(
-                [
-                    'email' => ['required', 'email'],
-                    'password' => ['required', 'string'],
+{
+    try {
+        $request->validate(
+            [
+                'email' => ['required', 'email'],
+                'password' => ['required', 'string'],
+            ],
+            [
+                'email.required' => 'กรุณากรอกอีเมล',
+                'email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
+                'password.required' => 'กรุณากรอกรหัสผ่าน',
+            ]
+        );
+
+        $credentials = $request->only('email', 'password');
+        $remember = $request->boolean('remember');
+
+        if (!Auth::attempt($credentials, $remember)) {
+            return response()->json([
+                'success' => false,
+                'title' => 'เข้าสู่ระบบไม่สำเร็จ',
+                'text' => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+                'errors' => [
+                    'email' => ['อีเมลหรือรหัสผ่านไม่ถูกต้อง'],
                 ],
-                [
-                    'email.required' => 'กรุณากรอกอีเมล',
-                    'email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
-                    'password.required' => 'กรุณากรอกรหัสผ่าน',
-                ]
-            );
-
-            $credentials = $request->only('email', 'password');
-            $remember = $request->boolean('remember');
-
-            if (!Auth::attempt($credentials, $remember)) {
-                return response()->json([
-                    'success' => false,
-                    'title' => 'เข้าสู่ระบบไม่สำเร็จ',
-                    'text' => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-                    'errors' => [
-                        'email' => ['อีเมลหรือรหัสผ่านไม่ถูกต้อง'],
-                    ],
-                ], 422);
-            }
-
-            $request->session()->regenerate();
-
-            return response()->json([
-                'success' => true,
-                'title' => 'สำเร็จ',
-                'text' => 'เข้าสู่ระบบสำเร็จ',
-                'redirect_url' => route('dashboard'),
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'title' => 'กรุณาตรวจสอบข้อมูล',
-                'text' => 'กรุณากรอกข้อมูลให้ถูกต้อง',
-                'errors' => $e->errors(),
             ], 422);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'title' => 'เกิดข้อผิดพลาด',
-                'text' => 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง',
-                'error' => $e->getMessage(),
-            ], 500);
         }
+
+        $request->session()->regenerate();
+
+        return response()->json([
+            'success' => true,
+            'title' => 'สำเร็จ',
+            'text' => 'เข้าสู่ระบบสำเร็จ',
+            'redirect_url' => route('dashboard'),
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'title' => 'กรุณาตรวจสอบข้อมูล',
+            'text' => 'กรุณากรอกข้อมูลให้ถูกต้อง',
+            'errors' => $e->errors(),
+        ], 422);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'title' => 'เกิดข้อผิดพลาด',
+            'text' => 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function logout(Request $request)
     {
