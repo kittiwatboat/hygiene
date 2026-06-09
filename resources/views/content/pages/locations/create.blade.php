@@ -29,7 +29,7 @@
 
         <div class="card-body">
           <form action="{{ route('locations.store') }}" method="POST">
-            @include('locations._form')
+            @include('content.pages.locations._form')
           </form>
         </div>
 
