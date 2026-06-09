@@ -16,6 +16,20 @@ use App\Http\Controllers\settings\SettingController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\locations\AddressController;
 
+Route::get('/cookie-test', function () {
+    session(['test_value' => 'OK']);
+
+    return response('cookie test ok')
+        ->cookie('manual_test_cookie', 'OK', 120);
+});
+
+Route::get('/session-read', function () {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'test_value' => session('test_value'),
+        'csrf_token' => csrf_token(),
+    ]);
+});
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
