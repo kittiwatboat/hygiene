@@ -22,7 +22,10 @@ use App\Http\Controllers\authentications\LoginBasic;
 */
 Route::get('/login', [LoginBasic::class, 'index'])->name('login');
 Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
-
+Route::post('/logout', function () {
+    auth()->logout();
+    return redirect()->route('login')->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
+})->name('logout');
 Route::get('password', function () {
     dd('hash: ' . bcrypt('password'));
 })->name('password.request');
