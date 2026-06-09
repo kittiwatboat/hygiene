@@ -19,14 +19,16 @@ class LoginBasic extends Controller
 
   public function login(Request $request)
   {
-    // dd($request->all());
-    $credentials = $request->only('email', 'password');
+    try {
+      $credentials = $request->only('email', 'password');
 
-    if (Auth::attempt($credentials)) {
-      return redirect()->route('dashboard');
+      if (Auth::attempt($credentials)) {
+        return redirect()->route('dashboard');
+      }
+
+      return back()->with('error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+    } catch (\Exception $e) {
+      return back()->with('error', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' . $e->getMessage());
     }
-    dd(Auth::attempt($credentials));
-
-    return redirect()->route('login')->with('error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
   }
 }
