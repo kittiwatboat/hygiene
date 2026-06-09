@@ -17,7 +17,7 @@ class MachineController extends Controller
         $locationId = $request->input('location_id');
         $status = $request->input('status');
 
-        $machines = VendingMachine::query()
+        $vendingMachines = VendingMachine::query()
             ->with('location')
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($subQuery) use ($keyword) {
@@ -42,7 +42,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('content.pages.machines.index', compact('machines', 'locations', 'keyword', 'locationId', 'status'));
+        return view('content.pages.machines.index', compact('vendingMachines', 'locations', 'keyword', 'locationId', 'status'));
     }
 
     public function create(): View
