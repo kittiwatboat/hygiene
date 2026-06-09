@@ -29,12 +29,8 @@ Route::get('/clear-cache', function () {
 | logins and registrations
 |--------------------------------------------------------------------------
 */
-
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginBasic::class, 'index'])->name('login');
-    Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
-});
-
+Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
 
 Route::middleware('admin.auth')->group(function () {
