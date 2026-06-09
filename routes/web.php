@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\machines\MachineController;
@@ -187,3 +188,10 @@ Route::prefix('settings')->name('settings.')->group(function () {
 */
 
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang.swap');
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return 'Cache cleared!';
+})->name('cache.clear');

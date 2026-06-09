@@ -1,17 +1,23 @@
 @php
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+$user = Auth::user();
+$userName = $user->name ?? 'Admin';
+$userEmail = $user->email ?? '-';
+$userInitial = strtoupper(mb_substr($userName, 0, 1));
 @endphp
 
-<!--  Brand demo (display only for navbar-full and hide on below xl) -->
+<!-- Brand demo (display only for navbar-full and hide on below xl) -->
 @if (isset($navbarFull))
 <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4 ms-0">
   <a href="{{ url('/') }}" class="app-brand-link">
     <span class="app-brand-logo demo">@include('_partials.macros')</span>
-    <span class="app-brand-text demo menu-text fw-bold">{{ config('variables.templateName') }}</span>
+    <span class="app-brand-text demo menu-text fw-bold">
+      {{ config('variables.templateName', 'Hygiene') }}
+    </span>
   </a>
 
-  <!-- Display menu close icon only for horizontal-menu with navbar-full -->
   @if (isset($menuHorizontal))
   <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
     <i class="icon-base ti tabler-x icon-sm d-flex align-items-center justify-content-center"></i>
@@ -20,7 +26,6 @@ use Illuminate\Support\Facades\Route;
 </div>
 @endif
 
-<!-- ! Not required for layout-without-menu -->
 @if (!isset($navbarHideToggle))
 <div
   class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0{{ isset($menuHorizontal) ? ' d-xl-none ' : '' }} {{ isset($contentNavbar) ? ' d-xl-none ' : '' }}">
@@ -31,163 +36,172 @@ use Illuminate\Support\Facades\Route;
 @endif
 
 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-  @if ($configData['hasCustomizer'] == true)
-  <!-- Style Switcher -->
+
   <div class="navbar-nav align-items-center">
-    <li class="nav-item dropdown me-2 me-xl-0">
-      <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);"
-        data-bs-toggle="dropdown">
-        <i class="icon-base ti tabler-sun icon-md theme-icon-active"></i>
-        <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
+    <div class="nav-item d-none d-md-flex align-items-center">
+      <span class="text-body-secondary">
+        ระบบจัดการตู้กดน้ำยาซักผ้า
+      </span>
+    </div>
+  </div>
+
+  <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+    @if (Auth::check())
+    <!-- Notifications -->
+    <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
+      <a
+        class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow"
+        href="javascript:void(0);"
+        data-bs-toggle="dropdown"
+        data-bs-auto-close="outside"
+        aria-expanded="false">
+        <span class="position-relative">
+          <i class="icon-base ti tabler-bell icon-22px"></i>
+          <span class="badge rounded-pill bg-danger badge-dot badge-notifications border"></span>
+        </span>
       </a>
-      <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="nav-theme-text">
-        <li>
-          <button type="button" class="dropdown-item align-items-center active" data-bs-theme-value="light"
-            aria-pressed="false">
-            <span><i class="icon-base ti tabler-sun icon-22px me-3" data-icon="sun"></i>Light</span>
-          </button>
+
+      <ul class="dropdown-menu dropdown-menu-end p-0">
+        <li class="dropdown-menu-header border-bottom">
+          <div class="dropdown-header d-flex align-items-center py-3">
+            <h6 class="mb-0 me-auto">แจ้งเตือน</h6>
+            <span class="badge bg-label-danger">12 รายการ</span>
+          </div>
         </li>
-        <li>
-          <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="dark" aria-pressed="true">
-            <span><i class="icon-base ti tabler-moon-stars icon-22px me-3" data-icon="moon-stars"></i>Dark</span>
-          </button>
+
+        <li class="dropdown-notifications-list scrollable-container">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+              <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                  <div class="avatar">
+                    <span class="avatar-initial rounded-circle bg-label-danger">
+                      <i class="icon-base ti tabler-plug-connected-x"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="small mb-1">HY-009 ออฟไลน์</h6>
+                  <small class="mb-1 d-block text-body">
+                    ขาดการเชื่อมต่อเกิน 20 นาที
+                  </small>
+                  <small class="text-body-secondary">2 นาทีที่แล้ว</small>
+                </div>
+              </div>
+            </li>
+
+            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+              <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                  <div class="avatar">
+                    <span class="avatar-initial rounded-circle bg-label-warning">
+                      <i class="icon-base ti tabler-droplet-exclamation"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="small mb-1">น้ำยาใกล้หมด</h6>
+                  <small class="mb-1 d-block text-body">
+                    HY-002 น้ำยาปรับผ้านุ่มเหลือต่ำกว่าเกณฑ์
+                  </small>
+                  <small class="text-body-secondary">8 นาทีที่แล้ว</small>
+                </div>
+              </div>
+            </li>
+          </ul>
         </li>
-        <li>
-          <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="system"
-            aria-pressed="false">
-            <span><i class="icon-base ti tabler-device-desktop-analytics icon-22px me-3"
-                data-icon="device-desktop-analytics"></i>System</span>
-          </button>
+
+        <li class="border-top">
+          <a href="{{ url('/alerts') }}" class="dropdown-item d-flex justify-content-center text-primary p-3">
+            ดูแจ้งเตือนทั้งหมด
+          </a>
         </li>
       </ul>
     </li>
-  </div>
-  <!-- / Style Switcher-->
-  @endif
-  <ul class="navbar-nav flex-row align-items-center ms-auto">
+    <!-- /Notifications -->
+    @endif
+
     <!-- User -->
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
+      @if (Auth::check())
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}" alt
-            class="rounded-circle" />
+          <span class="avatar-initial rounded-circle bg-label-primary">
+            {{ $userInitial }}
+          </span>
         </div>
       </a>
+
       <ul class="dropdown-menu dropdown-menu-end">
         <li>
-          <a class="dropdown-item mt-0"
-            href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
+          <a class="dropdown-item mt-0" href="javascript:void(0);">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0 me-2">
                 <div class="avatar avatar-online">
-                  <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}"
-                    alt class="rounded-circle" />
+                  <span class="avatar-initial rounded-circle bg-label-primary">
+                    {{ $userInitial }}
+                  </span>
                 </div>
               </div>
+
               <div class="flex-grow-1">
-                <h6 class="mb-0">
-                  @if (Auth::check())
-                  {{ Auth::user()->name }}
-                  @else
-                  John Doe
-                  @endif
-                </h6>
-                <small class="text-body-secondary">Admin</small>
+                <h6 class="mb-0">{{ $userName }}</h6>
+                <small class="text-body-secondary">{{ $userEmail }}</small>
               </div>
             </div>
           </a>
         </li>
-        <li>
-          <div class="dropdown-divider my-1 mx-n2"></div>
-        </li>
-        <li>
-          <a class="dropdown-item"
-            href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
-            <i class="icon-base ti tabler-user me-3 icon-md"></i><span class="align-middle">My Profile</span> </a>
-        </li>
-        @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
-        <li>
-          <a class="dropdown-item" href="{{ route('api-tokens.index') }}">
-            <i class="icon-base ti tabler-settings me-3 icon-md"></i><span class="align-middle">API Tokens</span> </a>
-        </li>
-        @endif
-        <li>
-          <a class="dropdown-item" href="javascript:void(0);">
-            <span class="d-flex align-items-center align-middle">
-              <i class="flex-shrink-0 icon-base ti tabler-file-dollar me-3 icon-md"></i><span
-                class="flex-grow-1 align-middle">Billing</span>
-              <span class="flex-shrink-0 badge bg-danger d-flex align-items-center justify-content-center">4</span>
-            </span>
-          </a>
-        </li>
-        @if (Auth::User() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
-        <li>
-          <div class="dropdown-divider my-1 mx-n2"></div>
-        </li>
-        <li>
-          <h6 class="dropdown-header">Manage Team</h6>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <a class="dropdown-item"
-            href="{{ Auth::user() ? route('teams.show', Auth::user()->currentTeam->id) : 'javascript:void(0)' }}">
-            <i class="icon-base bx bx-cog icon-md me-3"></i><span>Team Settings</span>
-          </a>
-        </li>
-        @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-        <li>
-          <a class="dropdown-item" href="{{ route('teams.create') }}">
-            <i class="icon-base bx bx-user icon-md me-3"></i><span>Create New Team</span>
-          </a>
-        </li>
-        @endcan
-        @if (Auth::user()->allTeams()->count() > 1)
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <h6 class="dropdown-header">Switch Teams</h6>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        @endif
-        @if (Auth::user())
-        @foreach (Auth::user()->allTeams() as $team)
-        {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream. --}}
 
-        {{-- <x-switchable-team :team="$team" /> --}}
-        @endforeach
-        @endif
-        @endif
         <li>
           <div class="dropdown-divider my-1 mx-n2"></div>
         </li>
-        @if (Auth::check())
+
         <li>
-          <a class="dropdown-item" href="{{ route('logout') }}"
-            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Logout</span>
+          <a class="dropdown-item" href="{{ url('/') }}">
+            <i class="icon-base ti tabler-smart-home me-3 icon-md"></i>
+            <span class="align-middle">Dashboard</span>
           </a>
         </li>
-        <form method="POST" id="logout-form" action="{{ route('logout') }}">
-          @csrf
-        </form>
-        @else
+
         <li>
-          <div class="d-grid px-2 pt-2 pb-1">
-            <a class="btn btn-sm btn-danger d-flex"
-              href="{{ Route::has('login') ? route('login') : url('auth/login-basic') }}" target="_blank">
-              <small class="align-middle">Login</small>
-              <i class="icon-base ti tabler-login ms-2 icon-14px"></i>
-            </a>
-          </div>
+          <a class="dropdown-item" href="{{ url('/alerts') }}">
+            <i class="icon-base ti tabler-bell-ringing me-3 icon-md"></i>
+            <span class="align-middle">แจ้งเตือน</span>
+          </a>
         </li>
-        @endif
+
+        <li>
+          <a class="dropdown-item" href="{{ url('/settings') }}">
+            <i class="icon-base ti tabler-settings me-3 icon-md"></i>
+            <span class="align-middle">ตั้งค่าระบบ</span>
+          </a>
+        </li>
+
+        <li>
+          <div class="dropdown-divider my-1 mx-n2"></div>
+        </li>
+
+        <li>
+          <form method="POST" id="logout-form" action="{{ route('logout') }}">
+            @csrf
+
+            <button type="submit" class="dropdown-item">
+              <i class="icon-base ti tabler-logout me-3 icon-md"></i>
+              <span class="align-middle">ออกจากระบบ</span>
+            </button>
+          </form>
+        </li>
       </ul>
+      @else
+      <div class="d-grid px-2 pt-2 pb-1">
+        <a class="btn btn-sm btn-primary d-flex align-items-center" href="{{ route('login') }}">
+          <small class="align-middle">Login</small>
+          <i class="icon-base ti tabler-login ms-2 icon-14px"></i>
+        </a>
+      </div>
+      @endif
     </li>
-    <!--/ User -->
+    <!-- /User -->
   </ul>
 </div>
