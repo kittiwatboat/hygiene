@@ -20,7 +20,7 @@ use App\Http\Controllers\authentications\LoginBasic;
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [LoginBasic::class, 'index'])->name('login');
-
+Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
 Route::middleware('admin.auth')->group(function () {
     /*
     |--------------------------------------------------------------------------

@@ -42,7 +42,8 @@ $customizerHidden = 'customizer-hide';
           <h4 class="mb-1">Welcome to {{ config('variables.templateName') }}! 👋</h4>
           <p class="mb-6">Please sign-in to your account and start the adventure</p>
 
-          <form id="formAuthentication" class="mb-4" action="{{ url('/') }}" method="GET">
+          <form id="formAuthentication" class="mb-4" action="{{ Route('login.post') }}" method="POST">
+            @csrf
             <div class="mb-6 form-control-validation">
               <label for="email" class="form-label">Email or Username</label>
               <input type="text" class="form-control" id="email" name="email-username"
