@@ -8,20 +8,44 @@
 
 @section('content')
 @section('content')
+ @section('content')
   <style>
     .machine-alert {
       margin: 0 1.5rem 1rem 1.5rem;
-      padding: 0.65rem 1rem;
+      padding: 0.65rem 0.85rem;
       font-size: 0.875rem;
       border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
     }
 
-    .machine-alert .btn-close {
-      padding: 0.85rem 1rem;
+    .machine-alert-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    .machine-alert-close {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0.25rem;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .machine-alert-close:hover {
+      opacity: 1;
     }
 
     .machines-table-wrap {
-      padding-top: 0.25rem;
+      padding-top: 0;
     }
   </style>
 
@@ -45,24 +69,42 @@
           </div>
         </div>
 
-        @if (session('success'))
-          <div class="alert alert-success alert-dismissible machine-alert" role="alert">
-            <i class="icon-base ti tabler-circle-check me-1"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        @endif
+       @if (session('success'))
+  <div class="alert alert-success machine-alert" role="alert">
+    <div class="machine-alert-content">
+      <i class="icon-base ti tabler-circle-check"></i>
+      <span>{{ session('success') }}</span>
+    </div>
 
-        @if (session('error'))
-          <div class="alert alert-danger alert-dismissible machine-alert" role="alert">
-            <i class="icon-base ti tabler-alert-circle me-1"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        @endif
+    <button
+      type="button"
+      class="machine-alert-close"
+      onclick="this.closest('.alert').remove()"
+      aria-label="Close">
+      <i class="icon-base ti tabler-x"></i>
+    </button>
+  </div>
+@endif
 
-        <div class="table-responsive text-nowrap machines-table-wrap">
-          <table class="table">
+@if (session('error'))
+  <div class="alert alert-danger machine-alert" role="alert">
+    <div class="machine-alert-content">
+      <i class="icon-base ti tabler-alert-circle"></i>
+      <span>{{ session('error') }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="machine-alert-close"
+      onclick="this.closest('.alert').remove()"
+      aria-label="Close">
+      <i class="icon-base ti tabler-x"></i>
+    </button>
+  </div>
+@endif
+
+<div class="table-responsive text-nowrap machines-table-wrap">
+            <table class="table">
             <thead class="table-light">
               <tr>
                 <th style="width: 70px;">#</th>
