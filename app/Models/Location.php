@@ -15,10 +15,16 @@ class Location extends Model
         'contact_name',
         'contact_phone',
         'address',
+
+        'province_id',
+        'district_id',
+        'subdistrict_id',
+
         'province',
         'district',
         'sub_district',
         'postcode',
+
         'latitude',
         'longitude',
         'remark',
@@ -26,6 +32,9 @@ class Location extends Model
     ];
 
     protected $casts = [
+        'province_id' => 'integer',
+        'district_id' => 'integer',
+        'subdistrict_id' => 'integer',
         'is_active' => 'boolean',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
@@ -34,6 +43,21 @@ class Location extends Model
     public function vendingMachines()
     {
         return $this->hasMany(VendingMachine::class);
+    }
+
+    public function provinceData()
+    {
+        return $this->belongsTo(Province::class, 'province_id', 'PROVINCE_ID');
+    }
+
+    public function districtData()
+    {
+        return $this->belongsTo(District::class, 'district_id', 'DISTRICT_ID');
+    }
+
+    public function subdistrictData()
+    {
+        return $this->belongsTo(Subdistrict::class, 'subdistrict_id', 'SUB_DISTRICT_ID');
     }
 
     public function getFullAddressAttribute(): string

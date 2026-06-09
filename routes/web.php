@@ -14,6 +14,7 @@ use App\Http\Controllers\alerts\AlertController;
 use App\Http\Controllers\users\UserController;
 use App\Http\Controllers\settings\SettingController;
 use App\Http\Controllers\authentications\LoginBasic;
+use App\Http\Controllers\locations\AddressController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -73,6 +74,11 @@ Route::prefix('machines')->name('machines.')->group(function () {
 | Locations
 |--------------------------------------------------------------------------
 */
+Route::prefix('address')->name('address.')->group(function () {
+    Route::get('/districts/{province}', [AddressController::class, 'districts'])->name('districts');
+    Route::get('/subdistricts/{district}', [AddressController::class, 'subdistricts'])->name('subdistricts');
+    Route::get('/zipcode/{subdistrict}', [AddressController::class, 'zipcode'])->name('zipcode');
+});
 
 Route::prefix('locations')->name('locations.')->group(function () {
     Route::get('/', [LocationController::class, 'index'])->name('index');

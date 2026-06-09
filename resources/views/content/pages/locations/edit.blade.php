@@ -43,3 +43,6 @@
     </div>
   </div>
 @endsection
+@section('page-script')
+  @include('locations._address-script')
+@endsection
