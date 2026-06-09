@@ -42,7 +42,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('machines.index', compact('machines', 'locations', 'keyword', 'locationId', 'status'));
+        return view('content.pages.machines.index', compact('machines', 'locations', 'keyword', 'locationId', 'status'));
     }
 
     public function create(): View
@@ -54,7 +54,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('machines.create', compact('machine', 'locations'));
+        return view('content.pages.machines.create', compact('machine', 'locations'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -74,7 +74,7 @@ class MachineController extends Controller
     {
         $machine->load('location');
 
-        return view('machines.show', compact('machine'));
+        return view('content.pages.machines.show', compact('machine'));
     }
 
     public function edit(VendingMachine $machine): View
@@ -86,7 +86,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('machines.edit', compact('machine', 'locations'));
+        return view('content.pages.machines.edit', compact('machine', 'locations'));
     }
 
     public function update(Request $request, VendingMachine $machine): RedirectResponse

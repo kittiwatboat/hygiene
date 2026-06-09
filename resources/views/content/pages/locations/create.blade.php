@@ -2,8 +2,20 @@
 
 @section('title', 'เพิ่มสถานที่')
 
+@section('vendor-style')
+  @vite([
+    'resources/assets/vendor/libs/select2/select2.scss'
+  ])
+@endsection
+
 @section('page-style')
   @vite(['resources/assets/vendor/fonts/fontawesome.scss'])
+@endsection
+
+@section('vendor-script')
+  @vite([
+    'resources/assets/vendor/libs/select2/select2.js'
+  ])
 @endsection
 
 @section('content')
@@ -29,7 +41,12 @@
 
         <div class="card-body">
           <form action="{{ route('locations.store') }}" method="POST">
-            @include('content.pages.locations._form')
+            @include('locations._form', [
+              'location' => $location,
+              'provinces' => $provinces,
+              'districts' => $districts,
+              'subdistricts' => $subdistricts,
+            ])
           </form>
         </div>
 
@@ -37,6 +54,7 @@
     </div>
   </div>
 @endsection
+
 @section('page-script')
-  @include('content.pages.locations._address-script')
+  @include('locations._address-script')
 @endsection
