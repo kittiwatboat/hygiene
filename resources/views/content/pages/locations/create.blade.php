@@ -41,7 +41,7 @@
 
         <div class="card-body">
           <form action="{{ route('locations.store') }}" method="POST">
-            @include('locations._form', [
+            @include('content.pages.locations._form', [
               'location' => $location,
               'provinces' => $provinces,
               'districts' => $districts,
@@ -56,5 +56,5 @@
 @endsection
 
 @section('page-script')
-  @include('locations._address-script')
+  @include('content.pages.locations._address-script')
 @endsection
