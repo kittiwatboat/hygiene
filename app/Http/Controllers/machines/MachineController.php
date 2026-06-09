@@ -66,7 +66,7 @@ class MachineController extends Controller
         ->orderBy('name')
         ->get();
 
-    return view('machines.create', compact('machine', 'locations'));
+    return view('content.pages.machines.create', compact('machine', 'locations'));
 }
 
     /**
