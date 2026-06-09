@@ -8,6 +8,49 @@
     const districtUrl = "{{ url('/address/districts') }}";
     const subdistrictUrl = "{{ url('/address/subdistricts') }}";
 
+    function hasJqueryAndSelect2() {
+      return typeof window.jQuery !== 'undefined' && typeof window.jQuery.fn.select2 !== 'undefined';
+    }
+
+    function initSelect2() {
+      if (!hasJqueryAndSelect2()) {
+        return;
+      }
+
+      $('.select2-address').each(function () {
+        const $this = $(this);
+
+        if ($this.hasClass('select2-hidden-accessible')) {
+          $this.select2('destroy');
+        }
+
+        $this.select2({
+          width: '100%',
+          allowClear: true,
+          placeholder: $this.data('placeholder') || '-- เลือกข้อมูล --',
+          language: {
+            noResults: function () {
+              return 'ไม่พบข้อมูล';
+            },
+            searching: function () {
+              return 'กำลังค้นหา...';
+            },
+            inputTooShort: function () {
+              return 'กรุณาพิมพ์เพื่อค้นหา';
+            }
+          }
+        });
+      });
+    }
+
+    function refreshSelect2(selectElement) {
+      if (!hasJqueryAndSelect2()) {
+        return;
+      }
+
+      $(selectElement).trigger('change.select2');
+    }
+
     function clearSelect(selectElement, placeholder) {
       selectElement.innerHTML = '';
 
@@ -16,6 +59,8 @@
       option.textContent = placeholder;
 
       selectElement.appendChild(option);
+
+      refreshSelect2(selectElement);
     }
 
     function fillPostcode() {
@@ -28,6 +73,21 @@
 
       postcodeInput.value = selectedOption.getAttribute('data-zipcode') || '';
     }
+
+    function appendOption(selectElement, value, text, attributes = {}) {
+      const option = document.createElement('option');
+
+      option.value = value;
+      option.textContent = text;
+
+      Object.keys(attributes).forEach(function (key) {
+        option.setAttribute(key, attributes[key]);
+      });
+
+      selectElement.appendChild(option);
+    }
+
+    initSelect2();
 
     provinceSelect.addEventListener('change', async function () {
       const provinceId = this.value;
@@ -55,12 +115,10 @@
         }
 
         result.data.forEach(function (district) {
-          const option = document.createElement('option');
-          option.value = district.id;
-          option.textContent = district.name;
-
-          districtSelect.appendChild(option);
+          appendOption(districtSelect, district.id, district.name);
         });
+
+        refreshSelect2(districtSelect);
       } catch (error) {
         console.error('Cannot load districts:', error);
       }
@@ -91,13 +149,17 @@
         }
 
         result.data.forEach(function (subdistrict) {
-          const option = document.createElement('option');
-          option.value = subdistrict.id;
-          option.textContent = subdistrict.name;
-          option.setAttribute('data-zipcode', subdistrict.zipcode || '');
-
-          subdistrictSelect.appendChild(option);
+          appendOption(
+            subdistrictSelect,
+            subdistrict.id,
+            subdistrict.name,
+            {
+              'data-zipcode': subdistrict.zipcode || ''
+            }
+          );
         });
+
+        refreshSelect2(subdistrictSelect);
       } catch (error) {
         console.error('Cannot load subdistricts:', error);
       }
