@@ -38,5 +38,5 @@
   </div>
 @endsection
 @section('page-script')
-  @include('locations._address-script')
+  @include('content.pages.locations._address-script')
 @endsection
