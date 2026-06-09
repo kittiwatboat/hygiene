@@ -7,6 +7,22 @@
 @endsection
 
 @section('content')
+  <style>
+    .machine-alert {
+      margin: 0 1.5rem 1rem 1.5rem;
+      padding: 0.65rem 1rem;
+      font-size: 0.875rem;
+      border-radius: 0.5rem;
+    }
+
+    .machine-alert .btn-close {
+      padding: 0.85rem 1rem;
+    }
+
+    .machines-table-wrap {
+      padding-top: 0.25rem;
+    }
+  </style>
   <div class="row">
     <div class="col-12">
       <div class="card">
