@@ -15,11 +15,20 @@ use App\Http\Controllers\users\UserController;
 use App\Http\Controllers\settings\SettingController;
 use App\Http\Controllers\authentications\LoginBasic;
 
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return 'Cache cleared!';
+})->name('cache.clear');
+
 /*
 |--------------------------------------------------------------------------
 | logins and registrations
 |--------------------------------------------------------------------------
 */
+
 Route::get('/login', [LoginBasic::class, 'index'])->name('login');
 Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
 Route::post('/logout', function () {
@@ -191,10 +200,3 @@ Route::prefix('settings')->name('settings.')->group(function () {
 */
 
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang.swap');
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    return 'Cache cleared!';
-})->name('cache.clear');
