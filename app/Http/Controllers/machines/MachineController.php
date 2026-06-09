@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Machines;
 
 use App\Http\Controllers\Controller;
-use App\Models\Machine;
+use App\Models\VendingMachine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +12,7 @@ class MachineController extends Controller
 {
     public function index()
     {
-        $machines = Machine::query()
+        $machines = VendingMachine::query()
             ->orderByDesc('id')
             ->get();
 
@@ -27,7 +27,7 @@ class MachineController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'machine_code' => 'required|string|max:100|unique:machines,machine_code',
+            'machine_code' => 'required|string|max:100|unique:vending_machines,machine_code',
             'machine_name' => 'required|string|max:255',
             'location_name' => 'nullable|string|max:255',
             'address' => 'nullable|string',
@@ -58,7 +58,7 @@ class MachineController extends Controller
         try {
             DB::beginTransaction();
 
-            Machine::create([
+            VendingMachine::create([
                 'machine_code' => trim($request->machine_code),
                 'machine_name' => trim($request->machine_name),
                 'location_name' => $request->location_name,
@@ -88,20 +88,20 @@ class MachineController extends Controller
         }
     }
 
-    public function show(Machine $machine)
+    public function show(VendingMachine $machine)
     {
         return view('content.pages.machines.show', compact('machine'));
     }
 
-    public function edit(Machine $machine)
+    public function edit(VendingMachine $machine)
     {
         return view('content.pages.machines.edit', compact('machine'));
     }
 
-    public function update(Request $request, Machine $machine)
+    public function update(Request $request, VendingMachine $machine)
     {
         $validator = Validator::make($request->all(), [
-            'machine_code' => 'required|string|max:100|unique:machines,machine_code,' . $machine->id,
+            'machine_code' => 'required|string|max:100|unique:vending_machines,machine_code,' . $machine->id,
             'machine_name' => 'required|string|max:255',
             'location_name' => 'nullable|string|max:255',
             'address' => 'nullable|string',
