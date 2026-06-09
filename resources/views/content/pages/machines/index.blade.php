@@ -93,11 +93,11 @@
 
                   <td>
                     <div class="d-flex align-items-center">
-                      <div class="avatar avatar-sm me-3">
+                      {{-- <div class="avatar avatar-sm me-3">
                         <span class="avatar-initial rounded bg-label-primary">
                           <i class="icon-base ti tabler-device-desktop"></i>
                         </span>
-                      </div>
+                      </div> --}}
 
                       <div>
                         <span class="fw-medium">{{ $machine->machine_code }}</span>
