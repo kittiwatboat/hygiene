@@ -29,15 +29,13 @@ Route::get('/clear-cache', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [LoginBasic::class, 'index'])->name('login');
-Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
-Route::post('/logout', function () {
-    auth()->logout();
-    return redirect()->route('login')->with('success', 'ออกจากระบบเรียบร้อยแล้ว');
-})->name('logout');
-Route::get('password', function () {
-    dd('hash: ' . bcrypt('password'));
-})->name('password.request');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+    Route::post('/login', [LoginBasic::class, 'login'])->name('login.post');
+});
+
+Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
+
 Route::middleware('admin.auth')->group(function () {
     /*
     |--------------------------------------------------------------------------
