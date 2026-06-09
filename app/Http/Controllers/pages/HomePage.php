@@ -9,6 +9,7 @@ class HomePage extends Controller
 {
   public function index()
   {
+    dd(auth()->user());
     return view('content.pages.pages-home');
   }
 }
