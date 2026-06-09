@@ -20,7 +20,7 @@ class LoginBasic extends Controller
   public function login(Request $request)
   {
     // dd($request->all());
-    $credentials = $request->only('email-username', 'password');
+    $credentials = $request->only('email', 'password');
 
     if (Auth::attempt($credentials)) {
       return redirect()->route('dashboard');

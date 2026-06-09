@@ -45,9 +45,9 @@ $customizerHidden = 'customizer-hide';
           <form id="formAuthentication" class="mb-4" action="{{ Route('login.post') }}" method="POST">
             @csrf
             <div class="mb-6 form-control-validation">
-              <label for="email" class="form-label">Email or Username</label>
-              <input type="text" class="form-control" id="email" name="email-username"
-                placeholder="Enter your email or username" autofocus />
+              <label for="email" class="form-label">Email</label>
+              <input type="text" class="form-control" id="email" name="email"
+                placeholder="Enter your email" autofocus />
             </div>
             <div class="mb-6 form-password-toggle form-control-validation">
               <label class="form-label" for="password">Password</label>
