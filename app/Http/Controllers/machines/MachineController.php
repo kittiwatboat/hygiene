@@ -16,12 +16,12 @@ class MachineController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('machines.index', compact('machines'));
+        return view('content.pages.machines.index', compact('machines'));
     }
 
     public function create()
     {
-        return view('machines.create');
+        return view('content.pages.machines.create');
     }
 
     public function store(Request $request)
@@ -90,12 +90,12 @@ class MachineController extends Controller
 
     public function show(Machine $machine)
     {
-        return view('machines.show', compact('machine'));
+        return view('content.pages.machines.show', compact('machine'));
     }
 
     public function edit(Machine $machine)
     {
-        return view('machines.edit', compact('machine'));
+        return view('content.pages.machines.edit', compact('machine'));
     }
 
     public function update(Request $request, Machine $machine)
