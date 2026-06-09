@@ -1,107 +1,77 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const provinceSelect = document.getElementById('province_id');
-    const districtSelect = document.getElementById('district_id');
-    const subdistrictSelect = document.getElementById('subdistrict_id');
-    const postcodeInput = document.getElementById('postcode');
-
     const districtUrl = "{{ url('/address/districts') }}";
     const subdistrictUrl = "{{ url('/address/subdistricts') }}";
 
-    function hasJqueryAndSelect2() {
-      return typeof window.jQuery !== 'undefined' && typeof window.jQuery.fn.select2 !== 'undefined';
-    }
+    const $provinceSelect = $('#province_id');
+    const $districtSelect = $('#district_id');
+    const $subdistrictSelect = $('#subdistrict_id');
+    const $postcodeInput = $('#postcode');
 
     function initSelect2() {
-      if (!hasJqueryAndSelect2()) {
-        return;
-      }
-
       $('.select2-address').each(function () {
-        const $this = $(this);
+        const $select = $(this);
 
-        if ($this.hasClass('select2-hidden-accessible')) {
-          $this.select2('destroy');
+        if ($select.hasClass('select2-hidden-accessible')) {
+          $select.select2('destroy');
         }
 
-        $this.select2({
+        $select.select2({
           width: '100%',
           allowClear: true,
-          placeholder: $this.data('placeholder') || '-- เลือกข้อมูล --',
+          placeholder: $select.data('placeholder') || '-- เลือกข้อมูล --',
           language: {
             noResults: function () {
               return 'ไม่พบข้อมูล';
             },
             searching: function () {
               return 'กำลังค้นหา...';
-            },
-            inputTooShort: function () {
-              return 'กรุณาพิมพ์เพื่อค้นหา';
             }
           }
         });
       });
     }
 
-    function refreshSelect2(selectElement) {
-      if (!hasJqueryAndSelect2()) {
-        return;
-      }
+    function resetSelect($select, placeholder) {
+      $select.empty();
 
-      $(selectElement).trigger('change.select2');
+      const emptyOption = new Option(placeholder, '', true, false);
+      $select.append(emptyOption);
+
+      $select.val('').trigger('change.select2');
     }
 
-    function clearSelect(selectElement, placeholder) {
-      selectElement.innerHTML = '';
+    function appendOption($select, value, text, data = {}) {
+      const option = new Option(text, value, false, false);
 
-      const option = document.createElement('option');
-      option.value = '';
-      option.textContent = placeholder;
+      Object.keys(data).forEach(function (key) {
+        option.setAttribute(key, data[key]);
+      });
 
-      selectElement.appendChild(option);
-
-      refreshSelect2(selectElement);
+      $select.append(option);
     }
 
     function fillPostcode() {
-      const selectedOption = subdistrictSelect.options[subdistrictSelect.selectedIndex];
+      const selectedOption = $subdistrictSelect.find(':selected');
+      const zipcode = selectedOption.data('zipcode') || selectedOption.attr('data-zipcode') || '';
 
-      if (!selectedOption) {
-        postcodeInput.value = '';
-        return;
-      }
-
-      postcodeInput.value = selectedOption.getAttribute('data-zipcode') || '';
+      $postcodeInput.val(zipcode);
     }
 
-    function appendOption(selectElement, value, text, attributes = {}) {
-      const option = document.createElement('option');
-
-      option.value = value;
-      option.textContent = text;
-
-      Object.keys(attributes).forEach(function (key) {
-        option.setAttribute(key, attributes[key]);
-      });
-
-      selectElement.appendChild(option);
-    }
-
-    initSelect2();
-
-    provinceSelect.addEventListener('change', async function () {
-      const provinceId = this.value;
-
-      clearSelect(districtSelect, '-- เลือกอำเภอ/เขต --');
-      clearSelect(subdistrictSelect, '-- เลือกตำบล/แขวง --');
-      postcodeInput.value = '';
+    async function loadDistricts(provinceId) {
+      resetSelect($districtSelect, '-- เลือกอำเภอ/เขต --');
+      resetSelect($subdistrictSelect, '-- เลือกตำบล/แขวง --');
+      $postcodeInput.val('');
 
       if (!provinceId) {
         return;
       }
 
+      $districtSelect.prop('disabled', true);
+
       try {
         const response = await fetch(`${districtUrl}/${provinceId}`, {
+          method: 'GET',
           headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -109,33 +79,38 @@
         });
 
         const result = await response.json();
+
+        console.log('district result:', result);
 
         if (!result.success) {
           return;
         }
 
         result.data.forEach(function (district) {
-          appendOption(districtSelect, district.id, district.name);
+          appendOption($districtSelect, district.id, district.name);
         });
 
-        refreshSelect2(districtSelect);
+        $districtSelect.prop('disabled', false);
+        $districtSelect.val('').trigger('change.select2');
       } catch (error) {
         console.error('Cannot load districts:', error);
+        $districtSelect.prop('disabled', false);
       }
-    });
+    }
 
-    districtSelect.addEventListener('change', async function () {
-      const districtId = this.value;
-
-      clearSelect(subdistrictSelect, '-- เลือกตำบล/แขวง --');
-      postcodeInput.value = '';
+    async function loadSubdistricts(districtId) {
+      resetSelect($subdistrictSelect, '-- เลือกตำบล/แขวง --');
+      $postcodeInput.val('');
 
       if (!districtId) {
         return;
       }
 
+      $subdistrictSelect.prop('disabled', true);
+
       try {
         const response = await fetch(`${subdistrictUrl}/${districtId}`, {
+          method: 'GET',
           headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -144,28 +119,39 @@
 
         const result = await response.json();
 
+        console.log('subdistrict result:', result);
+
         if (!result.success) {
           return;
         }
 
         result.data.forEach(function (subdistrict) {
-          appendOption(
-            subdistrictSelect,
-            subdistrict.id,
-            subdistrict.name,
-            {
-              'data-zipcode': subdistrict.zipcode || ''
-            }
-          );
+          appendOption($subdistrictSelect, subdistrict.id, subdistrict.name, {
+            'data-zipcode': subdistrict.zipcode || ''
+          });
         });
 
-        refreshSelect2(subdistrictSelect);
+        $subdistrictSelect.prop('disabled', false);
+        $subdistrictSelect.val('').trigger('change.select2');
       } catch (error) {
         console.error('Cannot load subdistricts:', error);
+        $subdistrictSelect.prop('disabled', false);
       }
+    }
+
+    initSelect2();
+
+    $provinceSelect.on('change', function () {
+      const provinceId = $(this).val();
+      loadDistricts(provinceId);
     });
 
-    subdistrictSelect.addEventListener('change', function () {
+    $districtSelect.on('change', function () {
+      const districtId = $(this).val();
+      loadSubdistricts(districtId);
+    });
+
+    $subdistrictSelect.on('change', function () {
       fillPostcode();
     });
 

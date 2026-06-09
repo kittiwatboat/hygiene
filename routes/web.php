@@ -74,10 +74,10 @@ Route::prefix('machines')->name('machines.')->group(function () {
 | Locations
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('address')->name('address.')->group(function () {
     Route::get('/districts/{province}', [AddressController::class, 'districts'])->name('districts');
     Route::get('/subdistricts/{district}', [AddressController::class, 'subdistricts'])->name('subdistricts');
-    Route::get('/zipcode/{subdistrict}', [AddressController::class, 'zipcode'])->name('zipcode');
 });
 
 Route::prefix('locations')->name('locations.')->group(function () {

@@ -77,11 +77,11 @@
   <div class="col-md-3">
   <label class="form-label">จังหวัด</label>
   <select
-    name="province_id"
-    id="province_id"
-    class="form-select select2-address @error('province_id') is-invalid @enderror"
-    data-placeholder="ค้นหาจังหวัด"
-  >
+  name="province_id"
+  id="province_id"
+  class="form-select select2-address @error('province_id') is-invalid @enderror"
+  data-placeholder="ค้นหาจังหวัด"
+>
     <option value="">-- เลือกจังหวัด --</option>
 
     @foreach ($provinces as $province)
@@ -102,11 +102,11 @@
 <div class="col-md-3">
   <label class="form-label">อำเภอ/เขต</label>
   <select
-    name="district_id"
-    id="district_id"
-    class="form-select select2-address @error('district_id') is-invalid @enderror"
-    data-placeholder="ค้นหาอำเภอ/เขต"
-  >
+  name="district_id"
+  id="district_id"
+  class="form-select select2-address @error('district_id') is-invalid @enderror"
+  data-placeholder="ค้นหาอำเภอ/เขต"
+>
     <option value="">-- เลือกอำเภอ/เขต --</option>
 
     @foreach ($districts as $district)
@@ -127,11 +127,11 @@
 <div class="col-md-3">
   <label class="form-label">ตำบล/แขวง</label>
   <select
-    name="subdistrict_id"
-    id="subdistrict_id"
-    class="form-select select2-address @error('subdistrict_id') is-invalid @enderror"
-    data-placeholder="ค้นหาตำบล/แขวง"
-  >
+  name="subdistrict_id"
+  id="subdistrict_id"
+  class="form-select select2-address @error('subdistrict_id') is-invalid @enderror"
+  data-placeholder="ค้นหาตำบล/แขวง"
+>
     <option value="">-- เลือกตำบล/แขวง --</option>
 
     @foreach ($subdistricts as $subdistrict)

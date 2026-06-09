@@ -1,12 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\locations;
-
 use App\Http\Controllers\Controller;
-use App\Models\District;
-use App\Models\Subdistrict;
-use App\Models\Zipcode;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class AddressController extends Controller
 {
@@ -15,7 +12,7 @@ class AddressController extends Controller
      */
     public function districts(int $province): JsonResponse
     {
-        $districts = District::query()
+        $districts = DB::table('district')
             ->where('PROVINCE_ID', $province)
             ->orderBy('DISTRICT_NAME')
             ->get([
@@ -39,7 +36,7 @@ class AddressController extends Controller
      */
     public function subdistricts(int $district): JsonResponse
     {
-        $subdistricts = Subdistrict::query()
+        $subdistricts = DB::table('subdistrict')
             ->leftJoin('zipcode', 'subdistrict.SUB_DISTRICT_ID', '=', 'zipcode.SUB_DISTRICT_ID')
             ->where('subdistrict.DISTRICT_ID', $district)
             ->orderBy('subdistrict.SUB_DISTRICT_NAME')
@@ -58,23 +55,6 @@ class AddressController extends Controller
                     'zipcode' => $subdistrict->ZIPCODE,
                 ];
             })->values(),
-        ]);
-    }
-
-    /**
-     * Get zipcode by subdistrict id.
-     */
-    public function zipcode(int $subdistrict): JsonResponse
-    {
-        $zipcode = Zipcode::query()
-            ->where('SUB_DISTRICT_ID', $subdistrict)
-            ->first();
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'zipcode' => $zipcode?->ZIPCODE,
-            ],
         ]);
     }
 }
