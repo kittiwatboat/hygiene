@@ -24,6 +24,7 @@ class LoginBasic extends Controller
     if (Auth::attempt($credentials)) {
       return redirect()->route('dashboard');
     }
+    dd(Auth::attempt($credentials));
 
     return redirect()->route('login')->with('error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
   }
