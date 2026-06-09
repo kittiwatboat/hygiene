@@ -119,7 +119,7 @@
             </thead>
 
             <tbody class="table-border-bottom-0">
-              @forelse ($machines as $index => $machine)
+              @forelse ($vendingMachines as $index => $machine)
                 @php
                   $tankCapacity = (float) ($machine->tank_capacity_liter ?? 0);
                   $currentStock = (float) ($machine->current_stock_liter ?? 0);

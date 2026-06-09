@@ -46,7 +46,7 @@ class MachineController extends Controller
             ->get();
 
         return view('content.pages.machines.index', compact(
-            'Machines',
+            'vendingMachines',
             'locations',
             'keyword',
             'locationId',
