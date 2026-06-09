@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Machines;
 
+use App\Http\Controllers\Controller;
 use App\Models\Machine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
