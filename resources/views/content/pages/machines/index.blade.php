@@ -7,6 +7,7 @@
 @endsection
 
 @section('content')
+@section('content')
   <style>
     .machine-alert {
       margin: 0 1.5rem 1rem 1.5rem;
@@ -23,6 +24,7 @@
       padding-top: 0.25rem;
     }
   </style>
+
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -44,20 +46,22 @@
         </div>
 
         @if (session('success'))
-          <div class="alert alert-success alert-dismissible mx-6 mt-2 mb-0" role="alert">
+          <div class="alert alert-success alert-dismissible machine-alert" role="alert">
+            <i class="icon-base ti tabler-circle-check me-1"></i>
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         @endif
 
         @if (session('error'))
-          <div class="alert alert-danger alert-dismissible mx-6 mt-2 mb-0" role="alert">
+          <div class="alert alert-danger alert-dismissible machine-alert" role="alert">
+            <i class="icon-base ti tabler-alert-circle me-1"></i>
             {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         @endif
 
-        <div class="table-responsive text-nowrap">
+        <div class="table-responsive text-nowrap machines-table-wrap">
           <table class="table">
             <thead class="table-light">
               <tr>
