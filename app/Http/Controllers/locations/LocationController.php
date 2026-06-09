@@ -60,7 +60,7 @@ class LocationController extends Controller
     $districts = collect();
     $subdistricts = collect();
 
-    return view('locations.create', compact(
+    return view('content.pages.locations.create', compact(
         'location',
         'provinces',
         'districts',
@@ -122,7 +122,7 @@ class LocationController extends Controller
             ])
         : collect();
 
-    return view('locations.edit', compact(
+    return view('content.pages.locations.edit', compact(
         'location',
         'provinces',
         'districts',
