@@ -1,180 +1,163 @@
 <?php
 
-namespace App\Http\Controllers\Machines;
+namespace App\Http\Controllers\machines;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use App\Models\VendingMachine;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class MachineController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of vending machines.
+     */
+    public function index(Request $request): View
     {
-        $machines = VendingMachine::query()
-            ->orderByDesc('id')
+        $keyword = $request->input('keyword');
+        $locationId = $request->input('location_id');
+        $status = $request->input('status');
+
+        $vendingMachines = VendingMachine::query()
+            ->with('location')
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where(function ($subQuery) use ($keyword) {
+                    $subQuery->where('name', 'like', '%' . $keyword . '%')
+                        ->orWhere('code', 'like', '%' . $keyword . '%')
+                        ->orWhere('serial_number', 'like', '%' . $keyword . '%')
+                        ->orWhere('model', 'like', '%' . $keyword . '%');
+                });
+            })
+            ->when($locationId, function ($query) use ($locationId) {
+                $query->where('location_id', $locationId);
+            })
+            ->when($status !== null && $status !== '', function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $locations = Location::query()
+            ->where('is_active', true)
+            ->orderBy('name')
             ->get();
 
-        return view('content.pages.machines.index', compact('machines'));
+        return view('content.pages.machines.index', compact(
+            'vendingMachines',
+            'locations',
+            'keyword',
+            'locationId',
+            'status'
+        ));
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new vending machine.
+     */
+    public function create(): View
+{
+    $machine = new VendingMachine();
+
+    $locations = Location::query()
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get();
+
+    return view('machines.create', compact('machine', 'locations'));
+}
+
+    /**
+     * Store a newly created vending machine in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        return view('content.pages.machines.create');
+        $validated = $this->validateVendingMachine($request);
+
+        $validated['is_active'] = $request->boolean('is_active');
+
+        VendingMachine::create($validated);
+
+        return redirect()
+            ->route('vending-machines.index')
+            ->with('success', 'เพิ่มตู้เรียบร้อยแล้ว');
     }
 
-    public function store(Request $request)
+    /**
+     * Display the specified vending machine.
+     */
+    public function show(VendingMachine $vendingMachine): View
     {
-        $validator = Validator::make($request->all(), [
-            'machine_code' => 'required|string|max:100|unique:vending_machines,machine_code',
-            'machine_name' => 'required|string|max:255',
-            'location_name' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'tank_capacity_liter' => 'required|numeric|min:0',
-            'current_stock_liter' => 'required|numeric|min:0',
-            'volume_per_press_ml' => 'required|numeric|min:0',
-            'status' => 'required|in:active,inactive,maintenance,out_of_stock',
-            'note' => 'nullable|string',
-        ], [
-            'machine_code.required' => 'กรุณากรอกรหัสตู้',
-            'machine_code.unique' => 'รหัสตู้นี้ถูกใช้งานแล้ว',
-            'machine_name.required' => 'กรุณากรอกชื่อตู้',
-            'tank_capacity_liter.required' => 'กรุณากรอกความจุถัง',
-            'current_stock_liter.required' => 'กรุณากรอกปริมาณคงเหลือ',
-            'volume_per_press_ml.required' => 'กรุณากรอกปริมาณต่อการกด',
-            'status.required' => 'กรุณาเลือกสถานะ',
-        ]);
+        $vendingMachine->load('location');
 
-        if ($validator->fails()) {
-            return redirect()
-                ->route('machines.create')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        try {
-            DB::beginTransaction();
-
-            VendingMachine::create([
-                'machine_code' => trim($request->machine_code),
-                'machine_name' => trim($request->machine_name),
-                'location_name' => $request->location_name,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'tank_capacity_liter' => $request->tank_capacity_liter ?? 0,
-                'current_stock_liter' => $request->current_stock_liter ?? 0,
-                'volume_per_press_ml' => $request->volume_per_press_ml ?? 0,
-                'total_press_count' => 0,
-                'status' => $request->status,
-                'note' => $request->note,
-            ]);
-
-            DB::commit();
-
-            return redirect()
-                ->route('machines.index')
-                ->with('success', 'เพิ่มตู้สำเร็จ');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            return redirect()
-                ->route('machines.create')
-                ->withInput()
-                ->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-        }
+        return view('content.pages.machines.show', compact('vendingMachine'));
     }
 
-    public function show(VendingMachine $machine)
-    {
-        return view('content.pages.machines.show', compact('machine'));
-    }
-
+    /**
+     * Show the form for editing the specified vending machine.
+     */
     public function edit(VendingMachine $machine)
+{
+    $locations = Location::query()
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get();
+
+    return view('content.pages.machines.edit', compact('machine', 'locations'));
+}
+
+    /**
+     * Update the specified vending machine in storage.
+     */
+    public function update(Request $request, VendingMachine $vendingMachine): RedirectResponse
     {
-        return view('content.pages.machines.edit', compact('machine'));
+        $validated = $this->validateVendingMachine($request, $vendingMachine->id);
+
+        $validated['is_active'] = $request->boolean('is_active');
+
+        $vendingMachine->update($validated);
+
+        return redirect()
+            ->route('vending-machines.index')
+            ->with('success', 'แก้ไขตู้เรียบร้อยแล้ว');
     }
 
-    public function update(Request $request, VendingMachine $machine)
+    /**
+     * Remove the specified vending machine from storage.
+     */
+    public function destroy(VendingMachine $vendingMachine): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'machine_code' => 'required|string|max:100|unique:vending_machines,machine_code,' . $machine->id,
-            'machine_name' => 'required|string|max:255',
-            'location_name' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'tank_capacity_liter' => 'required|numeric|min:0',
-            'current_stock_liter' => 'required|numeric|min:0',
-            'volume_per_press_ml' => 'required|numeric|min:0',
-            'total_press_count' => 'nullable|integer|min:0',
-            'status' => 'required|in:active,inactive,maintenance,out_of_stock',
-            'note' => 'nullable|string',
-        ], [
-            'machine_code.required' => 'กรุณากรอกรหัสตู้',
-            'machine_code.unique' => 'รหัสตู้นี้ถูกใช้งานแล้ว',
-            'machine_name.required' => 'กรุณากรอกชื่อตู้',
-            'tank_capacity_liter.required' => 'กรุณากรอกความจุถัง',
-            'current_stock_liter.required' => 'กรุณากรอกปริมาณคงเหลือ',
-            'volume_per_press_ml.required' => 'กรุณากรอกปริมาณต่อการกด',
-            'status.required' => 'กรุณาเลือกสถานะ',
+        $vendingMachine->delete();
+
+        return redirect()
+            ->route('vending-machines.index')
+            ->with('success', 'ลบตู้เรียบร้อยแล้ว');
+    }
+
+    /**
+     * Validate vending machine request.
+     */
+    private function validateVendingMachine(Request $request, ?int $vendingMachineId = null): array
+    {
+        return $request->validate([
+            'location_id' => ['nullable', 'exists:locations,id'],
+
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:100', 'unique:vending_machines,code,' . $vendingMachineId],
+            'serial_number' => ['nullable', 'string', 'max:255'],
+            'model' => ['nullable', 'string', 'max:255'],
+
+            'status' => ['required', 'string', 'max:50'],
+
+            'capacity_liters' => ['nullable', 'numeric', 'min:0'],
+            'remaining_liters' => ['nullable', 'numeric', 'min:0'],
+            'volume_per_press_ml' => ['nullable', 'integer', 'min:0'],
+            'price_per_press' => ['nullable', 'numeric', 'min:0'],
+            'location_id' => ['nullable', 'exists:locations,id'],
+            'remark' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
-
-        if ($validator->fails()) {
-            return redirect()
-                ->route('machines.edit', $machine)
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $machine->update([
-                'machine_code' => trim($request->machine_code),
-                'machine_name' => trim($request->machine_name),
-                'location_name' => $request->location_name,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'tank_capacity_liter' => $request->tank_capacity_liter ?? 0,
-                'current_stock_liter' => $request->current_stock_liter ?? 0,
-                'volume_per_press_ml' => $request->volume_per_press_ml ?? 0,
-                'total_press_count' => $request->total_press_count ?? 0,
-                'status' => $request->status,
-                'note' => $request->note,
-            ]);
-
-            DB::commit();
-
-            return redirect()
-                ->route('machines.index')
-                ->with('success', 'แก้ไขข้อมูลตู้สำเร็จ');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            return redirect()
-                ->route('machines.edit', $machine)
-                ->withInput()
-                ->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-        }
-    }
-
-    public function destroy(Machine $machine)
-    {
-        try {
-            $machine->delete();
-
-            return redirect()
-                ->route('machines.index')
-                ->with('success', 'ลบตู้สำเร็จ');
-        } catch (\Throwable $e) {
-            return redirect()
-                ->route('machines.index')
-                ->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-        }
     }
 }

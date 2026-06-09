@@ -31,9 +31,9 @@ class Location extends Model
         'longitude' => 'decimal:7',
     ];
 
-    public function getStatusTextAttribute(): string
+    public function vendingMachines()
     {
-        return $this->is_active ? 'เปิดใช้งาน' : 'ปิดใช้งาน';
+        return $this->hasMany(VendingMachine::class);
     }
 
     public function getFullAddressAttribute(): string
