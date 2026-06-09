@@ -11,16 +11,13 @@ use Illuminate\View\View;
 
 class MachineController extends Controller
 {
-    /**
-     * Display a listing of vending machines.
-     */
     public function index(Request $request): View
     {
         $keyword = $request->input('keyword');
         $locationId = $request->input('location_id');
         $status = $request->input('status');
 
-        $vendingMachines = VendingMachine::query()
+        $machines = VendingMachine::query()
             ->with('location')
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($subQuery) use ($keyword) {
@@ -45,117 +42,91 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('content.pages.machines.index', compact(
-            'vendingMachines',
-            'locations',
-            'keyword',
-            'locationId',
-            'status'
-        ));
+        return view('machines.index', compact('machines', 'locations', 'keyword', 'locationId', 'status'));
     }
 
-    /**
-     * Show the form for creating a new vending machine.
-     */
     public function create(): View
-{
-    $machine = new VendingMachine();
+    {
+        $machine = new VendingMachine();
 
-    $locations = Location::query()
-        ->where('is_active', true)
-        ->orderBy('name')
-        ->get();
+        $locations = Location::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-    return view('content.pages.machines.create', compact('machine', 'locations'));
-}
+        return view('machines.create', compact('machine', 'locations'));
+    }
 
-    /**
-     * Store a newly created vending machine in storage.
-     */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validateVendingMachine($request);
+        $validated = $this->validateMachine($request);
 
         $validated['is_active'] = $request->boolean('is_active');
 
         VendingMachine::create($validated);
 
         return redirect()
-            ->route('vending-machines.index')
+            ->route('machines.index')
             ->with('success', 'เพิ่มตู้เรียบร้อยแล้ว');
     }
 
-    /**
-     * Display the specified vending machine.
-     */
-    public function show(VendingMachine $vendingMachine): View
+    public function show(VendingMachine $machine): View
     {
-        $vendingMachine->load('location');
+        $machine->load('location');
 
-        return view('content.pages.machines.show', compact('vendingMachine'));
+        return view('machines.show', compact('machine'));
     }
 
-    /**
-     * Show the form for editing the specified vending machine.
-     */
-    public function edit(VendingMachine $machine)
-{
-    $locations = Location::query()
-        ->where('is_active', true)
-        ->orderBy('name')
-        ->get();
-
-    return view('content.pages.machines.edit', compact('machine', 'locations'));
-}
-
-    /**
-     * Update the specified vending machine in storage.
-     */
-    public function update(Request $request, VendingMachine $vendingMachine): RedirectResponse
+    public function edit(VendingMachine $machine): View
     {
-        $validated = $this->validateVendingMachine($request, $vendingMachine->id);
+        $machine->load('location');
+
+        $locations = Location::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('machines.edit', compact('machine', 'locations'));
+    }
+
+    public function update(Request $request, VendingMachine $machine): RedirectResponse
+    {
+        $validated = $this->validateMachine($request, $machine->id);
 
         $validated['is_active'] = $request->boolean('is_active');
 
-        $vendingMachine->update($validated);
+        $machine->update($validated);
 
         return redirect()
-            ->route('vending-machines.index')
+            ->route('machines.index')
             ->with('success', 'แก้ไขตู้เรียบร้อยแล้ว');
     }
 
-    /**
-     * Remove the specified vending machine from storage.
-     */
-    public function destroy(VendingMachine $vendingMachine): RedirectResponse
+    public function destroy(VendingMachine $machine): RedirectResponse
     {
-        $vendingMachine->delete();
+        $machine->delete();
 
         return redirect()
-            ->route('vending-machines.index')
+            ->route('machines.index')
             ->with('success', 'ลบตู้เรียบร้อยแล้ว');
     }
 
-    /**
-     * Validate vending machine request.
-     */
-    private function validateVendingMachine(Request $request, ?int $vendingMachineId = null): array
+    private function validateMachine(Request $request, ?int $machineId = null): array
     {
         return $request->validate([
             'location_id' => ['nullable', 'exists:locations,id'],
 
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:100', 'unique:vending_machines,code,' . $vendingMachineId],
+            'code' => ['nullable', 'string', 'max:100', 'unique:vending_machines,code,' . $machineId],
             'serial_number' => ['nullable', 'string', 'max:255'],
             'model' => ['nullable', 'string', 'max:255'],
-
             'status' => ['required', 'string', 'max:50'],
 
             'capacity_liters' => ['nullable', 'numeric', 'min:0'],
             'remaining_liters' => ['nullable', 'numeric', 'min:0'],
             'volume_per_press_ml' => ['nullable', 'integer', 'min:0'],
             'price_per_press' => ['nullable', 'numeric', 'min:0'],
-            'location_id' => ['nullable', 'exists:locations,id'],
+
             'remark' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ]);
