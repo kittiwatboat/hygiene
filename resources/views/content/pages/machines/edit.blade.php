@@ -15,7 +15,7 @@
           <div>
             <h5 class="mb-1">แก้ไขตู้</h5>
             <p class="mb-0 text-muted">
-              แก้ไขข้อมูลตู้: {{ $machine->name }}
+              แก้ไขข้อมูลตู้: {{ $machine->name ?: '-' }}
             </p>
           </div>
 
@@ -35,7 +35,10 @@
         <div class="card-body">
           <form action="{{ route('machines.update', $machine) }}" method="POST">
             @method('PUT')
-            @include('content.pages.machines._form')
+            @include('machines._form', [
+              'machine' => $machine,
+              'locations' => $locations,
+            ])
           </form>
         </div>
 

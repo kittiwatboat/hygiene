@@ -71,9 +71,11 @@
       <option value="active" {{ old('status', $machine->status ?? 'active') === 'active' ? 'selected' : '' }}>
         พร้อมใช้งาน
       </option>
+
       <option value="maintenance" {{ old('status', $machine->status ?? '') === 'maintenance' ? 'selected' : '' }}>
         ซ่อมบำรุง
       </option>
+
       <option value="inactive" {{ old('status', $machine->status ?? '') === 'inactive' ? 'selected' : '' }}>
         ปิดใช้งาน
       </option>
@@ -203,7 +205,7 @@
         value="1"
         class="form-check-input"
         id="is_active"
-        {{ old('is_active', $machine->is_active ?? true) ? 'checked' : '' }}
+        {{ old('is_active', isset($machine) ? (int) $machine->is_active : 1) ? 'checked' : '' }}
       >
 
       <label class="form-check-label" for="is_active">
