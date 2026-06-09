@@ -7,34 +7,54 @@
       "slug": "dashboard"
     },
     {
-      "url": "/machines",
-      "name": "จัดการตู้",
-      "icon": "menu-icon icon-base ti tabler-wash-machine",
-      "slug": "machines"
+      "name": "ข้อมูลหลัก",
+      "icon": "menu-icon icon-base ti tabler-database",
+      "slug": "master-data",
+      "submenu": [
+        {
+          "url": "/machines",
+          "name": "จัดการตู้",
+          "icon": "menu-icon icon-base ti tabler-wash-machine",
+          "slug": "machines"
+        },
+        {
+          "url": "/locations",
+          "name": "จุดติดตั้ง",
+          "icon": "menu-icon icon-base ti tabler-map-pin",
+          "slug": "locations"
+        },
+        {
+          "url": "/products",
+          "name": "สินค้า / น้ำยา",
+          "icon": "menu-icon icon-base ti tabler-droplet",
+          "slug": "products"
+        }
+      ]
     },
     {
-      "url": "/locations",
-      "name": "จุดติดตั้ง",
-      "icon": "menu-icon icon-base ti tabler-map-pin",
-      "slug": "locations"
-    },
-    {
-      "url": "/stock",
-      "name": "Stock น้ำยา",
-      "icon": "menu-icon icon-base ti tabler-droplet",
-      "slug": "stock"
-    },
-    {
-      "url": "/refills",
-      "name": "บันทึกเติมน้ำยา",
-      "icon": "menu-icon icon-base ti tabler-droplet-plus",
-      "slug": "refills"
-    },
-    {
-      "url": "/sales",
-      "name": "รายการขาย",
-      "icon": "menu-icon icon-base ti tabler-receipt",
-      "slug": "sales"
+      "name": "การทำงาน",
+      "icon": "menu-icon icon-base ti tabler-adjustments",
+      "slug": "operation",
+      "submenu": [
+        {
+          "url": "/stock",
+          "name": "Stock น้ำยา",
+          "icon": "menu-icon icon-base ti tabler-bottle",
+          "slug": "stock"
+        },
+        {
+          "url": "/refills",
+          "name": "บันทึกเติมน้ำยา",
+          "icon": "menu-icon icon-base ti tabler-droplet-plus",
+          "slug": "refills"
+        },
+        {
+          "url": "/sales",
+          "name": "รายการขาย",
+          "icon": "menu-icon icon-base ti tabler-receipt",
+          "slug": "sales"
+        }
+      ]
     },
     {
       "url": "/reports",
