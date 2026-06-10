@@ -28,13 +28,19 @@
           "name": "สินค้า / น้ำยา",
           "icon": "menu-icon icon-base ti tabler-droplet",
           "slug": "products"
+        },
+        {
+          "url": "/printers",
+          "name": "เครื่องปริ้นเตอร์",
+          "icon": "menu-icon icon-base ti tabler-printer",
+          "slug": "printers"
         }
       ]
     },
     {
       "name": "การทำงาน",
       "icon": "menu-icon icon-base ti tabler-adjustments",
-      "slug": "operation",
+      "slug": "operations",
       "submenu": [
         {
           "url": "/stock",
@@ -49,6 +55,12 @@
           "slug": "refills"
         },
         {
+          "url": "/maintenances",
+          "name": "ซ่อมบำรุง",
+          "icon": "menu-icon icon-base ti tabler-tools",
+          "slug": "maintenances"
+        },
+        {
           "url": "/sales",
           "name": "รายการขาย",
           "icon": "menu-icon icon-base ti tabler-receipt",
@@ -57,16 +69,29 @@
       ]
     },
     {
+      "name": "แจ้งเตือน",
+      "icon": "menu-icon icon-base ti tabler-bell-ringing",
+      "slug": "alerts-group",
+      "submenu": [
+        {
+          "url": "/alerts",
+          "name": "รายการแจ้งเตือน",
+          "icon": "menu-icon icon-base ti tabler-alert-triangle",
+          "slug": "alerts"
+        },
+        {
+          "url": "/alert-settings",
+          "name": "ตั้งค่าแจ้งเตือน",
+          "icon": "menu-icon icon-base ti tabler-bell-cog",
+          "slug": "alert-settings"
+        }
+      ]
+    },
+    {
       "url": "/reports",
       "name": "รายงาน",
       "icon": "menu-icon icon-base ti tabler-chart-bar",
       "slug": "reports"
-    },
-    {
-      "url": "/alerts",
-      "name": "แจ้งเตือน",
-      "icon": "menu-icon icon-base ti tabler-bell-ringing",
-      "slug": "alerts"
     },
     {
       "url": "/users",
