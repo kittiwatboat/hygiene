@@ -13,12 +13,12 @@ class ProductController extends Controller
     {
         $products = Product::latest()->get();
 
-        return view('products.index', compact('products'));
+        return view('content.pages.products.index', compact('products'));
     }
 
     public function create()
     {
-        return view('products.create');
+        return view('content.pages.products.create');
     }
 
     public function store(Request $request)
@@ -57,12 +57,12 @@ class ProductController extends Controller
     {
         $product->load('tanks.machine');
 
-        return view('products.show', compact('product'));
+        return view('content.pages.products.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        return view('content.pages.products.edit', compact('product'));
     }
 
     public function update(Request $request, Product $product)
