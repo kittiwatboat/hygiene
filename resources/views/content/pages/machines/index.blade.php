@@ -4,11 +4,7 @@
 
 @section('page-style')
   @vite(['resources/assets/vendor/fonts/fontawesome.scss'])
-@endsection
 
-@section('content')
-@section('content')
- @section('content')
   <style>
     .machine-alert {
       margin: 0 1.5rem 1rem 1.5rem;
@@ -47,8 +43,49 @@
     .machines-table-wrap {
       padding-top: 0;
     }
-  </style>
 
+    .tank-list {
+      min-width: 260px;
+    }
+
+    .tank-item {
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed rgba(75, 70, 92, 0.16);
+    }
+
+    .tank-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .tank-name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #444050;
+    }
+
+    .tank-product {
+      font-size: 0.75rem;
+      color: #6f6b7d;
+    }
+
+    .tank-stock-text {
+      font-size: 0.75rem;
+      color: #6f6b7d;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .tank-progress {
+      height: 6px;
+      border-radius: 30px;
+    }
+  </style>
+@endsection
+
+@section('content')
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -69,82 +106,73 @@
           </div>
         </div>
 
-       @if (session('success'))
-  <div class="alert alert-success machine-alert" role="alert">
-    <div class="machine-alert-content">
-      <i class="icon-base ti tabler-circle-check"></i>
-      <span>{{ session('success') }}</span>
-    </div>
+        @if (session('success'))
+          <div class="alert alert-success machine-alert" role="alert">
+            <div class="machine-alert-content">
+              <i class="icon-base ti tabler-circle-check"></i>
+              <span>{{ session('success') }}</span>
+            </div>
 
-    <button
-      type="button"
-      class="machine-alert-close"
-      onclick="this.closest('.alert').remove()"
-      aria-label="Close">
-      <i class="icon-base ti tabler-x"></i>
-    </button>
-  </div>
-@endif
+            <button
+              type="button"
+              class="machine-alert-close"
+              onclick="this.closest('.alert').remove()"
+              aria-label="Close">
+              <i class="icon-base ti tabler-x"></i>
+            </button>
+          </div>
+        @endif
 
-@if (session('error'))
-  <div class="alert alert-danger machine-alert" role="alert">
-    <div class="machine-alert-content">
-      <i class="icon-base ti tabler-alert-circle"></i>
-      <span>{{ session('error') }}</span>
-    </div>
+        @if (session('error'))
+          <div class="alert alert-danger machine-alert" role="alert">
+            <div class="machine-alert-content">
+              <i class="icon-base ti tabler-alert-circle"></i>
+              <span>{{ session('error') }}</span>
+            </div>
 
-    <button
-      type="button"
-      class="machine-alert-close"
-      onclick="this.closest('.alert').remove()"
-      aria-label="Close">
-      <i class="icon-base ti tabler-x"></i>
-    </button>
-  </div>
-@endif
+            <button
+              type="button"
+              class="machine-alert-close"
+              onclick="this.closest('.alert').remove()"
+              aria-label="Close">
+              <i class="icon-base ti tabler-x"></i>
+            </button>
+          </div>
+        @endif
 
-<div class="table-responsive text-nowrap machines-table-wrap">
-            <table class="table">
+        <div class="table-responsive text-nowrap machines-table-wrap">
+          <table class="table">
             <thead class="table-light">
               <tr>
                 <th style="width: 70px;">#</th>
                 <th>รหัสตู้</th>
                 <th>ชื่อตู้ / สถานที่</th>
-                <th>Stock คงเหลือ</th>
-                <th>ปริมาณต่อครั้ง</th>
-                <th>จำนวนการกด</th>
+                <th>ช่องน้ำยา / Stock</th>
                 <th>สถานะ</th>
+                <th>เปิดใช้งาน</th>
                 <th style="width: 110px;">Actions</th>
               </tr>
             </thead>
 
             <tbody class="table-border-bottom-0">
-              @forelse ($vendingMachines as $index => $machine)
+              @forelse ($machines as $index => $machine)
                 @php
-                  $tankCapacity = (float) ($machine->tank_capacity_liter ?? 0);
-                  $currentStock = (float) ($machine->current_stock_liter ?? 0);
-
-                  $stockPercent = 0;
-
-                  if ($tankCapacity > 0) {
-                      $stockPercent = ($currentStock / $tankCapacity) * 100;
-                      $stockPercent = min(max($stockPercent, 0), 100);
-                  }
-
                   $statusText = match ($machine->status) {
-                      'active' => 'ใช้งานปกติ',
-                      'inactive' => 'ปิดใช้งาน',
+                      'active' => 'พร้อมใช้งาน',
                       'maintenance' => 'ซ่อมบำรุง',
-                      'out_of_stock' => 'น้ำยาหมด',
+                      'inactive' => 'ปิดใช้งาน',
+                      'offline' => 'ออฟไลน์',
+                      'error' => 'มีปัญหา',
                       default => 'ไม่ทราบสถานะ',
                   };
 
                   $statusClass = match ($machine->status) {
                       'active' => 'bg-label-success',
-                      'inactive' => 'bg-label-secondary',
                       'maintenance' => 'bg-label-warning',
-                      'out_of_stock' => 'bg-label-danger',
-                      default => 'bg-label-dark',
+                      'inactive' => 'bg-label-secondary',
+                      'offline' => 'bg-label-dark',
+                      'error' => 'bg-label-danger',
+                      default => 'bg-label-secondary',
                   };
                 @endphp
 
@@ -155,14 +183,8 @@
 
                   <td>
                     <div class="d-flex align-items-center">
-                      {{-- <div class="avatar avatar-sm me-3">
-                        <span class="avatar-initial rounded bg-label-primary">
-                          <i class="icon-base ti tabler-device-desktop"></i>
-                        </span>
-                      </div> --}}
-
                       <div>
-                        <span class="fw-medium">{{ $machine->machine_code }}</span>
+                        <span class="fw-medium">{{ $machine->code }}</span>
                         <div class="text-muted small">
                           ID: {{ $machine->id }}
                         </div>
@@ -171,65 +193,117 @@
                   </td>
 
                   <td>
-                    <div class="fw-medium">{{ $machine->machine_name }}</div>
+                    <div class="fw-medium">{{ $machine->name }}</div>
 
                     <div class="text-muted small">
-                      {{ $machine->location_name ?: 'ไม่ระบุสถานที่' }}
+                      @if ($machine->location)
+                        {{ $machine->location->name }}
+                        @if (!empty($machine->location->code))
+                          ({{ $machine->location->code }})
+                        @endif
+                      @else
+                        ไม่ระบุสถานที่
+                      @endif
                     </div>
 
-                    @if (!empty($machine->address))
-                      <div class="text-muted small text-truncate" style="max-width: 260px;">
-                        {{ $machine->address }}
+                    @if (!empty($machine->serial_number))
+                      <div class="text-muted small">
+                        S/N: {{ $machine->serial_number }}
+                      </div>
+                    @endif
+
+                    @if (!empty($machine->model))
+                      <div class="text-muted small">
+                        รุ่น: {{ $machine->model }}
                       </div>
                     @endif
                   </td>
 
                   <td>
-                    <div style="min-width: 180px;">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-medium">
-                          {{ number_format($currentStock, 2) }} L
-                        </span>
-                        <small class="text-muted">
-                          {{ number_format($stockPercent, 0) }}%
-                        </small>
-                      </div>
+                    <div class="tank-list">
+                      @forelse ($machine->tanks as $tank)
+                        @php
+                          $capacity = (float) ($tank->capacity_liters ?? 0);
+                          $remaining = (float) ($tank->remaining_liters ?? 0);
+                          $percent = 0;
 
-                      <div class="progress" style="height: 7px;">
-                        <div
-                          class="progress-bar"
-                          role="progressbar"
-                          style="width: {{ $stockPercent }}%;"
-                          aria-valuenow="{{ $stockPercent }}"
-                          aria-valuemin="0"
-                          aria-valuemax="100">
+                          if ($capacity > 0) {
+                              $percent = ($remaining / $capacity) * 100;
+                              $percent = min(max($percent, 0), 100);
+                          }
+
+                          $progressClass = 'bg-primary';
+
+                          if ($percent <= 10) {
+                              $progressClass = 'bg-danger';
+                          } elseif ($percent <= 30) {
+                              $progressClass = 'bg-warning';
+                          } elseif ($percent <= 50) {
+                              $progressClass = 'bg-info';
+                          }
+                        @endphp
+
+                        <div class="tank-item">
+                          <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <div>
+                              <div class="tank-name">
+                                ช่อง {{ $tank->tank_no }}: {{ $tank->tank_name ?: 'ไม่ระบุชื่อช่อง' }}
+                              </div>
+                              <div class="tank-product">
+                                {{ $tank->product?->name ?: 'ยังไม่เลือกน้ำยา' }}
+                              </div>
+                            </div>
+
+                            @if ($tank->is_active)
+                              <span class="badge bg-label-success">เปิด</span>
+                            @else
+                              <span class="badge bg-label-secondary">ปิด</span>
+                            @endif
+                          </div>
+
+                          <div class="tank-stock-text">
+                            <span>
+                              {{ number_format($remaining, 2) }} / {{ number_format($capacity, 2) }} L
+                            </span>
+                            <span>
+                              {{ number_format($percent, 0) }}%
+                            </span>
+                          </div>
+
+                          <div class="progress tank-progress">
+                            <div
+                              class="progress-bar {{ $progressClass }}"
+                              role="progressbar"
+                              style="width: {{ $percent }}%;"
+                              aria-valuenow="{{ $percent }}"
+                              aria-valuemin="0"
+                              aria-valuemax="100">
+                            </div>
+                          </div>
+
+                          <div class="text-muted small mt-1">
+                            {{ number_format((float) $tank->volume_per_press_ml, 2) }} ml/ครั้ง,
+                            {{ number_format((float) $tank->price_per_press, 2) }} บาท/ครั้ง
+                          </div>
                         </div>
-                      </div>
-
-                      <small class="text-muted">
-                        ความจุ {{ number_format($tankCapacity, 2) }} L
-                      </small>
+                      @empty
+                        <span class="text-muted small">ยังไม่ได้ตั้งค่าน้ำยาในตู้</span>
+                      @endforelse
                     </div>
-                  </td>
-
-                  <td>
-                    <span class="fw-medium">
-                      {{ number_format((float) ($machine->volume_per_press_ml ?? 0), 2) }}
-                    </span>
-                    <span class="text-muted">ml</span>
-                  </td>
-
-                  <td>
-                    <span class="fw-medium">
-                      {{ number_format((int) ($machine->total_press_count ?? 0)) }}
-                    </span>
-                    <span class="text-muted">ครั้ง</span>
                   </td>
 
                   <td>
                     <span class="badge {{ $statusClass }} me-1">
                       {{ $statusText }}
                     </span>
+                  </td>
+
+                  <td>
+                    @if ($machine->is_active)
+                      <span class="badge bg-label-success">เปิดใช้งาน</span>
+                    @else
+                      <span class="badge bg-label-secondary">ปิดใช้งาน</span>
+                    @endif
                   </td>
 
                   <td>
@@ -267,7 +341,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center py-5">
+                  <td colspan="7" class="text-center py-5">
                     <div class="mb-2">
                       <i class="icon-base ti tabler-device-desktop-off" style="font-size: 42px;"></i>
                     </div>
