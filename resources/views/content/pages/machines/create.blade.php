@@ -19,7 +19,7 @@
         </div>
 
         <div class="card-body">
-          <form action="{{ route('content.pages.machines.store') }}" method="POST">
+          <form action="{{ route('machines.store') }}" method="POST">
             @include('content.pages.machines._form')
           </form>
         </div>
