@@ -17,7 +17,7 @@ class MachineController extends Controller
             ->latest()
             ->get();
 
-        return view('machines.index', compact('machines'));
+        return view('content.pages.machines.index', compact('machines'));
     }
 
     public function create()
@@ -28,7 +28,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('machines.create', compact('locations', 'products'));
+        return view('content.pages.machines.create', compact('locations', 'products'));
     }
 
     public function store(Request $request)
@@ -103,7 +103,7 @@ class MachineController extends Controller
     {
         $machine->load(['location', 'tanks.product']);
 
-        return view('machines.show', compact('machine'));
+        return view('content.pages.machines.show', compact('machine'));
     }
 
     public function edit(Machine $machine)
@@ -116,7 +116,7 @@ class MachineController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('machines.edit', compact('machine', 'locations', 'products'));
+        return view('content.pages.machines.edit', compact('machine', 'locations', 'products'));
     }
 
     public function update(Request $request, Machine $machine)
