@@ -4,131 +4,197 @@ namespace App\Http\Controllers\machines;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
-use App\Models\VendingMachine;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Machine;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class MachineController extends Controller
 {
-    public function index(Request $request): View
+    public function index()
     {
-        $keyword = $request->input('keyword');
-        $locationId = $request->input('location_id');
-        $status = $request->input('status');
-
-        $vendingMachines = VendingMachine::query()
-            ->with('location')
-            ->when($keyword, function ($query) use ($keyword) {
-                $query->where(function ($subQuery) use ($keyword) {
-                    $subQuery->where('name', 'like', '%' . $keyword . '%')
-                        ->orWhere('code', 'like', '%' . $keyword . '%')
-                        ->orWhere('serial_number', 'like', '%' . $keyword . '%')
-                        ->orWhere('model', 'like', '%' . $keyword . '%');
-                });
-            })
-            ->when($locationId, function ($query) use ($locationId) {
-                $query->where('location_id', $locationId);
-            })
-            ->when($status !== null && $status !== '', function ($query) use ($status) {
-                $query->where('status', $status);
-            })
+        $machines = Machine::with(['location', 'tanks.product'])
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
-        $locations = Location::query()
-            ->where('is_active', true)
+        return view('machines.index', compact('machines'));
+    }
+
+    public function create()
+    {
+        $locations = Location::orderBy('name')->get();
+
+        $products = Product::where('is_active', 1)
             ->orderBy('name')
             ->get();
 
-        return view('content.pages.machines.index', compact('vendingMachines', 'locations', 'keyword', 'locationId', 'status'));
+        return view('machines.create', compact('locations', 'products'));
     }
 
-    public function create(): View
+    public function store(Request $request)
     {
-        $machine = new VendingMachine();
+        $validated = $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'code' => ['required', 'string', 'max:100', 'unique:machines,code'],
+                'location_id' => ['nullable', 'exists:locations,id'],
+                'serial_number' => ['nullable', 'string', 'max:255'],
+                'model' => ['nullable', 'string', 'max:255'],
+                'status' => ['required', 'in:active,maintenance,inactive,offline,error'],
+                'remark' => ['nullable', 'string'],
+                'is_active' => ['nullable', 'boolean'],
 
-        $locations = Location::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+                'tanks' => ['required', 'array'],
+                'tanks.*.tank_no' => ['required', 'integer', 'between:1,3'],
+                'tanks.*.product_id' => ['nullable', 'exists:products,id'],
+                'tanks.*.tank_name' => ['nullable', 'string', 'max:255'],
+                'tanks.*.capacity_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.remaining_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.low_stock_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.empty_stock_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.volume_per_press_ml' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.price_per_press' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.is_active' => ['nullable', 'boolean'],
+            ],
+            [
+                'name.required' => 'กรุณากรอกชื่อตู้',
+                'code.required' => 'กรุณากรอกรหัสตู้',
+                'code.unique' => 'รหัสตู้นี้ถูกใช้งานแล้ว',
+                'status.required' => 'กรุณาเลือกสถานะตู้',
+            ]
+        );
 
-        return view('content.pages.machines.create', compact('machine', 'locations'));
-    }
+        DB::transaction(function () use ($request) {
+            $machine = Machine::create([
+                'name' => $request->name,
+                'code' => $request->code,
+                'location_id' => $request->location_id,
+                'serial_number' => $request->serial_number,
+                'model' => $request->model,
+                'status' => $request->status,
+                'remark' => $request->remark,
+                'is_active' => $request->boolean('is_active'),
+            ]);
 
-    public function store(Request $request): RedirectResponse
-    {
-        $validated = $this->validateMachine($request);
+            foreach ($request->input('tanks', []) as $tank) {
+                $hasProduct = !empty($tank['product_id']);
 
-        $validated['is_active'] = $request->boolean('is_active');
-
-        VendingMachine::create($validated);
+                $machine->tanks()->create([
+                    'tank_no' => $tank['tank_no'],
+                    'product_id' => $hasProduct ? $tank['product_id'] : null,
+                    'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $tank['tank_no']),
+                    'capacity_liters' => $tank['capacity_liters'] ?? 0,
+                    'remaining_liters' => $tank['remaining_liters'] ?? 0,
+                    'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
+                    'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
+                    'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
+                    'price_per_press' => $tank['price_per_press'] ?? 0,
+                    'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
+                ]);
+            }
+        });
 
         return redirect()
             ->route('machines.index')
-            ->with('success', 'เพิ่มตู้เรียบร้อยแล้ว');
+            ->with('success', 'เพิ่มข้อมูลตู้สำเร็จ');
     }
 
-    public function show(VendingMachine $machine): View
+    public function show(Machine $machine)
     {
-        $machine->load('location');
+        $machine->load(['location', 'tanks.product']);
 
-        return view('content.pages.machines.show', compact('machine'));
+        return view('machines.show', compact('machine'));
     }
 
-    public function edit(VendingMachine $machine): View
+    public function edit(Machine $machine)
     {
-        $machine->load('location');
+        $machine->load(['tanks.product']);
 
-        $locations = Location::query()
-            ->where('is_active', true)
+        $locations = Location::orderBy('name')->get();
+
+        $products = Product::where('is_active', 1)
             ->orderBy('name')
             ->get();
 
-        return view('content.pages.machines.edit', compact('machine', 'locations'));
+        return view('machines.edit', compact('machine', 'locations', 'products'));
     }
 
-    public function update(Request $request, VendingMachine $machine): RedirectResponse
+    public function update(Request $request, Machine $machine)
     {
-        $validated = $this->validateMachine($request, $machine->id);
+        $validated = $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'code' => ['required', 'string', 'max:100', 'unique:machines,code,' . $machine->id],
+                'location_id' => ['nullable', 'exists:locations,id'],
+                'serial_number' => ['nullable', 'string', 'max:255'],
+                'model' => ['nullable', 'string', 'max:255'],
+                'status' => ['required', 'in:active,maintenance,inactive,offline,error'],
+                'remark' => ['nullable', 'string'],
+                'is_active' => ['nullable', 'boolean'],
 
-        $validated['is_active'] = $request->boolean('is_active');
+                'tanks' => ['required', 'array'],
+                'tanks.*.tank_no' => ['required', 'integer', 'between:1,3'],
+                'tanks.*.product_id' => ['nullable', 'exists:products,id'],
+                'tanks.*.tank_name' => ['nullable', 'string', 'max:255'],
+                'tanks.*.capacity_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.remaining_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.low_stock_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.empty_stock_liters' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.volume_per_press_ml' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.price_per_press' => ['nullable', 'numeric', 'min:0'],
+                'tanks.*.is_active' => ['nullable', 'boolean'],
+            ],
+            [
+                'name.required' => 'กรุณากรอกชื่อตู้',
+                'code.required' => 'กรุณากรอกรหัสตู้',
+                'code.unique' => 'รหัสตู้นี้ถูกใช้งานแล้ว',
+                'status.required' => 'กรุณาเลือกสถานะตู้',
+            ]
+        );
 
-        $machine->update($validated);
+        DB::transaction(function () use ($request, $machine) {
+            $machine->update([
+                'name' => $request->name,
+                'code' => $request->code,
+                'location_id' => $request->location_id,
+                'serial_number' => $request->serial_number,
+                'model' => $request->model,
+                'status' => $request->status,
+                'remark' => $request->remark,
+                'is_active' => $request->boolean('is_active'),
+            ]);
+
+            foreach ($request->input('tanks', []) as $tank) {
+                $machine->tanks()->updateOrCreate(
+                    [
+                        'tank_no' => $tank['tank_no'],
+                    ],
+                    [
+                        'product_id' => !empty($tank['product_id']) ? $tank['product_id'] : null,
+                        'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $tank['tank_no']),
+                        'capacity_liters' => $tank['capacity_liters'] ?? 0,
+                        'remaining_liters' => $tank['remaining_liters'] ?? 0,
+                        'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
+                        'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
+                        'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
+                        'price_per_press' => $tank['price_per_press'] ?? 0,
+                        'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
+                    ]
+                );
+            }
+        });
 
         return redirect()
             ->route('machines.index')
-            ->with('success', 'แก้ไขตู้เรียบร้อยแล้ว');
+            ->with('success', 'แก้ไขข้อมูลตู้สำเร็จ');
     }
 
-    public function destroy(VendingMachine $machine): RedirectResponse
+    public function destroy(Machine $machine)
     {
         $machine->delete();
 
         return redirect()
             ->route('machines.index')
-            ->with('success', 'ลบตู้เรียบร้อยแล้ว');
-    }
-
-    private function validateMachine(Request $request, ?int $machineId = null): array
-    {
-        return $request->validate([
-            'location_id' => ['nullable', 'exists:locations,id'],
-
-            'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:100', 'unique:vending_machines,code,' . $machineId],
-            'serial_number' => ['nullable', 'string', 'max:255'],
-            'model' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', 'max:50'],
-
-            'capacity_liters' => ['nullable', 'numeric', 'min:0'],
-            'remaining_liters' => ['nullable', 'numeric', 'min:0'],
-            'volume_per_press_ml' => ['nullable', 'integer', 'min:0'],
-            'price_per_press' => ['nullable', 'numeric', 'min:0'],
-
-            'remark' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+            ->with('success', 'ลบข้อมูลตู้สำเร็จ');
     }
 }
