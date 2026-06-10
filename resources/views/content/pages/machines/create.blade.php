@@ -29,7 +29,7 @@
 
         <div class="card-body">
           <form action="{{ route('machines.store') }}" method="POST">
-            @include('machines._form', [
+            @include('content.pages.machines._form', [
               'machine' => $machine,
               'locations' => $locations,
             ])

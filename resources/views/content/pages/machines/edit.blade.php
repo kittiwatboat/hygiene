@@ -35,7 +35,7 @@
         <div class="card-body">
           <form action="{{ route('machines.update', $machine) }}" method="POST">
             @method('PUT')
-            @include('machines._form', [
+            @include('content.pages.machines._form', [
               'machine' => $machine,
               'locations' => $locations,
             ])
