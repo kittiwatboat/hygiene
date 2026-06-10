@@ -6,7 +6,7 @@ use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\machines\MachineController;
 use App\Http\Controllers\locations\LocationController;
-use App\Http\Controllers\stocks\StockController;
+// use App\Http\Controllers\stocks\StockController;
 use App\Http\Controllers\refills\RefillController;
 use App\Http\Controllers\sales\SaleController;
 use App\Http\Controllers\reports\ReportController;
@@ -15,6 +15,8 @@ use App\Http\Controllers\users\UserController;
 use App\Http\Controllers\settings\SettingController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\locations\AddressController;
+use App\Http\Controllers\products\ProductController;
+
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -102,15 +104,18 @@ Route::prefix('locations')->name('locations.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Stock น้ำยา
+| product stock management
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('stock')->name('stock.')->group(function () {
-    Route::get('/', [StockController::class, 'index'])->name('index');
-    Route::get('/history', [StockController::class, 'history'])->name('history');
-    Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low-stock');
-    Route::get('/{machine}', [StockController::class, 'show'])->name('show');
+Route::prefix('products')->name('products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/create', [ProductController::class, 'create'])->name('create');
+    Route::post('/', [ProductController::class, 'store'])->name('store');
+    Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+    Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+    Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+    Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 });
 
 /*
