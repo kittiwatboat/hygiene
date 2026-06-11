@@ -137,9 +137,7 @@
 
                   <td>
                     <span class="fw-medium">{{ $product->code ?: '-' }}</span>
-                    <div class="text-muted small">
-                      ID: {{ $product->id }}
-                    </div>
+
                   </td>
 
                   <td>

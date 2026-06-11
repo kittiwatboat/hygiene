@@ -185,9 +185,7 @@
                     <div class="d-flex align-items-center">
                       <div>
                         <span class="fw-medium">{{ $machine->code }}</span>
-                        <div class="text-muted small">
-                          ID: {{ $machine->id }}
-                        </div>
+
                       </div>
                     </div>
                   </td>
