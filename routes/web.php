@@ -215,15 +215,6 @@ Route::prefix('users')->name('users.')->group(function () {
 Route::prefix('settings')->name('settings.')->group(function () {
     Route::get('/', [SettingController::class, 'index'])->name('index');
     Route::put('/', [SettingController::class, 'update'])->name('update');
-
-    Route::get('/pricing', [SettingController::class, 'pricing'])->name('pricing');
-    Route::put('/pricing', [SettingController::class, 'updatePricing'])->name('pricing.update');
-
-    Route::get('/machine-config', [SettingController::class, 'machineConfig'])->name('machine-config');
-    Route::put('/machine-config', [SettingController::class, 'updateMachineConfig'])->name('machine-config.update');
-
-    Route::get('/notification', [SettingController::class, 'notification'])->name('notification');
-    Route::put('/notification', [SettingController::class, 'updateNotification'])->name('notification.update');
 });
 });
 
