@@ -6,7 +6,7 @@ use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\machines\MachineController;
 use App\Http\Controllers\locations\LocationController;
-// use App\Http\Controllers\stocks\StockController;
+use App\Http\Controllers\stocks\StockController;
 use App\Http\Controllers\refills\RefillController;
 use App\Http\Controllers\sales\SaleController;
 use App\Http\Controllers\reports\ReportController;
@@ -133,6 +133,18 @@ Route::prefix('printers')->name('printers.')->group(function () {
     Route::put('/{printer}', [PrinterController::class, 'update'])->name('update');
     Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
 });
+
+/*
+|--------------------------------------------------------------------------
+| stock management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('stock')->name('stock.')->group(function () {
+    Route::get('/', [StockController::class, 'index'])->name('index');
+    Route::get('/{tank}', [StockController::class, 'show'])->name('show');
+    Route::put('/{tank}/adjust', [StockController::class, 'adjust'])->name('adjust');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Refill น้ำยา

@@ -30,13 +30,59 @@ class MachineTank extends Model
         'is_active' => 'boolean',
     ];
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id');
+    public function machine()
+{
+    return $this->belongsTo(Machine::class, 'machine_id');
+}
+
+public function product()
+{
+    return $this->belongsTo(Product::class, 'product_id');
+}
+
+public function getStockPercentAttribute(): float
+{
+    $capacity = (float) $this->capacity_liters;
+    $remaining = (float) $this->remaining_liters;
+
+    if ($capacity <= 0) {
+        return 0;
     }
 
-    public function machine()
-    {
-        return $this->belongsTo(Machine::class, 'machine_id');
+    return round(min(max(($remaining / $capacity) * 100, 0), 100), 2);
+}
+
+public function getStockStatusTextAttribute(): string
+{
+    $remaining = (float) $this->remaining_liters;
+    $low = (float) $this->low_stock_liters;
+    $empty = (float) $this->empty_stock_liters;
+
+    if ($remaining <= $empty) {
+        return 'หมด';
     }
+
+    if ($remaining <= $low) {
+        return 'ใกล้หมด';
+    }
+
+    return 'ปกติ';
+}
+
+public function getStockStatusBadgeClassAttribute(): string
+{
+    $remaining = (float) $this->remaining_liters;
+    $low = (float) $this->low_stock_liters;
+    $empty = (float) $this->empty_stock_liters;
+
+    if ($remaining <= $empty) {
+        return 'bg-label-danger';
+    }
+
+    if ($remaining <= $low) {
+        return 'bg-label-warning';
+    }
+
+    return 'bg-label-success';
+}
 }
