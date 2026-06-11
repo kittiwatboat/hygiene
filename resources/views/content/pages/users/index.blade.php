@@ -128,9 +128,7 @@
 
                       <div>
                         <div class="fw-medium">{{ $user->full_name }}</div>
-                        <div class="text-muted small">
-                          ID: {{ $user->id }}
-                        </div>
+
                       </div>
                     </div>
                   </td>
