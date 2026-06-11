@@ -18,7 +18,7 @@ class SettingController extends Controller
             ->get()
             ->groupBy('group');
 
-        return view('settings.index', compact('settings'));
+        return view('content.pages.settings.index', compact('settings'));
     }
 
     public function update(Request $request)
