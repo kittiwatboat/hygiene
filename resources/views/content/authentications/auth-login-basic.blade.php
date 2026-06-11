@@ -95,7 +95,7 @@ $customizerHidden = 'customizer-hide';
           <p class="mb-6">ระบบจัดการตู้กดน้ำยาซักผ้าและน้ำยาปรับผ้านุ่ม</p>
 
           <div id="loginErrorBox" class="alert alert-danger login-error-box mb-4"></div>
-          <div id="loginSuccessBox" class="alert alert-success login-error-box mb-4"></div>
+          {{-- <div id="loginSuccessBox" class="alert alert-success login-error-box mb-4"></div> --}}
 
 <form
   id="form_submit"
@@ -196,8 +196,10 @@ $customizerHidden = 'customizer-hide';
     const form = document.getElementById('form_submit');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
+    const loginErrorBox = document.getElementById('loginErrorBox');
 
     const loginButton = document.getElementById('loginButton');
     const loginButtonText = document.getElementById('loginButtonText');
@@ -217,6 +219,9 @@ $customizerHidden = 'customizer-hide';
 
       emailError.innerHTML = '';
       passwordError.innerHTML = '';
+
+      loginErrorBox.classList.remove('show');
+      loginErrorBox.innerHTML = '';
     }
 
     function setLoading(isLoading) {
@@ -231,13 +236,9 @@ $customizerHidden = 'customizer-hide';
       }
     }
 
-    function showAlert(options) {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire(options);
-        return;
-      }
-
-      alert(options.text || options.title || 'เกิดข้อผิดพลาด');
+    function showTopError(message) {
+      loginErrorBox.innerHTML = message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+      loginErrorBox.classList.add('show');
     }
 
     function showValidationErrors(errors) {
@@ -264,34 +265,21 @@ $customizerHidden = 'customizer-hide';
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
-      if (email === '' || password === '') {
-        showAlert({
-          icon: 'warning',
-          title: 'เกิดข้อผิดพลาด',
-          html: "กรุณากรอกข้อมูลที่มี <span class='text-danger'>*</span> ให้ครบถ้วน !",
-          confirmButtonText: 'ปิด'
-        });
-
+      if (email === '') {
+        emailInput.classList.add('is-invalid');
+        emailError.innerHTML = 'กรุณากรอกอีเมล';
+        emailError.classList.add('show');
+        showTopError('กรุณากรอกอีเมล');
+        emailInput.focus();
         return;
       }
 
-      let confirmed = true;
-
-      if (typeof Swal !== 'undefined') {
-        const result = await Swal.fire({
-          icon: 'warning',
-          html: 'กรุณากด <b>ยืนยัน</b> เพื่อเข้าสู่ระบบ',
-          showCancelButton: true,
-          confirmButtonText: 'ยืนยัน',
-          cancelButtonText: 'ยกเลิก'
-        });
-
-        confirmed = result.isConfirmed;
-      } else {
-        confirmed = confirm('ยืนยันการเข้าสู่ระบบ?');
-      }
-
-      if (!confirmed) {
+      if (password === '') {
+        passwordInput.classList.add('is-invalid');
+        passwordError.innerHTML = 'กรุณากรอกรหัสผ่าน';
+        passwordError.classList.add('show');
+        showTopError('กรุณากรอกรหัสผ่าน');
+        passwordInput.focus();
         return;
       }
 
@@ -319,16 +307,11 @@ $customizerHidden = 'customizer-hide';
         }
 
         if (response.status === 419) {
-          showAlert({
-            icon: 'error',
-            title: 'Session หมดอายุ',
-            text: 'กรุณารีเฟรชหน้าแล้วลองเข้าสู่ระบบใหม่อีกครั้ง',
-            confirmButtonText: 'รีเฟรชหน้า'
-          });
+          showTopError('Session หมดอายุ กรุณารีเฟรชหน้าแล้วลองเข้าสู่ระบบใหม่อีกครั้ง');
 
           setTimeout(function () {
             window.location.reload();
-          }, 800);
+          }, 1000);
 
           return;
         }
@@ -338,47 +321,29 @@ $customizerHidden = 'customizer-hide';
             showValidationErrors(data.errors);
           }
 
-          showAlert({
-            icon: 'error',
-            title: data && data.title ? data.title : 'เข้าสู่ระบบไม่สำเร็จ',
-            text: data && data.text ? data.text : 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-            confirmButtonText: 'ปิด'
-          });
+          showTopError(
+            data && data.text
+              ? data.text
+              : 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+          );
 
           return;
         }
 
         if (!data || data.success !== true) {
-          showAlert({
-            icon: 'error',
-            title: 'เข้าสู่ระบบไม่สำเร็จ',
-            text: data && data.text ? data.text : 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง',
-            confirmButtonText: 'ปิด'
-          });
+          showTopError(
+            data && data.text
+              ? data.text
+              : 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง'
+          );
 
           return;
-        }
-
-        if (typeof Swal !== 'undefined') {
-          await Swal.fire({
-            icon: 'success',
-            title: data.title || 'สำเร็จ',
-            text: data.text || 'เข้าสู่ระบบสำเร็จ',
-            showConfirmButton: false,
-            timer: 900
-          });
         }
 
         window.location.href = data.redirect_url || "{{ route('dashboard') }}";
       } catch (error) {
         console.error(error);
-
-        showAlert({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: 'ไม่สามารถเชื่อมต่อ Server ได้ กรุณาลองใหม่อีกครั้ง',
-          confirmButtonText: 'ปิด'
-        });
+        showTopError('ไม่สามารถเชื่อมต่อ Server ได้ กรุณาลองใหม่อีกครั้ง');
       } finally {
         setLoading(false);
       }

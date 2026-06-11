@@ -59,13 +59,13 @@ class LoginBasic extends Controller
                 $request->session()->regenerateToken();
 
                 return response()->json([
-                    'success' => false,
-                    'title' => 'บัญชีถูกปิดใช้งาน',
-                    'text' => 'บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ',
-                    'errors' => [
-                        'email' => ['บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ'],
-                    ],
-                ], 403);
+    'success' => false,
+    'title' => 'บัญชีถูกปิดใช้งาน',
+    'text' => 'บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ',
+    'errors' => [
+        'email' => ['บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ'],
+    ],
+], 403);
             }
 
             $request->session()->regenerate();
