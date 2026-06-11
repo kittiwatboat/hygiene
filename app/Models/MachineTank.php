@@ -30,25 +30,13 @@ class MachineTank extends Model
         'is_active' => 'boolean',
     ];
 
-    public function machine()
-    {
-        return $this->belongsTo(Machine::class, 'machine_id');
-    }
-
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function getStockPercentAttribute(): float
+    public function machine()
     {
-        $capacity = (float) $this->capacity_liters;
-        $remaining = (float) $this->remaining_liters;
-
-        if ($capacity <= 0) {
-            return 0;
-        }
-
-        return round(min(max(($remaining / $capacity) * 100, 0), 100), 2);
+        return $this->belongsTo(Machine::class, 'machine_id');
     }
 }
