@@ -17,6 +17,7 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\locations\AddressController;
 use App\Http\Controllers\products\ProductController;
 use App\Http\Controllers\printers\PrinterController;
+use App\Http\Controllers\maintenance\MaintenanceController;
 
 
 Route::get('/cookie-test', function () {
@@ -158,6 +159,21 @@ Route::prefix('refills')->name('refills.')->group(function () {
     Route::delete('/{refill}', [RefillController::class, 'destroy'])->name('destroy');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Refill น้ำยา
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('maintenances')->name('maintenances.')->group(function () {
+    Route::get('/', [MaintenanceController::class, 'index'])->name('index');
+    Route::get('/create', [MaintenanceController::class, 'create'])->name('create');
+    Route::post('/', [MaintenanceController::class, 'store'])->name('store');
+    Route::get('/{maintenance}', [MaintenanceController::class, 'show'])->name('show');
+    Route::get('/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('edit');
+    Route::put('/{maintenance}', [MaintenanceController::class, 'update'])->name('update');
+    Route::delete('/{maintenance}', [MaintenanceController::class, 'destroy'])->name('destroy');
+});
 /*
 |--------------------------------------------------------------------------
 | Sales / Transactions

@@ -67,4 +67,8 @@ public function refills()
 {
     return $this->hasMany(Refill::class, 'machine_id');
 }
+public function maintenances()
+{
+    return $this->hasMany(Maintenance::class, 'machine_id');
+}
 }
