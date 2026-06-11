@@ -1,4 +1,4 @@
-@extends('layouts/layoutMaster')
+{{-- @extends('layouts/layoutMaster')
 
 @section('title', 'Dashboard ระบบตู้กดน้ำยา')
 
@@ -992,5 +992,175 @@
       </div>
     </div>
   </div>
+</div>
+@endsection --}}
+
+@extends('layouts/layoutMaster')
+
+@section('title', 'Dashboard')
+
+@section('page-style')
+<style>
+  .welcome-card {
+    border-radius: 18px;
+    border: 1px solid rgba(67, 89, 113, .12);
+    background:
+      radial-gradient(circle at top right, rgba(0, 127, 196, .16), transparent 34%),
+      linear-gradient(135deg, #ffffff 0%, #f5fbff 100%);
+    box-shadow: 0 8px 24px rgba(67, 89, 113, .06);
+  }
+
+  .welcome-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    background: rgba(0, 127, 196, .12);
+    color: #007FC4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .welcome-icon i {
+    font-size: 38px;
+  }
+
+  .welcome-title {
+    color: #007FC4;
+    font-weight: 700;
+  }
+
+  .welcome-mini-card {
+    border: 1px solid rgba(67, 89, 113, .12);
+    border-radius: 16px;
+    height: 100%;
+    transition: all .2s ease;
+  }
+
+  .welcome-mini-card:hover {
+    border-color: rgba(0, 127, 196, .35);
+    box-shadow: 0 8px 20px rgba(0, 127, 196, .08);
+  }
+
+  .welcome-mini-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(0, 127, 196, .12);
+    color: #007FC4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+@endsection
+
+@section('content')
+<div class="row g-4">
+
+  <div class="col-12">
+    <div class="card welcome-card">
+      <div class="card-body p-5">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-4">
+          <div class="d-flex align-items-start gap-4">
+            <div class="welcome-icon flex-shrink-0">
+              <i class="icon-base ti tabler-droplet"></i>
+            </div>
+
+            <div>
+              <span class="badge rounded-pill mb-3" style="background:#007FC4;color:#fff;">
+                Hygiene Dashboard
+              </span>
+
+              <h3 class="welcome-title mb-2">
+                ยินดีต้อนรับเข้าสู่ระบบจัดการตู้กดน้ำยา
+              </h3>
+
+              <p class="text-muted mb-0">
+                ระบบหลังบ้านสำหรับจัดการตู้ จุดติดตั้ง สินค้า/น้ำยา Stock การเติมน้ำยา ซ่อมบำรุง และรายการขาย
+              </p>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('machines.index') }}" class="btn btn-primary" style="background:#007FC4;border-color:#007FC4;">
+              <i class="icon-base ti tabler-wash-machine me-1"></i>
+              จัดการตู้
+            </a>
+
+            <a href="{{ route('stock.index') }}" class="btn btn-label-primary">
+              <i class="icon-base ti tabler-bottle me-1"></i>
+              ดู Stock น้ำยา
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('machines.index') }}" class="text-decoration-none text-body">
+      <div class="card welcome-mini-card">
+        <div class="card-body">
+          <div class="welcome-mini-icon mb-3">
+            <i class="icon-base ti tabler-wash-machine"></i>
+          </div>
+          <h6 class="mb-1">จัดการตู้</h6>
+          <p class="text-muted mb-0 small">
+            เพิ่ม แก้ไข และตั้งค่าช่องน้ำยาของแต่ละตู้
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('products.index') }}" class="text-decoration-none text-body">
+      <div class="card welcome-mini-card">
+        <div class="card-body">
+          <div class="welcome-mini-icon mb-3">
+            <i class="icon-base ti tabler-droplet"></i>
+          </div>
+          <h6 class="mb-1">สินค้า / น้ำยา</h6>
+          <p class="text-muted mb-0 small">
+            จัดการรายการน้ำยาซักผ้า น้ำยาปรับผ้านุ่ม และน้ำยาอื่น ๆ
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('refills.index') }}" class="text-decoration-none text-body">
+      <div class="card welcome-mini-card">
+        <div class="card-body">
+          <div class="welcome-mini-icon mb-3">
+            <i class="icon-base ti tabler-droplet-plus"></i>
+          </div>
+          <h6 class="mb-1">บันทึกเติมน้ำยา</h6>
+          <p class="text-muted mb-0 small">
+            บันทึกการเติมน้ำยาและอัปเดต Stock อัตโนมัติ
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-6 col-xl-3">
+    <a href="{{ route('sales.index') }}" class="text-decoration-none text-body">
+      <div class="card welcome-mini-card">
+        <div class="card-body">
+          <div class="welcome-mini-icon mb-3">
+            <i class="icon-base ti tabler-receipt"></i>
+          </div>
+          <h6 class="mb-1">รายการขาย</h6>
+          <p class="text-muted mb-0 small">
+            ดูรายการขายและประวัติการกดน้ำยาจากตู้
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+
 </div>
 @endsection
