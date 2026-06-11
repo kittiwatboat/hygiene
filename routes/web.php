@@ -16,6 +16,7 @@ use App\Http\Controllers\settings\SettingController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\locations\AddressController;
 use App\Http\Controllers\products\ProductController;
+use App\Http\Controllers\printers\PrinterController;
 
 
 Route::get('/cookie-test', function () {
@@ -117,7 +118,21 @@ Route::prefix('products')->name('products.')->group(function () {
     Route::put('/{product}', [ProductController::class, 'update'])->name('update');
     Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 });
+/*
+|--------------------------------------------------------------------------
+| Printer Management
+|--------------------------------------------------------------------------
+*/
 
+Route::prefix('printers')->name('printers.')->group(function () {
+    Route::get('/', [PrinterController::class, 'index'])->name('index');
+    Route::get('/create', [PrinterController::class, 'create'])->name('create');
+    Route::post('/', [PrinterController::class, 'store'])->name('store');
+    Route::get('/{printer}', [PrinterController::class, 'show'])->name('show');
+    Route::get('/{printer}/edit', [PrinterController::class, 'edit'])->name('edit');
+    Route::put('/{printer}', [PrinterController::class, 'update'])->name('update');
+    Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
+});
 /*
 |--------------------------------------------------------------------------
 | Refill น้ำยา
