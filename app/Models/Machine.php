@@ -8,20 +8,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Machine extends Model
 {
     use SoftDeletes;
-    
+
     protected $fillable = [
-        'name',
-        'code',
-        'location_id',
-        'serial_number',
-        'model',
-        'status',
-        'is_active',
-        'remark',
-    ];
+    'code',
+    'name',
+    'location_id',
+    'serial_number',
+    'model',
+    'status',
+    'is_active',
+    'remark',
+    'last_seen_at',
+];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'last_seen_at' => 'datetime',
     ];
 
     public function location()
