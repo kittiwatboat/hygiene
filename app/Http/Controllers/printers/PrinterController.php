@@ -16,7 +16,7 @@ class PrinterController extends Controller
             ->latest()
             ->get();
 
-        return view('printers.index', compact('printers'));
+        return view('content.pages.printers.index', compact('printers'));
     }
 
     public function create()
@@ -25,7 +25,7 @@ class PrinterController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('printers.create', compact('machines'));
+        return view('content.pages.printers.create', compact('machines'));
     }
 
     public function store(Request $request)
@@ -80,7 +80,7 @@ class PrinterController extends Controller
     {
         $printer->load('machine');
 
-        return view('printers.show', compact('printer'));
+        return view('content.pages.printers.show', compact('printer'));
     }
 
     public function edit(Printer $printer)
@@ -89,7 +89,7 @@ class PrinterController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('printers.edit', compact('printer', 'machines'));
+        return view('content.pages.printers.edit', compact('printer', 'machines'));
     }
 
     public function update(Request $request, Printer $printer)
