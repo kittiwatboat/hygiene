@@ -1,4 +1,4 @@
-{{-- @extends('layouts/layoutMaster')
+@extends('layouts/layoutMaster')
 
 @section('title', 'Dashboard ระบบตู้กดน้ำยา')
 
@@ -993,9 +993,9 @@
     </div>
   </div>
 </div>
-@endsection --}}
+@endsection
 
-@extends('layouts/layoutMaster')
+{{-- @extends('layouts/layoutMaster')
 
 @section('title', 'Dashboard')
 
@@ -1163,4 +1163,4 @@
   </div>
 
 </div>
-@endsection
+@endsection --}}
