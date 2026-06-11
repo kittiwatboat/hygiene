@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\stocks;
 
+use App\Http\Controllers\Controller;
 use App\Models\MachineTank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,14 +50,14 @@ class StockController extends Controller
 
         $tanks = $query->get();
 
-        return view('stock.index', compact('tanks'));
+        return view('content.pages.stocks.index', compact('tanks'));
     }
 
     public function show(MachineTank $tank)
     {
         $tank->load(['machine.location', 'product']);
 
-        return view('stock.show', compact('tank'));
+        return view('content.pages.stocks.show', compact('tank'));
     }
 
     public function adjust(Request $request, MachineTank $tank)
