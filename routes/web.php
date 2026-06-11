@@ -150,14 +150,11 @@ Route::prefix('stock')->name('stock.')->group(function () {
 | Refill น้ำยา
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('refills')->name('refills.')->group(function () {
     Route::get('/', [RefillController::class, 'index'])->name('index');
     Route::get('/create', [RefillController::class, 'create'])->name('create');
     Route::post('/', [RefillController::class, 'store'])->name('store');
     Route::get('/{refill}', [RefillController::class, 'show'])->name('show');
-    Route::get('/{refill}/edit', [RefillController::class, 'edit'])->name('edit');
-    Route::put('/{refill}', [RefillController::class, 'update'])->name('update');
     Route::delete('/{refill}', [RefillController::class, 'destroy'])->name('destroy');
 });
 

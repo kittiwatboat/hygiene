@@ -85,4 +85,8 @@ public function getStockStatusBadgeClassAttribute(): string
 
     return 'bg-label-success';
 }
+public function refills()
+{
+    return $this->hasMany(Refill::class, 'machine_tank_id');
+}
 }

@@ -63,4 +63,8 @@ class Machine extends Model
 {
     return $this->hasMany(Printer::class, 'machine_id');
 }
+public function refills()
+{
+    return $this->hasMany(Refill::class, 'machine_id');
+}
 }
