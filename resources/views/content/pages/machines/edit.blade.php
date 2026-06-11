@@ -19,7 +19,7 @@
         </div>
 
         <div class="card-body">
-          <form action="{{ route('content.pages.machines.update', $machine) }}" method="POST">
+          <form action="{{ route('machines.update', $machine) }}" method="POST">
             @method('PUT')
             @include('content.pages.machines._form')
           </form>
