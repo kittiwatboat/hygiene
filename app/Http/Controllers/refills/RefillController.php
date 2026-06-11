@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\refills;
 
+use App\Http\Controllers\Controller;
 use App\Models\Machine;
 use App\Models\MachineTank;
 use App\Models\Refill;
@@ -48,7 +49,7 @@ class RefillController extends Controller
 
         $machines = Machine::orderBy('code')->get();
 
-        return view('refills.index', compact('refills', 'machines'));
+        return view('content.pages.refill.index', compact('refills', 'machines'));
     }
 
     public function create(Request $request)
@@ -68,7 +69,7 @@ class RefillController extends Controller
             ->orderBy('tank_no')
             ->get();
 
-        return view('refills.create', compact('machines', 'tanks', 'selectedMachineId'));
+        return view('content.pages.refill.create', compact('machines', 'tanks', 'selectedMachineId'));
     }
 
     public function store(Request $request)
@@ -137,7 +138,7 @@ class RefillController extends Controller
             'refillBy',
         ]);
 
-        return view('refills.show', compact('refill'));
+        return view('content.pages.refill.show', compact('refill'));
     }
 
     public function destroy(Refill $refill)
