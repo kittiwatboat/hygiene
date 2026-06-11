@@ -89,4 +89,8 @@ public function refills()
 {
     return $this->hasMany(Refill::class, 'machine_tank_id');
 }
+public function sales()
+{
+    return $this->hasMany(Sale::class, 'machine_tank_id');
+}
 }

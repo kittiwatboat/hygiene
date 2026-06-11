@@ -180,10 +180,13 @@ Route::prefix('maintenances')->name('maintenances.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+
 Route::prefix('sales')->name('sales.')->group(function () {
     Route::get('/', [SaleController::class, 'index'])->name('index');
-    Route::get('/transactions', [SaleController::class, 'transactions'])->name('transactions');
+    Route::get('/create', [SaleController::class, 'create'])->name('create');
+    Route::post('/', [SaleController::class, 'store'])->name('store');
     Route::get('/{sale}', [SaleController::class, 'show'])->name('show');
+    Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('destroy');
 });
 
 /*

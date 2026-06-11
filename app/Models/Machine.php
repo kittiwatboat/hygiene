@@ -71,4 +71,8 @@ public function maintenances()
 {
     return $this->hasMany(Maintenance::class, 'machine_id');
 }
+public function sales()
+{
+    return $this->hasMany(Sale::class, 'machine_id');
+}
 }
