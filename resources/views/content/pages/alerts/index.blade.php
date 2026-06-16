@@ -186,7 +186,7 @@
 
             <div class="flex-grow-1">
               <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                <h6 class="mb-0">{{ $alert['title'] }}</h6>
+                <h6 class="mb-0">{{ $alert->title }}</h6>
 
                 @if ($alert['level'] === 'urgent')
                   <span class="badge bg-label-danger">ด่วนมาก</span>

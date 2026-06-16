@@ -213,6 +213,7 @@ Route::prefix('reports')->name('reports.')->group(function () {
 
 Route::prefix('alerts')->name('alerts.')->group(function () {
     Route::get('/', [AlertController::class, 'index'])->name('index');
+    Route::get('/{systemAlert}', [AlertController::class, 'show'])->name('show');
 });
 /*
 |--------------------------------------------------------------------------

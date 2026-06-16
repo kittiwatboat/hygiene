@@ -9,65 +9,50 @@ use App\Models\Maintenance;
 use App\Models\Printer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Models\SystemAlert;
 
 class AlertController extends Controller
 {
     public function index(Request $request)
-    {
-        $alerts = collect();
+{
+    $query = SystemAlert::query()
+        ->where('status', 'open')
+        ->latest('updated_at');
 
-        $this->appendStockAlerts($alerts);
-        $this->appendMachineAlerts($alerts);
-        $this->appendPrinterAlerts($alerts);
-        $this->appendMaintenanceAlerts($alerts);
+    if ($request->filled('keyword')) {
+        $keyword = $request->keyword;
 
-        $alerts = $alerts
-            ->sortByDesc(function ($alert) {
-                return [
-                    'urgent' => 4,
-                    'danger' => 3,
-                    'warning' => 2,
-                    'info' => 1,
-                ][$alert['level']] ?? 0;
-            })
-            ->values();
-
-        if ($request->filled('type')) {
-            $alerts = $alerts
-                ->where('type', $request->type)
-                ->values();
-        }
-
-        if ($request->filled('level')) {
-            $alerts = $alerts
-                ->where('level', $request->level)
-                ->values();
-        }
-
-        if ($request->filled('keyword')) {
-            $keyword = mb_strtolower(trim($request->keyword));
-
-            $alerts = $alerts->filter(function ($alert) use ($keyword) {
-                $searchText = mb_strtolower(
-                    ($alert['title'] ?? '') . ' ' .
-                    ($alert['description'] ?? '') . ' ' .
-                    ($alert['machine_code'] ?? '') . ' ' .
-                    ($alert['location'] ?? '')
-                );
-
-                return str_contains($searchText, $keyword);
-            })->values();
-        }
-
-        $summary = [
-            'total' => $alerts->count(),
-            'urgent' => $alerts->where('level', 'urgent')->count(),
-            'danger' => $alerts->where('level', 'danger')->count(),
-            'warning' => $alerts->where('level', 'warning')->count(),
-        ];
-
-        return view('content.pages.alerts.index', compact('alerts', 'summary'));
+        $query->where(function ($q) use ($keyword) {
+            $q->where('title', 'like', "%{$keyword}%")
+                ->orWhere('message', 'like', "%{$keyword}%");
+        });
     }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('level')) {
+        $query->where('level', $request->level);
+    }
+
+    $alerts = $query->get();
+
+    $summary = [
+        'total' => SystemAlert::where('status', 'open')->count(),
+        'urgent' => SystemAlert::where('status', 'open')
+            ->where('level', 'urgent')
+            ->count(),
+        'danger' => SystemAlert::where('status', 'open')
+            ->where('level', 'danger')
+            ->count(),
+        'warning' => SystemAlert::where('status', 'open')
+            ->where('level', 'warning')
+            ->count(),
+    ];
+
+    return view('alerts.index', compact('alerts', 'summary'));
+}
 
     private function appendStockAlerts(Collection $alerts): void
     {
@@ -243,4 +228,18 @@ class AlertController extends Controller
             ]);
         }
     }
+    public function show(SystemAlert $systemAlert)
+{
+    if (!$systemAlert->read_at) {
+        $systemAlert->update([
+            'read_at' => now(),
+        ]);
+    }
+
+    if ($systemAlert->url) {
+        return redirect($systemAlert->url);
+    }
+
+    return redirect()->route('alerts.index');
+}
 }
