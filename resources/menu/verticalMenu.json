@@ -2,18 +2,22 @@
   "menu": [
     {
       "url": "/",
-      "name": "Dashboard",
-      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "name": "ภาพรวม",
+      "icon": "menu-icon icon-base ti tabler-layout-dashboard",
       "slug": "dashboard"
     },
+
     {
-      "name": "ข้อมูลหลัก",
-      "icon": "menu-icon icon-base ti tabler-database",
-      "slug": "master-data",
+      "menuHeader": "จัดการข้อมูล"
+    },
+    {
+      "name": "ตู้และอุปกรณ์",
+      "icon": "menu-icon icon-base ti tabler-device-desktop-cog",
+      "slug": "equipment",
       "submenu": [
         {
           "url": "/machines",
-          "name": "จัดการตู้",
+          "name": "ตู้กดน้ำยา",
           "icon": "menu-icon icon-base ti tabler-wash-machine",
           "slug": "machines"
         },
@@ -37,9 +41,13 @@
         }
       ]
     },
+
     {
-      "name": "การทำงาน",
-      "icon": "menu-icon icon-base ti tabler-adjustments",
+      "menuHeader": "การทำงาน"
+    },
+    {
+      "name": "งานประจำวัน",
+      "icon": "menu-icon icon-base ti tabler-clipboard-check",
       "slug": "operations",
       "submenu": [
         {
@@ -55,55 +63,73 @@
           "slug": "refills"
         },
         {
-          "url": "/maintenances",
-          "name": "ซ่อมบำรุง",
-          "icon": "menu-icon icon-base ti tabler-tools",
-          "slug": "maintenances"
-        },
-        {
           "url": "/sales",
           "name": "รายการขาย",
           "icon": "menu-icon icon-base ti tabler-receipt",
           "slug": "sales"
-        }
-      ]
-    },
-    {
-      "name": "แจ้งเตือน",
-      "icon": "menu-icon icon-base ti tabler-bell-ringing",
-      "slug": "alerts-group",
-      "submenu": [
-        {
-          "url": "/alerts",
-          "name": "รายการแจ้งเตือน",
-          "icon": "menu-icon icon-base ti tabler-alert-triangle",
-          "slug": "alerts"
         },
         {
-          "url": "/alert-settings",
-          "name": "ตั้งค่าแจ้งเตือน",
-          "icon": "menu-icon icon-base ti tabler-bell-cog",
-          "slug": "alert-settings"
+          "url": "/maintenances",
+          "name": "ซ่อมบำรุง",
+          "icon": "menu-icon icon-base ti tabler-tools",
+          "slug": "maintenances"
         }
       ]
     },
+
     {
-      "url": "/reports",
-      "name": "รายงาน",
-      "icon": "menu-icon icon-base ti tabler-chart-bar",
-      "slug": "reports"
+      "name": "แจ้งเตือน",
+      "icon": "menu-icon icon-base ti tabler-bell",
+      "slug": "alerts",
+      "submenu": [
+        {
+          "url": "/stock?stock_status=low",
+          "name": "น้ำยาใกล้หมด",
+          "icon": "menu-icon icon-base ti tabler-droplet-exclamation",
+          "slug": "alerts-stock"
+        },
+        {
+          "url": "/machines?status=offline",
+          "name": "ตู้ออฟไลน์",
+          "icon": "menu-icon icon-base ti tabler-plug-connected-x",
+          "slug": "alerts-machines"
+        },
+        {
+          "url": "/printers?status=error",
+          "name": "เครื่องปริ้นมีปัญหา",
+          "icon": "menu-icon icon-base ti tabler-printer-off",
+          "slug": "alerts-printers"
+        },
+        {
+          "url": "/maintenances?status=reported",
+          "name": "งานซ่อมรอดำเนินการ",
+          "icon": "menu-icon icon-base ti tabler-tool",
+          "slug": "alerts-maintenance"
+        }
+      ]
+    },
+
+    {
+      "menuHeader": "ตั้งค่าระบบ"
     },
     {
-      "url": "/users",
-      "name": "ผู้ใช้งาน",
-      "icon": "menu-icon icon-base ti tabler-users",
-      "slug": "users"
-    },
-    {
-      "url": "/settings",
-      "name": "ตั้งค่าระบบ",
+      "name": "จัดการระบบ",
       "icon": "menu-icon icon-base ti tabler-settings",
-      "slug": "settings"
+      "slug": "system-management",
+      "submenu": [
+        {
+          "url": "/users",
+          "name": "ผู้ใช้งาน",
+          "icon": "menu-icon icon-base ti tabler-users",
+          "slug": "users"
+        },
+        {
+          "url": "/settings",
+          "name": "ตั้งค่าระบบ",
+          "icon": "menu-icon icon-base ti tabler-adjustments",
+          "slug": "settings"
+        }
+      ]
     }
   ]
 }
