@@ -217,78 +217,52 @@
                     @endif
                   </td>
 
-                  <td>
-                    <div class="tank-list">
-                      @forelse ($machine->tanks as $tank)
-                        @php
-                          $capacity = (float) ($tank->capacity_liters ?? 0);
-                          $remaining = (float) ($tank->remaining_liters ?? 0);
-                          $percent = 0;
+                 <td>
+  <div class="d-flex flex-column gap-2">
+    @forelse ($machine->tanks as $tank)
+      @php
+        $remaining = (float) $tank->remaining_liters;
+        $lowStock = (float) $tank->low_stock_liters;
+        $emptyStock = (float) $tank->empty_stock_liters;
 
-                          if ($capacity > 0) {
-                              $percent = ($remaining / $capacity) * 100;
-                              $percent = min(max($percent, 0), 100);
-                          }
+        if (!$tank->is_active) {
+            $tankStatusText = 'ปิดใช้งาน';
+            $tankStatusClass = 'bg-label-secondary';
+        } elseif (!$tank->product_id) {
+            $tankStatusText = 'ยังไม่ตั้งค่าน้ำยา';
+            $tankStatusClass = 'bg-label-secondary';
+        } elseif ($remaining <= $emptyStock) {
+            $tankStatusText = 'น้ำยาหมด';
+            $tankStatusClass = 'bg-label-danger';
+        } elseif ($remaining <= $lowStock) {
+            $tankStatusText = 'น้ำยาใกล้หมด';
+            $tankStatusClass = 'bg-label-warning';
+        } else {
+            $tankStatusText = 'ปกติ';
+            $tankStatusClass = 'bg-label-success';
+        }
+      @endphp
 
-                          $progressClass = 'bg-primary';
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        <div>
+          <span class="fw-medium">
+            ช่อง {{ $tank->tank_no }}
+          </span>
 
-                          if ($percent <= 10) {
-                              $progressClass = 'bg-danger';
-                          } elseif ($percent <= 30) {
-                              $progressClass = 'bg-warning';
-                          } elseif ($percent <= 50) {
-                              $progressClass = 'bg-info';
-                          }
-                        @endphp
+          <span class="text-muted small">
+            {{ $tank->product?->name ?: $tank->tank_name ?: 'ยังไม่ตั้งค่าน้ำยา' }}
+          </span>
+        </div>
 
-                        <div class="tank-item">
-                          <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-                            <div>
-                              <div class="tank-name">
-                                ช่อง {{ $tank->tank_no }}: {{ $tank->tank_name ?: 'ไม่ระบุชื่อช่อง' }}
-                              </div>
-                              <div class="tank-product">
-                                {{ $tank->product?->name ?: 'ยังไม่เลือกน้ำยา' }}
-                              </div>
-                            </div>
-
-                            @if ($tank->is_active)
-                              <span class="badge bg-label-success">เปิด</span>
-                            @else
-                              <span class="badge bg-label-secondary">ปิด</span>
-                            @endif
-                          </div>
-
-                          <div class="tank-stock-text">
-                            <span>
-                              {{ number_format($remaining, 2) }} / {{ number_format($capacity, 2) }} L
-                            </span>
-                            <span>
-                              {{ number_format($percent, 0) }}%
-                            </span>
-                          </div>
-
-                          <div class="progress tank-progress">
-                            <div
-                              class="progress-bar {{ $progressClass }}"
-                              role="progressbar"
-                              style="width: {{ $percent }}%;"
-                              aria-valuenow="{{ $percent }}"
-                              aria-valuemin="0"
-                              aria-valuemax="100">
-                            </div>
-                          </div>
-
-                          <div class="text-muted small mt-1">
-                            {{ number_format((float) $tank->volume_per_press_ml, 2) }} ml/ครั้ง,
-                            {{ number_format((float) $tank->price_per_press, 2) }} บาท/ครั้ง
-                          </div>
-                        </div>
-                      @empty
-                        <span class="text-muted small">ยังไม่ได้ตั้งค่าน้ำยาในตู้</span>
-                      @endforelse
-                    </div>
-                  </td>
+        <span class="badge {{ $tankStatusClass }}">
+          {{ $tankStatusText }}
+        </span>
+      </div>
+    @empty
+      <span class="text-muted">ยังไม่มีช่องน้ำยา</span>
+    @endforelse
+  </div>
+</td>
 
                   <td>
                     <span class="badge {{ $statusClass }} me-1">
