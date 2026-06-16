@@ -10,14 +10,26 @@ use Illuminate\Validation\Rule;
 
 class PrinterController extends Controller
 {
-    public function index()
-    {
-        $printers = Printer::with('machine')
-            ->latest()
-            ->get();
+    public function index(Request $request)
+{
+    $query = Printer::with('machine')->latest();
 
-        return view('content.pages.printers.index', compact('printers'));
+    if ($request->filled('status')) {
+        if ($request->status === 'error') {
+            $query->whereIn('status', [
+                'error',
+                'offline',
+                'paper_out',
+            ]);
+        } else {
+            $query->where('status', $request->status);
+        }
     }
+
+    $printers = $query->get();
+
+    return view('content.pages.printers.index', compact('printers'));
+}
 
     public function create()
     {

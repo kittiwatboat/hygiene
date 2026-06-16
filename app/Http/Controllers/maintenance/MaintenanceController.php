@@ -14,50 +14,20 @@ use Illuminate\Validation\Rule;
 class MaintenanceController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Maintenance::with([
-                'machine.location',
-                'reportedBy',
-                'assignedTo',
-            ])
-            ->latest();
+{
+    $query = Machine::with([
+        'location',
+        'tanks.product',
+    ])->latest();
 
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-
-            $query->where(function ($q) use ($keyword) {
-                $q->where('code', 'like', "%{$keyword}%")
-                    ->orWhere('problem', 'like', "%{$keyword}%")
-                    ->orWhereHas('machine', function ($machineQuery) use ($keyword) {
-                        $machineQuery->where('code', 'like', "%{$keyword}%")
-                            ->orWhere('name', 'like', "%{$keyword}%");
-                    });
-            });
-        }
-
-        if ($request->filled('machine_id')) {
-            $query->where('machine_id', $request->machine_id);
-        }
-
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('priority')) {
-            $query->where('priority', $request->priority);
-        }
-
-        $maintenances = $query->get();
-
-        $machines = Machine::orderBy('code')->get();
-
-        return view('content.pages.maintenances.index', compact('maintenances', 'machines'));
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
     }
 
+    $machines = $query->get();
+
+    return view('content.pages.machines.index', compact('machines'));
+}
     public function create()
     {
         $machines = Machine::orderBy('code')->get();

@@ -78,37 +78,11 @@
     },
 
     {
-      "name": "แจ้งเตือน",
-      "icon": "menu-icon icon-base ti tabler-bell",
-      "slug": "alerts",
-      "submenu": [
-        {
-          "url": "/stock?stock_status=low",
-          "name": "น้ำยาใกล้หมด",
-          "icon": "menu-icon icon-base ti tabler-droplet-exclamation",
-          "slug": "alerts-stock"
-        },
-        {
-          "url": "/machines?status=offline",
-          "name": "ตู้ออฟไลน์",
-          "icon": "menu-icon icon-base ti tabler-plug-connected-x",
-          "slug": "alerts-machines"
-        },
-        {
-          "url": "/printers?status=error",
-          "name": "เครื่องปริ้นมีปัญหา",
-          "icon": "menu-icon icon-base ti tabler-printer-off",
-          "slug": "alerts-printers"
-        },
-        {
-          "url": "/maintenances?status=reported",
-          "name": "งานซ่อมรอดำเนินการ",
-          "icon": "menu-icon icon-base ti tabler-tool",
-          "slug": "alerts-maintenance"
-        }
-      ]
-    },
-
+  "url": "/alerts",
+  "name": "แจ้งเตือน",
+  "icon": "menu-icon icon-base ti tabler-bell",
+  "slug": "alerts"
+},
     {
       "menuHeader": "ตั้งค่าระบบ"
     },

@@ -210,14 +210,10 @@ Route::prefix('reports')->name('reports.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+
 Route::prefix('alerts')->name('alerts.')->group(function () {
     Route::get('/', [AlertController::class, 'index'])->name('index');
-    Route::get('/offline', [AlertController::class, 'offline'])->name('offline');
-    Route::get('/low-stock', [AlertController::class, 'lowStock'])->name('low-stock');
-    Route::get('/errors', [AlertController::class, 'errors'])->name('errors');
-    Route::post('/{alert}/read', [AlertController::class, 'markAsRead'])->name('read');
 });
-
 /*
 |--------------------------------------------------------------------------
 | Users
