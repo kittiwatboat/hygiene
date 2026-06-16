@@ -165,6 +165,9 @@ class SaleController extends Controller
                 $tank->update([
                     'remaining_liters' => $afterStock,
                 ]);
+
+                app(\App\Services\SystemAlertService::class)
+                    ->syncTankStock($tank->fresh());
             }
 
             return $sale;
