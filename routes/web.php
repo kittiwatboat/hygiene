@@ -18,7 +18,7 @@ use App\Http\Controllers\locations\AddressController;
 use App\Http\Controllers\products\ProductController;
 use App\Http\Controllers\printers\PrinterController;
 use App\Http\Controllers\maintenance\MaintenanceController;
-
+use App\Http\Controllers\banners\BannerController;
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -242,7 +242,29 @@ Route::prefix('settings')->name('settings.')->group(function () {
     Route::put('/', [SettingController::class, 'update'])->name('update');
 });
 });
+/*|--------------------------------------------------------------------------
+| Banners
+|--------------------------------------------------------------------------*/
 
+Route::prefix('banners')->name('banners.')->group(function () {
+    Route::get('/', [BannerController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [BannerController::class, 'create'])
+        ->name('create');
+
+    Route::post('/', [BannerController::class, 'store'])
+        ->name('store');
+
+    Route::get('/{banner}/edit', [BannerController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/{banner}', [BannerController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/{banner}', [BannerController::class, 'destroy'])
+        ->name('destroy');
+});
 /*
 |--------------------------------------------------------------------------
 | Locale

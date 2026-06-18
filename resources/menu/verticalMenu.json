@@ -92,6 +92,12 @@
       "slug": "system-management",
       "submenu": [
         {
+          "url": "/banners",
+          "name": "จัดการแบนเนอร์",
+          "icon": "menu-icon icon-base ti tabler-photo",
+          "slug": "banners"
+        },
+        {
           "url": "/users",
           "name": "ผู้ใช้งาน",
           "icon": "menu-icon icon-base ti tabler-users",
