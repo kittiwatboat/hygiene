@@ -47,12 +47,16 @@ class ProductController extends Controller
         'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
     ]
 );
-$imagePath = null;
-if ($request->hasFile('image')) {
+        $imagePath = null;
+        if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = Str::random(20) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/img/products'), $filename);
-            $imagePath = 'assets/img/products/' . $filename;
+            $storagePath = 'upload/image/products';
+
+            // store in the public disk so it can be served via storage:link
+            Storage::disk('public')->putFileAs($storagePath, $image, $filename);
+
+            $imagePath = $storagePath . '/' . $filename; // saved path relative to storage/app/public
         }
 
         Product::create([
