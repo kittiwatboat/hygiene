@@ -14,12 +14,12 @@ class BannerController extends Controller
             ->latest()
             ->get();
 
-        return view('banners.index', compact('banners'));
+        return view('content.pages.banners.index', compact('banners'));
     }
 
     public function create()
     {
-        return view('banners.create');
+        return view('content.pages.banners.create');
     }
 
     public function store(Request $request)
@@ -76,7 +76,7 @@ class BannerController extends Controller
 
     public function edit(Banner $banner)
     {
-        return view('banners.edit', compact('banner'));
+        return view('content.pages.banners.edit', compact('banner'));
     }
 
     public function update(Request $request, Banner $banner)
