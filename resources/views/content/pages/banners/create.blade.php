@@ -15,7 +15,7 @@
       method="POST"
       enctype="multipart/form-data"
     >
-      @include('banners._form')
+      @include('content.pages.banners._form')
     </form>
   </div>
 </div>

@@ -16,7 +16,7 @@
       enctype="multipart/form-data"
     >
       @method('PUT')
-      @include('banners._form')
+      @include('content.pages.banners._form')
     </form>
   </div>
 </div>
