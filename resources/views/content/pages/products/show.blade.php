@@ -85,16 +85,7 @@
               <small class="text-muted">วันที่สร้าง</small>
               <div class="fw-medium">{{ optional($product->created_at)->format('d/m/Y H:i') ?: '-' }}</div>
             </div>
-
-            <div class="col-12">
-              <small class="text-muted">รายละเอียด</small>
-              <div class="fw-medium">{{ $product->description ?: '-' }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12">
+<div class="col-12">
   <small class="text-muted d-block mb-2">รูปสินค้า / น้ำยา</small>
 
   @if ($product->image)
@@ -114,6 +105,15 @@
     </div>
   @endif
 </div>
+            <div class="col-12">
+              <small class="text-muted">รายละเอียด</small>
+              <div class="fw-medium">{{ $product->description ?: '-' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="col-xl-4">
       <div class="card">
         <h5 class="card-header">การใช้งานในตู้</h5>
