@@ -89,10 +89,7 @@
   <small class="text-muted d-block mb-2">รูปสินค้า / น้ำยา</small>
 
   @if ($product->image)
-    <img
-  src="{{ asset('assets/img/products/' . $product->image) }}"
-  alt="{{ $product->name }}"
->
+    <img src="{{ asset('assets/img/products/' . $product->image) }}"alt="{{ $product->name }}" class="img-fluid rounded" style="max-width: 240px; max-height: 240px;">
   @else
     <div
       class="rounded bg-label-secondary d-flex flex-column align-items-center justify-content-center"
