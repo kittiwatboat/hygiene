@@ -75,63 +75,107 @@ if ($request->hasFile('image')) {
     }
 
     public function update(Request $request, Product $product)
-    {
-        $validated = $request->validate(
-            [
-                'code' => [
-                    'nullable',
-                    'string',
-                    'max:100',
-                    Rule::unique('products', 'code')->ignore($product->id),
-                ],
-                'name' => ['required', 'string', 'max:255'],
-                'type' => ['nullable', 'string', 'max:100'],
-                'unit' => ['required', 'string', 'max:50'],
-                'description' => ['nullable', 'string'],
-                'is_active' => ['nullable', 'boolean'],
-                'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-                'remove_image' => ['nullable', 'boolean'],
+{
+    $validated = $request->validate(
+        [
+            'code' => [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::unique('products', 'code')->ignore($product->id),
             ],
-            [
-                'code.unique' => 'รหัสสินค้า/น้ำยานี้ถูกใช้งานแล้ว',
-                'name.required' => 'กรุณากรอกชื่อสินค้า/น้ำยา',
-                'unit.required' => 'กรุณากรอกหน่วยนับ',
-                'image.image' => 'ไฟล์ที่เลือกต้องเป็นรูปภาพ',
-                'image.mimes' => 'รองรับเฉพาะไฟล์ JPG, JPEG, PNG และ WEBP',
-                'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
-            ]
-        );
-        dd($request->hasFile('image'), $request->file('image'));
-$imagePath = $product->image;
-if ($request->boolean('remove_image')) {
-    if ($product->image && Storage::disk('public')->exists($product->image)) {
-        Storage::disk('public')->delete($product->image);
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:100'],
+            'unit' => ['required', 'string', 'max:50'],
+            'description' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
+            'image' => [
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+            'remove_image' => ['nullable', 'boolean'],
+        ],
+        [
+            'code.unique' => 'รหัสสินค้า/น้ำยานี้ถูกใช้งานแล้ว',
+            'name.required' => 'กรุณากรอกชื่อสินค้า/น้ำยา',
+            'unit.required' => 'กรุณากรอกหน่วยนับ',
+            'image.image' => 'ไฟล์ที่เลือกต้องเป็นรูปภาพ',
+            'image.mimes' => 'รองรับเฉพาะไฟล์ JPG, JPEG, PNG และ WEBP',
+            'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
+        ]
+    );
+
+    $imagePath = $product->image;
+
+    /*
+    |--------------------------------------------------------------------------
+    | ลบรูปเดิม
+    |--------------------------------------------------------------------------
+    */
+    if ($request->boolean('remove_image')) {
+        if (
+            $product->image &&
+            Storage::disk('public')->exists($product->image)
+        ) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $imagePath = null;
     }
 
-    $imagePath = null;
+    /*
+    |--------------------------------------------------------------------------
+    | อัปโหลดรูปใหม่
+    |--------------------------------------------------------------------------
+    */
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+
+        if (!$image->isValid()) {
+            return back()
+                ->withErrors([
+                    'image' => 'อัปโหลดรูปภาพไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
+                ])
+                ->withInput();
+        }
+
+        $newImagePath = $image->store('products', 'public');
+
+        if (!$newImagePath) {
+            return back()
+                ->withErrors([
+                    'image' => 'ไม่สามารถบันทึกรูปภาพได้',
+                ])
+                ->withInput();
+        }
+
+        if (
+            $product->image &&
+            Storage::disk('public')->exists($product->image)
+        ) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $imagePath = $newImagePath;
+    }
+
+    $product->update([
+        'code' => $validated['code'] ?? null,
+        'name' => $validated['name'],
+        'type' => $validated['type'] ?? null,
+        'unit' => $validated['unit'],
+        'description' => $validated['description'] ?? null,
+        'is_active' => $request->boolean('is_active'),
+        'image' => $imagePath,
+    ]);
+
+    return redirect()
+        ->route('products.index')
+        ->with('success', 'แก้ไขสินค้า/น้ำยาสำเร็จ');
 }
-
-if ($request->hasFile('image')) {
-    if ($product->image && Storage::disk('public')->exists($product->image)) {
-        Storage::disk('public')->delete($product->image);
-    }
-
-    $imagePath = $request->file('image')->store('products', 'public');
-}
-        $product->update([
-            'code' => $request->code,
-            'name' => $request->name,
-            'type' => $request->type,
-            'unit' => $request->unit,
-            'description' => $request->description,
-            'is_active' => $request->boolean('is_active'),
-            'image' => $imagePath,
-        ]);
-
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'แก้ไขสินค้า/น้ำยาสำเร็จ');
-    }
 
     public function destroy(Product $product)
     {
