@@ -28,7 +28,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
       try {
-        dd($request->all());
+        // dd($request->all());
         $validated = $request->validate(
     [
         'code' => ['nullable', 'string', 'max:100', 'unique:products,code'],
