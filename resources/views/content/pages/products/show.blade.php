@@ -92,8 +92,6 @@
     <img
   src="{{ asset('assets/img/products/' . $product->image) }}"
   alt="{{ $product->name }}"
-  class="rounded border"
-  style="width: 56px; height: 56px; object-fit: cover;"
 >
   @else
     <div

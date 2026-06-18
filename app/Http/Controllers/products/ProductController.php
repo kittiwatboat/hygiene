@@ -47,17 +47,23 @@ class ProductController extends Controller
         'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
     ]
 );
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = Str::random(20) . '.' . $image->getClientOriginalExtension();
-            $storagePath = 'upload/image/products';
+       $imagePath = null;
 
-            // store in the public disk so it can be served via storage:link
-            Storage::disk('public')->putFileAs($storagePath, $image, $filename);
+if ($request->hasFile('image')) {
+    $image = $request->file('image');
 
-            $imagePath = $storagePath . '/' . $filename; // saved path relative to storage/app/public
-        }
+    $fileName = uniqid() . '.' . strtolower($image->getClientOriginalExtension());
+
+    $uploadPath = base_path('../public_html/assets/img/products');
+
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
+    }
+
+    $image->move($uploadPath, $fileName);
+
+    $imagePath = $fileName;
+}
 
         Product::create([
     'code' => $request->code,
@@ -134,85 +140,53 @@ catch (\Exception $e) {
         ]
     );
 return $
-    $imagePath = $product->image;
+   $imagePath = $product->image;
 
-    /*
-    |--------------------------------------------------------------------------
-    | ลบรูปโดยไม่ได้อัปโหลดรูปใหม่
-    |--------------------------------------------------------------------------
-    */
-    if ($request->boolean('remove_image') && !$request->hasFile('image')) {
-        if (
-            !empty($product->image) &&
-            Storage::disk('public')->exists($product->image)
-        ) {
-            Storage::disk('public')->delete($product->image);
-        }
+if ($request->boolean('remove_image') && !$request->hasFile('image')) {
+    $oldImagePath = base_path(
+        '../public_html/assets/img/products/' . $product->image
+    );
 
-        $imagePath = null;
+    if ($product->image && file_exists($oldImagePath)) {
+        unlink($oldImagePath);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | อัปโหลดรูปใหม่
-    |--------------------------------------------------------------------------
-    */
-    if ($request->hasFile('image')) {
-        $imageUpload = $request->file('image');
-        $customPath = 'upload/image/products';
+    $imagePath = null;
+}
 
-        $functionUpload = FunctionControl::upload_image(
-            $imageUpload,
-            $customPath
-        );
+if ($request->hasFile('image')) {
+    $image = $request->file('image');
 
-        if (
-            !$functionUpload ||
-            !isset($functionUpload['status']) ||
-            (int) $functionUpload['status'] !== 200
-        ) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'image' => $functionUpload['text']
-                        ?? $functionUpload['title']
-                        ?? 'ไม่สามารถอัปโหลดรูปภาพได้',
-                ]);
-        }
+    $fileName = uniqid() . '.' . strtolower($image->getClientOriginalExtension());
 
-        $newImagePath = $functionUpload['path'] ?? null;
+    $uploadPath = base_path('../public_html/assets/img/products');
 
-        if (empty($newImagePath)) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'image' => 'อัปโหลดรูปสำเร็จแต่ไม่พบตำแหน่งไฟล์',
-                ]);
-        }
-
-        /*
-        | ลบรูปเดิมหลังจากอัปโหลดรูปใหม่สำเร็จแล้ว
-        */
-        if (
-            !empty($product->image) &&
-            Storage::disk('public')->exists($product->image)
-        ) {
-            Storage::disk('public')->delete($product->image);
-        }
-
-        $imagePath = $newImagePath;
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
     }
 
-    $product->update([
-        'code' => $validated['code'] ?? null,
-        'name' => $validated['name'],
-        'type' => $validated['type'] ?? null,
-        'unit' => $validated['unit'],
-        'description' => $validated['description'] ?? null,
-        'is_active' => $request->boolean('is_active'),
-        'image' => $imagePath,
-    ]);
+    $image->move($uploadPath, $fileName);
 
+    $oldImagePath = base_path(
+        '../public_html/assets/img/products/' . $product->image
+    );
+
+    if ($product->image && file_exists($oldImagePath)) {
+        unlink($oldImagePath);
+    }
+
+    $imagePath = $fileName;
+}
+
+   $product->update([
+    'code' => $request->code,
+    'name' => $request->name,
+    'type' => $request->type,
+    'unit' => $request->unit,
+    'description' => $request->description,
+    'image' => $imagePath,
+    'is_active' => $request->boolean('is_active'),
+]);
     return redirect()
         ->route('products.index')
         ->with('success', 'แก้ไขสินค้า/น้ำยาสำเร็จ');
