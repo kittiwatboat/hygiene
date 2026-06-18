@@ -9,7 +9,7 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
-            <h5 class="mb-1">แก้ไขสินค้า / น้ำยา</h5>
+            <h5 class="mb-1">แก้ไขสินค้า / น้ำยา ฟฟ</h5>
             <p class="text-muted mb-0">{{ $product->code }} - {{ $product->name }}</p>
           </div>
 
