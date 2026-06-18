@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\FunctionControl;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+
 
 class ProductController extends Controller
 {
@@ -43,11 +45,13 @@ class ProductController extends Controller
         'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
     ]
 );
-$imagePath = null;
-
 if ($request->hasFile('image')) {
-    $imagePath = $request->file('image')->store('products', 'public');
-}
+            $image = $request->file('image');
+            $filename = Str::random(20) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('assets/img/products'), $filename);
+            $imagePath = 'assets/img/products/' . $filename;
+        }
+
         Product::create([
     'code' => $request->code,
     'name' => $request->name,
@@ -111,7 +115,7 @@ if ($request->hasFile('image')) {
             'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
         ]
     );
-
+return $
     $imagePath = $product->image;
 
     /*
