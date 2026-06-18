@@ -122,7 +122,7 @@ public function update(Request $request, Product $product)
     ]);
 
     // กรณีไม่อัปโหลดใหม่ ให้ใช้รูปเดิม
-    $uploadPath = base_path('../public_html/assets/img/products');
+    $uploadPathฟ = base_path('../public_html/assets/img/products');
 
     /*
     | ลบรูปเดิม โดยไม่มีการอัปโหลดรูปใหม่
