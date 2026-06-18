@@ -20,7 +20,11 @@
         </div>
 
         <div class="card-body">
-          <form action="{{ route('products.store') }}" method="POST">
+         <form
+  action="{{ route('products.store') }}"
+  method="POST"
+  enctype="multipart/form-data"
+>
             @include('content.pages.products._form')
           </form>
         </div>

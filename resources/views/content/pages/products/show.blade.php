@@ -94,7 +94,26 @@
         </div>
       </div>
     </div>
+    <div class="col-12">
+  <small class="text-muted d-block mb-2">รูปสินค้า / น้ำยา</small>
 
+  @if ($product->image)
+    <img
+      src="{{ asset('storage/' . $product->image) }}"
+      alt="{{ $product->name }}"
+      class="rounded border"
+      style="width: 240px; height: 240px; object-fit: cover;"
+    >
+  @else
+    <div
+      class="rounded bg-label-secondary d-flex flex-column align-items-center justify-content-center"
+      style="width: 240px; height: 240px;"
+    >
+      <i class="icon-base ti tabler-photo-off mb-2" style="font-size: 38px;"></i>
+      <span class="text-muted">ยังไม่มีรูปสินค้า</span>
+    </div>
+  @endif
+</div>
     <div class="col-xl-4">
       <div class="card">
         <h5 class="card-header">การใช้งานในตู้</h5>

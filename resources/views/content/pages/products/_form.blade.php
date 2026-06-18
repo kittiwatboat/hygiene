@@ -109,7 +109,64 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
+<div class="col-12">
+  <label class="form-label">รูปสินค้า / น้ำยา</label>
 
+  <input
+    type="file"
+    name="image"
+    id="productImageInput"
+    class="form-control @error('image') is-invalid @enderror"
+    accept="image/jpeg,image/png,image/webp"
+  >
+
+  @error('image')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+
+  <div class="form-text">
+    รองรับ JPG, JPEG, PNG และ WEBP ขนาดไม่เกิน 5 MB
+  </div>
+</div>
+
+<div class="col-12">
+  <div
+    id="productImagePreviewWrapper"
+    class="{{ isset($product) && $product->image ? '' : 'd-none' }}"
+  >
+    <label class="form-label">ตัวอย่างรูป</label>
+
+    <div class="border rounded p-3" style="max-width: 260px;">
+      <img
+        id="productImagePreview"
+        src="{{ isset($product) && $product->image ? asset('storage/' . $product->image) : '' }}"
+        alt="Product image"
+        class="img-fluid rounded"
+        style="width: 100%; height: 180px; object-fit: cover;"
+      >
+    </div>
+  </div>
+</div>
+
+@if (isset($product) && $product->image)
+  <div class="col-12">
+    <div class="form-check">
+      <input type="hidden" name="remove_image" value="0">
+
+      <input
+        type="checkbox"
+        name="remove_image"
+        value="1"
+        class="form-check-input"
+        id="remove_image"
+      >
+
+      <label class="form-check-label text-danger" for="remove_image">
+        ลบรูปปัจจุบัน
+      </label>
+    </div>
+  </div>
+@endif
   <div class="col-12">
     <div class="form-check form-switch">
       <input type="hidden" name="is_active" value="0">
@@ -141,3 +198,33 @@
   </div>
 
 </div>
+@push('page-script')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const imageInput = document.getElementById('productImageInput');
+    const previewWrapper = document.getElementById('productImagePreviewWrapper');
+    const previewImage = document.getElementById('productImagePreview');
+
+    if (!imageInput) {
+      return;
+    }
+
+    imageInput.addEventListener('change', function () {
+      const file = this.files && this.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        previewImage.src = event.target.result;
+        previewWrapper.classList.remove('d-none');
+      };
+
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+@endpush

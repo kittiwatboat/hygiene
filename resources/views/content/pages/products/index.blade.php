@@ -103,6 +103,7 @@
               <tr>
                 <th style="width: 70px;">#</th>
                 <th>รหัส</th>
+                <th style="width: 90px;">รูป</th>
                 <th>ชื่อสินค้า / น้ำยา</th>
                 <th>ประเภท</th>
                 <th>หน่วย</th>
@@ -139,7 +140,23 @@
                     <span class="fw-medium">{{ $product->code ?: '-' }}</span>
 
                   </td>
-
+<td>
+  @if ($product->image)
+    <img
+      src="{{ asset('storage/' . $product->image) }}"
+      alt="{{ $product->name }}"
+      class="rounded border"
+      style="width: 56px; height: 56px; object-fit: cover;"
+    >
+  @else
+    <div
+      class="rounded bg-label-secondary d-flex align-items-center justify-content-center"
+      style="width: 56px; height: 56px;"
+    >
+      <i class="icon-base ti tabler-photo-off"></i>
+    </div>
+  @endif
+</td>
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="avatar avatar-sm me-3">
