@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Products;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Helpers\FunctionControl;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -74,7 +75,7 @@ if ($request->hasFile('image')) {
         return view('content.pages.products.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product)
+   public function update(Request $request, Product $product)
 {
     $validated = $request->validate(
         [
@@ -89,19 +90,21 @@ if ($request->hasFile('image')) {
             'unit' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+
             'image' => [
                 'nullable',
-                'file',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
             ],
+
             'remove_image' => ['nullable', 'boolean'],
         ],
         [
             'code.unique' => 'รหัสสินค้า/น้ำยานี้ถูกใช้งานแล้ว',
             'name.required' => 'กรุณากรอกชื่อสินค้า/น้ำยา',
             'unit.required' => 'กรุณากรอกหน่วยนับ',
+
             'image.image' => 'ไฟล์ที่เลือกต้องเป็นรูปภาพ',
             'image.mimes' => 'รองรับเฉพาะไฟล์ JPG, JPEG, PNG และ WEBP',
             'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
@@ -112,12 +115,12 @@ if ($request->hasFile('image')) {
 
     /*
     |--------------------------------------------------------------------------
-    | ลบรูปเดิม
+    | ลบรูปโดยไม่ได้อัปโหลดรูปใหม่
     |--------------------------------------------------------------------------
     */
-    if ($request->boolean('remove_image')) {
+    if ($request->boolean('remove_image') && !$request->hasFile('image')) {
         if (
-            $product->image &&
+            !empty($product->image) &&
             Storage::disk('public')->exists($product->image)
         ) {
             Storage::disk('public')->delete($product->image);
@@ -132,28 +135,43 @@ if ($request->hasFile('image')) {
     |--------------------------------------------------------------------------
     */
     if ($request->hasFile('image')) {
-        $image = $request->file('image');
+        $imageUpload = $request->file('image');
+        $customPath = 'upload/image/products';
 
-        if (!$image->isValid()) {
-            return back()
-                ->withErrors([
-                    'image' => 'อัปโหลดรูปภาพไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
-                ])
-                ->withInput();
-        }
-
-        $newImagePath = $image->store('products', 'public');
-
-        if (!$newImagePath) {
-            return back()
-                ->withErrors([
-                    'image' => 'ไม่สามารถบันทึกรูปภาพได้',
-                ])
-                ->withInput();
-        }
+        $functionUpload = FunctionControl::upload_image(
+            $imageUpload,
+            $customPath
+        );
 
         if (
-            $product->image &&
+            !$functionUpload ||
+            !isset($functionUpload['status']) ||
+            (int) $functionUpload['status'] !== 200
+        ) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'image' => $functionUpload['text']
+                        ?? $functionUpload['title']
+                        ?? 'ไม่สามารถอัปโหลดรูปภาพได้',
+                ]);
+        }
+
+        $newImagePath = $functionUpload['path'] ?? null;
+
+        if (empty($newImagePath)) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'image' => 'อัปโหลดรูปสำเร็จแต่ไม่พบตำแหน่งไฟล์',
+                ]);
+        }
+
+        /*
+        | ลบรูปเดิมหลังจากอัปโหลดรูปใหม่สำเร็จแล้ว
+        */
+        if (
+            !empty($product->image) &&
             Storage::disk('public')->exists($product->image)
         ) {
             Storage::disk('public')->delete($product->image);
