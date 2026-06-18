@@ -101,8 +101,8 @@ if ($request->hasFile('image')) {
                 'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
             ]
         );
+        dd($request->hasFile('image'), $request->file('image'));
 $imagePath = $product->image;
-dd($request->all());
 if ($request->boolean('remove_image')) {
     if ($product->image && Storage::disk('public')->exists($product->image)) {
         Storage::disk('public')->delete($product->image);
