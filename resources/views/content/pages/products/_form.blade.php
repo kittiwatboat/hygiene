@@ -172,16 +172,14 @@
       <input type="hidden" name="is_active" value="0">
 
       <input
-  type="file"
-  name="image"
-  id="productImageInput"
-  class="form-control @error('image') is-invalid @enderror"
-  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
->
+        type="checkbox"
+        name="is_active"
+        value="1"
+        class="form-check-input"
+        id="is_active"
+        {{ old('is_active', isset($product) ? (int) $product->is_active : 1) ? 'checked' : '' }}
+      >
 
-@error('image')
-  <div class="invalid-feedback">{{ $message }}</div>
-@enderror
       <label class="form-check-label" for="is_active">
         เปิดใช้งานสินค้า/น้ำยานี้
       </label>
