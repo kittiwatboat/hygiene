@@ -51,7 +51,7 @@ class AlertController extends Controller
             ->count(),
     ];
 
-    return view('alerts.index', compact('alerts', 'summary'));
+    return view('content.pages.alerts.index', compact('alerts', 'summary'));
 }
 
     private function appendStockAlerts(Collection $alerts): void
