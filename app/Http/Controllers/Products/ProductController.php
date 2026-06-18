@@ -27,6 +27,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+      try {
         $validated = $request->validate(
     [
         'code' => ['nullable', 'string', 'max:100', 'unique:products,code'],
@@ -45,6 +46,7 @@ class ProductController extends Controller
         'image.max' => 'ขนาดรูปต้องไม่เกิน 5 MB',
     ]
 );
+$imagePath = null;
 if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = Str::random(20) . '.' . $image->getClientOriginalExtension();
@@ -65,6 +67,17 @@ if ($request->hasFile('image')) {
         return redirect()
             ->route('products.index')
             ->with('success', 'เพิ่มสินค้า/น้ำยาสำเร็จ');
+    }
+catch (\Illuminate\Validation\ValidationException $e) {
+        return back()
+            ->withInput()
+            ->withErrors($e->validator->errors());
+    }
+catch (\Exception $e) {
+        return back()
+            ->withInput()
+            ->withErrors(['error' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
+    }
     }
 
     public function show(Product $product)
