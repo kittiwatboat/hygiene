@@ -106,6 +106,7 @@
     accept="image/jpeg,image/jpg,image/png,image/webp"
   >
 
+
   @error('image')
     <div class="invalid-feedback">{{ $message }}</div>
   @enderror

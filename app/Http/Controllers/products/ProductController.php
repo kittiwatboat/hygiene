@@ -122,8 +122,6 @@ public function update(Request $request, Product $product)
     ]);
 
     // กรณีไม่อัปโหลดใหม่ ให้ใช้รูปเดิม
-    $imagePath = $product->image;
-    dd($imagePath);
     $uploadPath = base_path('../public_html/assets/img/products');
 
     /*
