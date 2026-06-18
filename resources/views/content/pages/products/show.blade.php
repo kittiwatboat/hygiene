@@ -90,11 +90,11 @@
 
   @if ($product->image)
     <img
-      src="{{ asset('storage/' . $product->image) }}"
-      alt="{{ $product->name }}"
-      class="rounded border"
-      style="width: 240px; height: 240px; object-fit: cover;"
-    >
+  src="{{ asset('assets/img/products/' . $product->image) }}"
+  alt="{{ $product->name }}"
+  class="rounded border"
+  style="width: 56px; height: 56px; object-fit: cover;"
+>
   @else
     <div
       class="rounded bg-label-secondary d-flex flex-column align-items-center justify-content-center"
