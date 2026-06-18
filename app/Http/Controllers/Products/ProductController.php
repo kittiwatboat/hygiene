@@ -77,7 +77,7 @@ if ($request->hasFile('image')) {
 
    public function update(Request $request, Product $product)
 {
-  dd($request->all());
+  // dd($request->all());
     $validated = $request->validate(
         [
             'code' => [
