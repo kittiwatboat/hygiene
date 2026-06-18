@@ -142,7 +142,7 @@
                   </td>
 <td>
   @if ($product->image)
-       <img src="{{ asset('assets/img/products/' . $product->image) }}"alt="{{ $product->name }}" class="img-fluid rounded" style="max-width: 240px; max-height: 240px;">
+       <img src="{{ asset('assets/img/products/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid rounded" style="max-width: 120px; max-height: 120px;">
   @else
     <div
       class="rounded bg-label-secondary d-flex align-items-center justify-content-center"
