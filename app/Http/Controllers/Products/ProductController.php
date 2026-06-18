@@ -102,7 +102,7 @@ if ($request->hasFile('image')) {
             ]
         );
 $imagePath = $product->image;
-
+dd($request->all());
 if ($request->boolean('remove_image')) {
     if ($product->image && Storage::disk('public')->exists($product->image)) {
         Storage::disk('public')->delete($product->image);
