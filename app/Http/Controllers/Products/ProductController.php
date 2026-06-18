@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Products;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Helpers\FunctionControl;
+use App\Http\Controllers\FunctionControl;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
