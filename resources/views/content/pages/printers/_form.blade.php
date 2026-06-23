@@ -2,36 +2,38 @@
 
 <div class="row g-4">
 
-  <div class="col-md-8">
-    <label class="form-label">
-      ชื่อโปรโมชัน <span class="text-danger">*</span>
-    </label>
-
-    <input
-      type="text"
-      name="name"
-      value="{{ old('name', $promotion->name ?? '') }}"
-      class="form-control @error('name') is-invalid @enderror"
-      placeholder="เช่น ใช้ 500 แต้ม ลด 50 บาท"
-      required
+  <div class="col-md-6">
+    <label class="form-label">ตู้ที่เชื่อมต่อ</label>
+    <select
+      name="machine_id"
+      class="form-select @error('machine_id') is-invalid @enderror"
     >
+      <option value="">-- ยังไม่ผูกกับตู้ --</option>
 
-    @error('name')
+      @foreach ($machines as $machine)
+        <option
+          value="{{ $machine->id }}"
+          {{ (string) old('machine_id', $printer->machine_id ?? '') === (string) $machine->id ? 'selected' : '' }}
+        >
+          {{ $machine->code }} - {{ $machine->name }}
+        </option>
+      @endforeach
+    </select>
+
+    @error('machine_id')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
 
-  <div class="col-md-4">
-    <label class="form-label">รหัสโปรโมชัน</label>
-
+  <div class="col-md-6">
+    <label class="form-label">รหัสเครื่องปริ้น</label>
     <input
       type="text"
       name="code"
-      value="{{ old('code', $promotion->code ?? '') }}"
+      value="{{ old('code', $printer->code ?? '') }}"
       class="form-control @error('code') is-invalid @enderror"
-      placeholder="เช่น POINT500"
+      placeholder="เช่น PRN-001"
     >
-
     @error('code')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
@@ -39,347 +41,228 @@
 
   <div class="col-md-6">
     <label class="form-label">
-      ประเภทโปรโมชัน <span class="text-danger">*</span>
+      ชื่อเครื่องปริ้น <span class="text-danger">*</span>
+    </label>
+    <input
+      type="text"
+      name="name"
+      value="{{ old('name', $printer->name ?? '') }}"
+      class="form-control @error('name') is-invalid @enderror"
+      placeholder="เช่น เครื่องปริ้นตู้ BH-001"
+      required
+    >
+    @error('name')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Serial Number</label>
+    <input
+      type="text"
+      name="serial_number"
+      value="{{ old('serial_number', $printer->serial_number ?? '') }}"
+      class="form-control @error('serial_number') is-invalid @enderror"
+      placeholder="Serial Number"
+    >
+    @error('serial_number')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">ยี่ห้อ</label>
+    <input
+      type="text"
+      name="brand"
+      value="{{ old('brand', $printer->brand ?? '') }}"
+      class="form-control @error('brand') is-invalid @enderror"
+      placeholder="เช่น Epson, Xprinter"
+    >
+    @error('brand')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">รุ่น</label>
+    <input
+      type="text"
+      name="model"
+      value="{{ old('model', $printer->model ?? '') }}"
+      class="form-control @error('model') is-invalid @enderror"
+      placeholder="เช่น XP-Q200"
+    >
+    @error('model')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">
+      ประเภทการเชื่อมต่อ <span class="text-danger">*</span>
     </label>
 
     @php
-      $selectedType = old(
-          'promotion_type',
-          $promotion->promotion_type ?? 'earn_points'
-      );
+      $selectedConnectionType = old('connection_type', $printer->connection_type ?? 'usb');
     @endphp
 
     <select
-      name="promotion_type"
-      id="promotionType"
-      class="form-select @error('promotion_type') is-invalid @enderror"
+      name="connection_type"
+      class="form-select @error('connection_type') is-invalid @enderror"
       required
     >
-      <option value="earn_points" {{ $selectedType === 'earn_points' ? 'selected' : '' }}>
-        ซื้อสินค้าแล้วได้รับแต้ม
-      </option>
-
-      <option value="redeem_discount" {{ $selectedType === 'redeem_discount' ? 'selected' : '' }}>
-        ใช้แต้มแลกส่วนลด
-      </option>
-
-      <option value="direct_discount" {{ $selectedType === 'direct_discount' ? 'selected' : '' }}>
-        ส่วนลดทันที
-      </option>
+      <option value="usb" {{ $selectedConnectionType === 'usb' ? 'selected' : '' }}>USB</option>
+      <option value="lan" {{ $selectedConnectionType === 'lan' ? 'selected' : '' }}>LAN</option>
+      <option value="wifi" {{ $selectedConnectionType === 'wifi' ? 'selected' : '' }}>Wi-Fi</option>
+      <option value="bluetooth" {{ $selectedConnectionType === 'bluetooth' ? 'selected' : '' }}>Bluetooth</option>
     </select>
+
+    @error('connection_type')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">IP Address</label>
+    <input
+      type="text"
+      name="ip_address"
+      value="{{ old('ip_address', $printer->ip_address ?? '') }}"
+      class="form-control @error('ip_address') is-invalid @enderror"
+      placeholder="เช่น 192.168.1.50"
+    >
+    @error('ip_address')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Port</label>
+    <input
+      type="number"
+      min="0"
+      max="65535"
+      name="port"
+      value="{{ old('port', $printer->port ?? '') }}"
+      class="form-control @error('port') is-invalid @enderror"
+      placeholder="เช่น 9100"
+    >
+    @error('port')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
   </div>
 
   <div class="col-md-6">
-    <label class="form-label">ขอบเขตสินค้า</label>
+    <label class="form-label">ขนาดกระดาษ</label>
 
     @php
-      $selectedScope = old(
-          'scope',
-          $promotion->scope ?? 'all'
-      );
+      $selectedPaperSize = old('paper_size', $printer->paper_size ?? '');
     @endphp
 
     <select
-      name="scope"
-      id="promotionScope"
-      class="form-select"
+      name="paper_size"
+      class="form-select @error('paper_size') is-invalid @enderror"
     >
-      <option value="all" {{ $selectedScope === 'all' ? 'selected' : '' }}>
-        สินค้าทั้งหมด
-      </option>
-
-      <option value="product" {{ $selectedScope === 'product' ? 'selected' : '' }}>
-        เฉพาะสินค้าที่เลือก
-      </option>
+      <option value="">-- เลือกขนาดกระดาษ --</option>
+      <option value="58mm" {{ $selectedPaperSize === '58mm' ? 'selected' : '' }}>58mm</option>
+      <option value="80mm" {{ $selectedPaperSize === '80mm' ? 'selected' : '' }}>80mm</option>
+      <option value="A5" {{ $selectedPaperSize === 'A5' ? 'selected' : '' }}>A5</option>
+      <option value="A4" {{ $selectedPaperSize === 'A4' ? 'selected' : '' }}>A4</option>
     </select>
+
+    @error('paper_size')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
   </div>
 
-  <div class="col-md-6" id="productSelectWrapper">
-    <label class="form-label">สินค้าที่ร่วมรายการ</label>
+  <div class="col-md-6">
+    <label class="form-label">
+      สถานะเครื่องปริ้น <span class="text-danger">*</span>
+    </label>
+
+    @php
+      $selectedStatus = old('status', $printer->status ?? 'active');
+    @endphp
 
     <select
-      name="product_id"
-      class="form-select @error('product_id') is-invalid @enderror"
+      name="status"
+      class="form-select @error('status') is-invalid @enderror"
+      required
     >
-      <option value="">-- เลือกสินค้า --</option>
+      <option value="active" {{ $selectedStatus === 'active' ? 'selected' : '' }}>พร้อมใช้งาน</option>
+      <option value="inactive" {{ $selectedStatus === 'inactive' ? 'selected' : '' }}>ปิดใช้งาน</option>
+      <option value="offline" {{ $selectedStatus === 'offline' ? 'selected' : '' }}>ออฟไลน์</option>
+      <option value="error" {{ $selectedStatus === 'error' ? 'selected' : '' }}>มีปัญหา</option>
+      <option value="paper_out" {{ $selectedStatus === 'paper_out' ? 'selected' : '' }}>กระดาษหมด</option>
+    </select>
 
-      @foreach ($products as $product)
-        <option
-          value="{{ $product->id }}"
-          {{ (string) old('product_id', $promotion->product_id ?? '') === (string) $product->id ? 'selected' : '' }}
+    @error('status')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6 d-flex align-items-end">
+    <div class="d-flex flex-column gap-2">
+      <div class="form-check form-switch">
+        <input type="hidden" name="paper_available" value="0">
+
+        <input
+          type="checkbox"
+          name="paper_available"
+          value="1"
+          class="form-check-input"
+          id="paper_available"
+          {{ old('paper_available', isset($printer) ? (int) $printer->paper_available : 1) ? 'checked' : '' }}
         >
-          {{ $product->code }} - {{ $product->name }}
-        </option>
-      @endforeach
-    </select>
 
-    @error('product_id')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
+        <label class="form-check-label" for="paper_available">
+          มีกระดาษพร้อมใช้งาน
+        </label>
+      </div>
 
-  <div class="col-md-6 earn-points-field">
-    <label class="form-label">แต้มที่ได้รับ</label>
+      <div class="form-check form-switch">
+        <input type="hidden" name="is_active" value="0">
 
-    <input
-      type="number"
-      name="points_reward"
-      min="0"
-      value="{{ old('points_reward', $promotion->points_reward ?? 0) }}"
-      class="form-control"
-    >
-  </div>
+        <input
+          type="checkbox"
+          name="is_active"
+          value="1"
+          class="form-check-input"
+          id="is_active"
+          {{ old('is_active', isset($printer) ? (int) $printer->is_active : 1) ? 'checked' : '' }}
+        >
 
-  <div class="col-md-6 redeem-field">
-    <label class="form-label">แต้มที่ต้องใช้</label>
-
-    <input
-      type="number"
-      name="points_required"
-      min="0"
-      value="{{ old('points_required', $promotion->points_required ?? 0) }}"
-      class="form-control"
-    >
-  </div>
-
-  <div class="col-md-6 discount-field">
-    <label class="form-label">รูปแบบส่วนลด</label>
-
-    @php
-      $discountType = old(
-          'discount_type',
-          $promotion->discount_type ?? 'fixed'
-      );
-    @endphp
-
-    <select name="discount_type" class="form-select">
-      <option value="fixed" {{ $discountType === 'fixed' ? 'selected' : '' }}>
-        ลดเป็นจำนวนเงิน
-      </option>
-
-      <option value="percent" {{ $discountType === 'percent' ? 'selected' : '' }}>
-        ลดเป็นเปอร์เซ็นต์
-      </option>
-    </select>
-  </div>
-
-  <div class="col-md-6 discount-field">
-    <label class="form-label">มูลค่าส่วนลด</label>
-
-    <input
-      type="number"
-      step="0.01"
-      min="0"
-      name="discount_value"
-      value="{{ old('discount_value', $promotion->discount_value ?? 0) }}"
-      class="form-control"
-    >
-  </div>
-
-  <div class="col-md-6 discount-field">
-    <label class="form-label">ส่วนลดสูงสุด</label>
-
-    <input
-      type="number"
-      step="0.01"
-      min="0"
-      name="max_discount"
-      value="{{ old('max_discount', $promotion->max_discount ?? '') }}"
-      class="form-control"
-      placeholder="เว้นว่างหากไม่จำกัด"
-    >
-  </div>
-
-  <div class="col-md-6">
-    <label class="form-label">ยอดซื้อขั้นต่ำ</label>
-
-    <input
-      type="number"
-      step="0.01"
-      min="0"
-      name="minimum_amount"
-      value="{{ old('minimum_amount', $promotion->minimum_amount ?? 0) }}"
-      class="form-control"
-    >
-  </div>
-
-  <div class="col-md-6">
-    <label class="form-label">จำนวนสิทธิ์ทั้งหมด</label>
-
-    <input
-      type="number"
-      min="1"
-      name="usage_limit"
-      value="{{ old('usage_limit', $promotion->usage_limit ?? '') }}"
-      class="form-control"
-      placeholder="เว้นว่างหากไม่จำกัด"
-    >
-  </div>
-
-  <div class="col-md-6">
-    <label class="form-label">ลำดับแสดงผล</label>
-
-    <input
-      type="number"
-      min="0"
-      name="sort_order"
-      value="{{ old('sort_order', $promotion->sort_order ?? 0) }}"
-      class="form-control"
-    >
-  </div>
-
-  <div class="col-md-6">
-    <label class="form-label">วันเริ่มต้น</label>
-
-    <input
-      type="datetime-local"
-      name="start_at"
-      value="{{ old('start_at', isset($promotion) && $promotion->start_at ? $promotion->start_at->format('Y-m-d\TH:i') : '') }}"
-      class="form-control"
-    >
-  </div>
-
-  <div class="col-md-6">
-    <label class="form-label">วันสิ้นสุด</label>
-
-    <input
-      type="datetime-local"
-      name="end_at"
-      value="{{ old('end_at', isset($promotion) && $promotion->end_at ? $promotion->end_at->format('Y-m-d\TH:i') : '') }}"
-      class="form-control @error('end_at') is-invalid @enderror"
-    >
-
-    @error('end_at')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
-
-  <div class="col-12">
-    <label class="form-label">รูปโปรโมชัน</label>
-
-    <input
-      type="file"
-      name="image"
-      id="promotionImageInput"
-      class="form-control @error('image') is-invalid @enderror"
-      accept=".jpg,.jpeg,.png,.webp"
-    >
-
-    @error('image')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
-
-  <div class="col-12">
-    <div
-      id="promotionImageWrapper"
-      class="{{ isset($promotion) && $promotion->image ? '' : 'd-none' }}"
-    >
-      <img
-        id="promotionImagePreview"
-        src="{{ isset($promotion) && $promotion->image ? asset('assets/img/promotions/' . $promotion->image) : '' }}"
-        class="rounded border"
-        style="width:260px;height:160px;object-fit:cover;"
-        alt="Promotion"
-      >
+        <label class="form-check-label" for="is_active">
+          เปิดใช้งานเครื่องปริ้นนี้
+        </label>
+      </div>
     </div>
   </div>
 
   <div class="col-12">
-    <label class="form-label">รายละเอียดโปรโมชัน</label>
-
+    <label class="form-label">หมายเหตุ</label>
     <textarea
-      name="description"
-      rows="4"
-      class="form-control"
-    >{{ old('description', $promotion->description ?? '') }}</textarea>
-  </div>
+      name="remark"
+      rows="3"
+      class="form-control @error('remark') is-invalid @enderror"
+      placeholder="รายละเอียดเพิ่มเติม"
+    >{{ old('remark', $printer->remark ?? '') }}</textarea>
 
-  <div class="col-12">
-    <div class="form-check form-switch">
-      <input type="hidden" name="is_active" value="0">
-
-      <input
-        type="checkbox"
-        name="is_active"
-        value="1"
-        id="is_active"
-        class="form-check-input"
-        {{ old('is_active', isset($promotion) ? (int) $promotion->is_active : 1) ? 'checked' : '' }}
-      >
-
-      <label class="form-check-label" for="is_active">
-        เปิดใช้งานโปรโมชัน
-      </label>
-    </div>
+    @error('remark')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
   </div>
 
   <div class="col-12 d-flex justify-content-end gap-2">
-    <a href="{{ route('promotions.index') }}" class="btn btn-label-secondary">
+    <a href="{{ route('printers.index') }}" class="btn btn-label-secondary">
       ยกเลิก
     </a>
 
     <button type="submit" class="btn btn-primary">
+      <i class="icon-base ti tabler-device-floppy me-1"></i>
       บันทึก
     </button>
   </div>
+
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const type = document.getElementById('promotionType');
-  const scope = document.getElementById('promotionScope');
-  const productWrapper = document.getElementById('productSelectWrapper');
-
-  const earnFields = document.querySelectorAll('.earn-points-field');
-  const redeemFields = document.querySelectorAll('.redeem-field');
-  const discountFields = document.querySelectorAll('.discount-field');
-
-  function toggleFields() {
-    const value = type.value;
-
-    earnFields.forEach(el => {
-      el.classList.toggle('d-none', value !== 'earn_points');
-    });
-
-    redeemFields.forEach(el => {
-      el.classList.toggle('d-none', value !== 'redeem_discount');
-    });
-
-    discountFields.forEach(el => {
-      el.classList.toggle(
-        'd-none',
-        !['redeem_discount', 'direct_discount'].includes(value)
-      );
-    });
-  }
-
-  function toggleProduct() {
-    productWrapper.classList.toggle(
-      'd-none',
-      scope.value !== 'product'
-    );
-  }
-
-  type.addEventListener('change', toggleFields);
-  scope.addEventListener('change', toggleProduct);
-
-  toggleFields();
-  toggleProduct();
-
-  const imageInput = document.getElementById('promotionImageInput');
-  const imageWrapper = document.getElementById('promotionImageWrapper');
-  const imagePreview = document.getElementById('promotionImagePreview');
-
-  imageInput?.addEventListener('change', function () {
-    const file = this.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    imagePreview.src = URL.createObjectURL(file);
-    imageWrapper.classList.remove('d-none');
-  });
-});
-</script>
