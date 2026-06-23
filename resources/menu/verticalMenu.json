@@ -87,22 +87,30 @@
       "menuHeader": "ตั้งค่าระบบ"
     },
     {
+  "name": "การตลาดและเนื้อหา",
+  "icon": "menu-icon icon-base ti tabler-speakerphone",
+  "slug": "marketing-content",
+  "submenu": [
+    {
+      "url": "/banners",
+      "name": "แบนเนอร์",
+      "icon": "menu-icon icon-base ti tabler-photo",
+      "slug": "banners"
+    },
+    {
+      "url": "/promotions",
+      "name": "โปรโมชัน",
+      "icon": "menu-icon icon-base ti tabler-discount",
+      "slug": "promotions"
+    }
+  ]
+},
+    {
       "name": "จัดการระบบ",
       "icon": "menu-icon icon-base ti tabler-settings",
       "slug": "system-management",
       "submenu": [
-        {
-          "url": "/banners",
-          "name": "จัดการแบนเนอร์",
-          "icon": "menu-icon icon-base ti tabler-photo",
-          "slug": "banners"
-        },
-        {
-          "url": "/promotions",
-          "name": "โปรโมชั่น",
-          "icon": "menu-icon icon-base ti tabler-gift",
-          "slug": "promotions"
-        },
+
         {
           "url": "/users",
           "name": "ผู้ใช้งาน",
@@ -116,6 +124,7 @@
           "slug": "settings"
         }
       ]
-    }
+    },
+
   ]
 }
