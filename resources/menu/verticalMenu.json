@@ -98,6 +98,12 @@
           "slug": "banners"
         },
         {
+          "url": "/promotions",
+          "name": "โปรโมชั่น",
+          "icon": "menu-icon icon-base ti tabler-gift",
+          "slug": "promotions"
+        },
+        {
           "url": "/users",
           "name": "ผู้ใช้งาน",
           "icon": "menu-icon icon-base ti tabler-users",

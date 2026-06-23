@@ -19,6 +19,7 @@ use App\Http\Controllers\products\ProductController;
 use App\Http\Controllers\printers\PrinterController;
 use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
+use App\Http\Controllers\promotions\PromotionController;
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -272,3 +273,30 @@ Route::prefix('banners')->name('banners.')->group(function () {
 */
 
 Route::get('/lang/{locale}', [LanguageController::class, 'swap'])->name('lang.swap');
+
+/*
+|--------------------------------------------------------------------------
+| Promotion
+|--------------------------------------------------------------------------
+*/
+Route::prefix('promotions')
+    ->name('promotions.')
+    ->group(function () {
+        Route::get('/', [PromotionController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [PromotionController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PromotionController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{promotion}/edit', [PromotionController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{promotion}', [PromotionController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{promotion}', [PromotionController::class, 'destroy'])
+            ->name('destroy');
+    });
