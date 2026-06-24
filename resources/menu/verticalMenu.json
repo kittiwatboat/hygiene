@@ -105,6 +105,19 @@
     }
   ]
 },
+{
+  "name": "สมาชิกและแต้ม",
+  "icon": "menu-icon icon-base ti tabler-users",
+  "slug": "membership",
+  "submenu": [
+    {
+      "url": "/customers",
+      "name": "สมาชิก",
+      "icon": "menu-icon icon-base ti tabler-user",
+      "slug": "customers"
+    }
+  ]
+},
     {
       "name": "จัดการระบบ",
       "icon": "menu-icon icon-base ti tabler-settings",

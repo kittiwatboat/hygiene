@@ -20,6 +20,7 @@ use App\Http\Controllers\printers\PrinterController;
 use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
+use App\Http\Controllers\customers\CustomerController;
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -299,4 +300,41 @@ Route::prefix('promotions')
 
         Route::delete('/{promotion}', [PromotionController::class, 'destroy'])
             ->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Customers
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('customers')
+    ->name('customers.')
+    ->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [CustomerController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [CustomerController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{customer}', [CustomerController::class, 'show'])
+            ->name('show');
+
+        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{customer}', [CustomerController::class, 'update'])
+            ->name('update');
+
+        Route::post('/{customer}/adjust-points', [
+            CustomerController::class,
+            'adjustPoints',
+        ])->name('adjust-points');
+
+        Route::delete('/{customer}', [
+            CustomerController::class,
+            'destroy',
+        ])->name('destroy');
     });
