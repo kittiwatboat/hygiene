@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Customer;
+use App\Models\Promotion;
+use App\Models\PointTransaction;
 
 class Sale extends Model
 {
@@ -25,6 +29,10 @@ class Sale extends Model
         'created_by',
         'payload',
         'remark',
+        'customer_id',
+    'promotion_id',
+    'points_earned',
+    'points_used',
     ];
 
     protected $casts = [
@@ -35,6 +43,8 @@ class Sale extends Model
         'amount' => 'decimal:2',
         'sold_at' => 'datetime',
         'payload' => 'array',
+         'points_earned' => 'integer',
+    'points_used' => 'integer',
     ];
 
     public function machine()
@@ -91,4 +101,20 @@ class Sale extends Model
             default => 'bg-label-secondary',
         };
     }
+    public function customer(): BelongsTo
+{
+    return $this->belongsTo(Customer::class);
+}
+
+public function promotion(): BelongsTo
+{
+    return $this->belongsTo(Promotion::class);
+}
+
+public function pointTransactions()
+{
+    return $this->hasMany(PointTransaction::class);
+}
+
+
 }
