@@ -34,52 +34,40 @@ class KioskThemeController extends Controller
         if ($request->hasFile('logo')) {
             $logoPath = $this->uploadLogo($request->file('logo'));
         }
+        $backgroundImagePath = null;
+$backgroundVideoPath = null;
 
-        $theme = KioskTheme::create([
-            'name' => $validated['name'],
-            'slug' => $validated['slug'] ?: Str::slug($validated['name']),
+if ($request->hasFile('background_image')) {
+    $backgroundImagePath = $this->uploadThemeImage(
+        $request->file('background_image')
+    );
+}
 
-            'primary_color' => $validated['primary_color'],
-            'secondary_color' => $validated['secondary_color'],
-            'accent_color' => $validated['accent_color'],
+if ($request->hasFile('background_video')) {
+    $backgroundVideoPath = $this->uploadThemeVideo(
+        $request->file('background_video')
+    );
+}
 
-            'background_color' => $validated['background_color'],
-            'text_color' => $validated['text_color'],
-            'muted_text_color' => $validated['muted_text_color'],
+      $theme = KioskTheme::create([
+    'name' => $validated['name'],
+    'slug' => $validated['slug'] ?: Str::slug($validated['name']),
 
-            'button_background_color' => $validated['button_background_color'],
-            'button_text_color' => $validated['button_text_color'],
-            'button_border_color' => $validated['button_border_color'] ?? null,
-            'button_hover_background_color' => $validated['button_hover_background_color'] ?? null,
-            'button_hover_text_color' => $validated['button_hover_text_color'] ?? null,
+    'text_color' => $validated['text_color'],
 
-            'card_background_color' => $validated['card_background_color'],
-            'card_text_color' => $validated['card_text_color'],
-            'card_border_color' => $validated['card_border_color'] ?? null,
+    'background_type' => $validated['background_type'],
+    'background_color' => $validated['background_color'] ?? '#FFFFFF',
+    'background_image' => $backgroundImagePath,
+    'background_video' => $backgroundVideoPath,
 
-            'success_color' => $validated['success_color'],
-            'warning_color' => $validated['warning_color'],
-            'danger_color' => $validated['danger_color'],
-            'info_color' => $validated['info_color'],
+    'button_color' => $validated['button_color'],
+    'button_text_color' => $validated['button_text_color'],
+    'button_hover_border_color' => $validated['button_hover_border_color'],
 
-            'font_family' => $validated['font_family'] ?? null,
-
-            'button_radius' => $validated['button_radius'] ?? 24,
-            'card_radius' => $validated['card_radius'] ?? 28,
-            'input_radius' => $validated['input_radius'] ?? 16,
-
-            'logo' => $logoPath,
-
-            'settings_json' => [
-                'overlay_color' => $validated['overlay_color'] ?? null,
-                'shadow' => $validated['shadow'] ?? null,
-                'disabled_color' => $validated['disabled_color'] ?? null,
-            ],
-
-            'is_default' => $request->boolean('is_default'),
-            'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+    'is_default' => $request->boolean('is_default'),
+    'is_active' => $request->boolean('is_active'),
+    'remark' => $validated['remark'] ?? null,
+]);
 
         if ($theme->is_default) {
             $this->clearOtherDefaultThemes($theme);
@@ -112,52 +100,62 @@ class KioskThemeController extends Controller
             $logoPath = $newLogo;
         }
 
-        $theme->update([
-            'name' => $validated['name'],
-            'slug' => $validated['slug'] ?: Str::slug($validated['name']),
+        $backgroundImagePath = $theme->background_image;
+$backgroundVideoPath = $theme->background_video;
 
-            'primary_color' => $validated['primary_color'],
-            'secondary_color' => $validated['secondary_color'],
-            'accent_color' => $validated['accent_color'],
+if (
+    $request->boolean('remove_background_image') &&
+    !$request->hasFile('background_image')
+) {
+    $this->deleteThemeImage($theme->background_image);
+    $backgroundImagePath = null;
+}
 
-            'background_color' => $validated['background_color'],
-            'text_color' => $validated['text_color'],
-            'muted_text_color' => $validated['muted_text_color'],
+if (
+    $request->boolean('remove_background_video') &&
+    !$request->hasFile('background_video')
+) {
+    $this->deleteThemeVideo($theme->background_video);
+    $backgroundVideoPath = null;
+}
 
-            'button_background_color' => $validated['button_background_color'],
-            'button_text_color' => $validated['button_text_color'],
-            'button_border_color' => $validated['button_border_color'] ?? null,
-            'button_hover_background_color' => $validated['button_hover_background_color'] ?? null,
-            'button_hover_text_color' => $validated['button_hover_text_color'] ?? null,
+if ($request->hasFile('background_image')) {
+    $newImage = $this->uploadThemeImage(
+        $request->file('background_image')
+    );
 
-            'card_background_color' => $validated['card_background_color'],
-            'card_text_color' => $validated['card_text_color'],
-            'card_border_color' => $validated['card_border_color'] ?? null,
+    $this->deleteThemeImage($theme->background_image);
+    $backgroundImagePath = $newImage;
+}
 
-            'success_color' => $validated['success_color'],
-            'warning_color' => $validated['warning_color'],
-            'danger_color' => $validated['danger_color'],
-            'info_color' => $validated['info_color'],
+if ($request->hasFile('background_video')) {
+    $newVideo = $this->uploadThemeVideo(
+        $request->file('background_video')
+    );
 
-            'font_family' => $validated['font_family'] ?? null,
+    $this->deleteThemeVideo($theme->background_video);
+    $backgroundVideoPath = $newVideo;
+}
 
-            'button_radius' => $validated['button_radius'] ?? 24,
-            'card_radius' => $validated['card_radius'] ?? 28,
-            'input_radius' => $validated['input_radius'] ?? 16,
+$theme->update([
+    'name' => $validated['name'],
+    'slug' => $validated['slug'] ?: Str::slug($validated['name']),
 
-            'logo' => $logoPath,
+    'text_color' => $validated['text_color'],
 
-            'settings_json' => [
-                'overlay_color' => $validated['overlay_color'] ?? null,
-                'shadow' => $validated['shadow'] ?? null,
-                'disabled_color' => $validated['disabled_color'] ?? null,
-            ],
+    'background_type' => $validated['background_type'],
+    'background_color' => $validated['background_color'] ?? '#FFFFFF',
+    'background_image' => $backgroundImagePath,
+    'background_video' => $backgroundVideoPath,
 
-            'is_default' => $request->boolean('is_default'),
-            'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+    'button_color' => $validated['button_color'],
+    'button_text_color' => $validated['button_text_color'],
+    'button_hover_border_color' => $validated['button_hover_border_color'],
 
+    'is_default' => $request->boolean('is_default'),
+    'is_active' => $request->boolean('is_active'),
+    'remark' => $validated['remark'] ?? null,
+]);
         if ($theme->is_default) {
             $this->clearOtherDefaultThemes($theme);
         }
@@ -188,69 +186,132 @@ class KioskThemeController extends Controller
             ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
     }
 
-    private function validateTheme(Request $request, ?KioskTheme $theme = null): array
-    {
-        return $request->validate(
-            [
-                'name' => ['required', 'string', 'max:255'],
-                'slug' => [
-                    'nullable',
-                    'string',
-                    'max:255',
-                    Rule::unique('kiosk_themes', 'slug')->ignore($theme?->id),
-                ],
-
-                'primary_color' => ['required', 'string', 'max:50'],
-                'secondary_color' => ['required', 'string', 'max:50'],
-                'accent_color' => ['required', 'string', 'max:50'],
-
-                'background_color' => ['required', 'string', 'max:50'],
-                'text_color' => ['required', 'string', 'max:50'],
-                'muted_text_color' => ['required', 'string', 'max:50'],
-
-                'button_background_color' => ['required', 'string', 'max:50'],
-                'button_text_color' => ['required', 'string', 'max:50'],
-                'button_border_color' => ['nullable', 'string', 'max:50'],
-                'button_hover_background_color' => ['nullable', 'string', 'max:50'],
-                'button_hover_text_color' => ['nullable', 'string', 'max:50'],
-
-                'card_background_color' => ['required', 'string', 'max:50'],
-                'card_text_color' => ['required', 'string', 'max:50'],
-                'card_border_color' => ['nullable', 'string', 'max:50'],
-
-                'success_color' => ['required', 'string', 'max:50'],
-                'warning_color' => ['required', 'string', 'max:50'],
-                'danger_color' => ['required', 'string', 'max:50'],
-                'info_color' => ['required', 'string', 'max:50'],
-
-                'font_family' => ['nullable', 'string', 'max:255'],
-
-                'button_radius' => ['nullable', 'integer', 'min:0', 'max:200'],
-                'card_radius' => ['nullable', 'integer', 'min:0', 'max:200'],
-                'input_radius' => ['nullable', 'integer', 'min:0', 'max:200'],
-
-                'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
-                'remove_logo' => ['nullable', 'boolean'],
-
-                'overlay_color' => ['nullable', 'string', 'max:100'],
-                'shadow' => ['nullable', 'string', 'max:255'],
-                'disabled_color' => ['nullable', 'string', 'max:50'],
-
-                'is_default' => ['nullable', 'boolean'],
-                'is_active' => ['nullable', 'boolean'],
-                'remark' => ['nullable', 'string'],
+private function validateTheme(Request $request, ?KioskTheme $theme = null): array
+{
+    return $request->validate(
+        [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
             ],
-            [
-                'name.required' => 'กรุณากรอกชื่อธีม',
-                'primary_color.required' => 'กรุณากรอกสีหลัก',
-                'background_color.required' => 'กรุณากรอกสีพื้นหลัง',
-                'text_color.required' => 'กรุณากรอกสีตัวอักษร',
-                'logo.image' => 'ไฟล์โลโก้ต้องเป็นรูปภาพ',
-                'logo.mimes' => 'รองรับเฉพาะ JPG, JPEG, PNG, WEBP และ SVG',
-                'logo.max' => 'โลโก้ต้องมีขนาดไม่เกิน 4 MB',
-            ]
-        );
-    }
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('kiosk_themes', 'slug')->ignore($theme?->id),
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Text
+            |--------------------------------------------------------------------------
+            */
+            'text_color' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Background
+            |--------------------------------------------------------------------------
+            */
+            'background_type' => [
+                'required',
+                Rule::in(['color', 'image', 'video']),
+            ],
+            'background_color' => [
+                'nullable',
+                'string',
+                'max:50',
+                'required_if:background_type,color',
+            ],
+            'background_image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp,svg',
+                'max:5120',
+            ],
+            'background_video' => [
+                'nullable',
+                'file',
+                'mimes:mp4,webm,mov',
+                'max:51200',
+            ],
+            'remove_background_image' => [
+                'nullable',
+                'boolean',
+            ],
+            'remove_background_video' => [
+                'nullable',
+                'boolean',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Button
+            |--------------------------------------------------------------------------
+            */
+            'button_color' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+            'button_text_color' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+            'button_hover_border_color' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Status
+            |--------------------------------------------------------------------------
+            */
+            'is_default' => [
+                'nullable',
+                'boolean',
+            ],
+            'is_active' => [
+                'nullable',
+                'boolean',
+            ],
+            'remark' => [
+                'nullable',
+                'string',
+            ],
+        ],
+        [
+            'name.required' => 'กรุณากรอกชื่อธีม',
+            'slug.unique' => 'Slug นี้ถูกใช้งานแล้ว',
+
+            'text_color.required' => 'กรุณาเลือกสีตัวอักษร',
+
+            'background_type.required' => 'กรุณาเลือกประเภทพื้นหลัง',
+            'background_type.in' => 'ประเภทพื้นหลังไม่ถูกต้อง',
+            'background_color.required_if' => 'กรุณาเลือกสีพื้นหลัง',
+
+            'background_image.image' => 'ไฟล์พื้นหลังต้องเป็นรูปภาพ',
+            'background_image.mimes' => 'รูปพื้นหลังรองรับเฉพาะ JPG, JPEG, PNG, WEBP และ SVG',
+            'background_image.max' => 'รูปพื้นหลังต้องมีขนาดไม่เกิน 5 MB',
+
+            'background_video.file' => 'ไฟล์วิดีโอพื้นหลังไม่ถูกต้อง',
+            'background_video.mimes' => 'วิดีโอพื้นหลังรองรับเฉพาะ MP4, WEBM และ MOV',
+            'background_video.max' => 'วิดีโอพื้นหลังต้องมีขนาดไม่เกิน 50 MB',
+
+            'button_color.required' => 'กรุณาเลือกสีปุ่ม',
+            'button_text_color.required' => 'กรุณาเลือกสีตัวอักษรปุ่ม',
+            'button_hover_border_color.required' => 'กรุณาเลือกสีเส้นตอน Hover',
+        ]
+    );
+}
 
     private function clearOtherDefaultThemes(KioskTheme $theme): void
     {
@@ -289,4 +350,63 @@ class KioskThemeController extends Controller
             unlink($filePath);
         }
     }
+    private function uploadThemeImage($image): string
+{
+    $uploadPath = base_path('../public_html/assets/img/kiosk/themes');
+
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
+    }
+
+    $fileName = uniqid('theme_bg_', true)
+        . '.'
+        . strtolower($image->getClientOriginalExtension());
+
+    $image->move($uploadPath, $fileName);
+
+    return $fileName;
+}
+
+private function uploadThemeVideo($video): string
+{
+    $uploadPath = base_path('../public_html/assets/videos/kiosk/themes');
+
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
+    }
+
+    $fileName = uniqid('theme_bg_video_', true)
+        . '.'
+        . strtolower($video->getClientOriginalExtension());
+
+    $video->move($uploadPath, $fileName);
+
+    return $fileName;
+}
+
+private function deleteThemeImage(?string $fileName): void
+{
+    if (!$fileName) {
+        return;
+    }
+
+    $filePath = base_path('../public_html/assets/img/kiosk/themes/' . $fileName);
+
+    if (file_exists($filePath)) {
+        unlink($filePath);
+    }
+}
+
+private function deleteThemeVideo(?string $fileName): void
+{
+    if (!$fileName) {
+        return;
+    }
+
+    $filePath = base_path('../public_html/assets/videos/kiosk/themes/' . $fileName);
+
+    if (file_exists($filePath)) {
+        unlink($filePath);
+    }
+}
 }

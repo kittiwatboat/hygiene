@@ -1,9 +1,5 @@
 @csrf
 
-@php
-  $settings = old('settings_json', $theme->settings_json ?? []);
-@endphp
-
 <div class="row g-4">
 
   <div class="col-md-6">
@@ -16,7 +12,7 @@
       name="name"
       value="{{ old('name', $theme->name ?? '') }}"
       class="form-control @error('name') is-invalid @enderror"
-      placeholder="เช่น Hygiene Default"
+      placeholder="เช่น Hygiene Blue"
       required
     >
 
@@ -33,218 +29,344 @@
       name="slug"
       value="{{ old('slug', $theme->slug ?? '') }}"
       class="form-control @error('slug') is-invalid @enderror"
-      placeholder="เช่น hygiene-default"
+      placeholder="เช่น hygiene-blue"
     >
 
     @error('slug')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
-  </div>
 
-  <div class="col-12">
-    <hr>
-    <h6 class="mb-1">สีหลักของธีม</h6>
-    <p class="text-muted mb-0">กำหนดชุดสีหลักของหน้าตู้</p>
-  </div>
-
-  @php
-    $colorFields = [
-      'primary_color' => ['สีหลัก', '#00AEEF'],
-      'secondary_color' => ['สีรอง', '#FFFFFF'],
-      'accent_color' => ['สีเน้น', '#F7941D'],
-      'background_color' => ['สีพื้นหลัง', '#FFFFFF'],
-      'text_color' => ['สีตัวอักษร', '#111827'],
-      'muted_text_color' => ['สีตัวอักษรรอง', '#6B7280'],
-      'button_background_color' => ['สีพื้นหลังปุ่ม', '#00AEEF'],
-      'button_text_color' => ['สีตัวอักษรปุ่ม', '#FFFFFF'],
-      'button_border_color' => ['สีขอบปุ่ม', ''],
-      'button_hover_background_color' => ['สีปุ่มตอน Hover', ''],
-      'button_hover_text_color' => ['สีตัวอักษรปุ่มตอน Hover', ''],
-      'card_background_color' => ['สีพื้นหลังการ์ด', '#FFFFFF'],
-      'card_text_color' => ['สีตัวอักษรการ์ด', '#111827'],
-      'card_border_color' => ['สีขอบการ์ด', ''],
-      'success_color' => ['สี Success', '#22C55E'],
-      'warning_color' => ['สี Warning', '#F59E0B'],
-      'danger_color' => ['สี Danger', '#EF4444'],
-      'info_color' => ['สี Info', '#3B82F6'],
-    ];
-  @endphp
-
-  @foreach ($colorFields as $field => [$label, $default])
-    <div class="col-md-4">
-      <label class="form-label">{{ $label }}</label>
-
-      <div class="input-group">
-        <input
-          type="color"
-          value="{{ old($field, $theme->$field ?? $default ?: '#ffffff') }}"
-          class="form-control form-control-color theme-color-picker"
-          data-target="{{ $field }}"
-          style="max-width: 64px;"
-        >
-
-        <input
-          type="text"
-          name="{{ $field }}"
-          id="{{ $field }}"
-          value="{{ old($field, $theme->$field ?? $default) }}"
-          class="form-control @error($field) is-invalid @enderror"
-          placeholder="#FFFFFF"
-        >
-      </div>
-
-      @error($field)
-        <div class="text-danger small mt-1">{{ $message }}</div>
-      @enderror
+    <div class="form-text">
+      ถ้าไม่กรอก ระบบจะสร้างจากชื่อธีมให้อัตโนมัติ
     </div>
-  @endforeach
-
-  <div class="col-12">
-    <hr>
-    <h6 class="mb-1">ฟอนต์และรูปทรง</h6>
-  </div>
-
-  <div class="col-md-3">
-    <label class="form-label">Font Family</label>
-
-    <input
-      type="text"
-      name="font_family"
-      value="{{ old('font_family', $theme->font_family ?? 'Prompt') }}"
-      class="form-control"
-      placeholder="Prompt"
-    >
-  </div>
-
-  <div class="col-md-3">
-    <label class="form-label">มุมโค้งปุ่ม</label>
-
-    <input
-      type="number"
-      name="button_radius"
-      value="{{ old('button_radius', $theme->button_radius ?? 24) }}"
-      class="form-control"
-      min="0"
-    >
-  </div>
-
-  <div class="col-md-3">
-    <label class="form-label">มุมโค้งการ์ด</label>
-
-    <input
-      type="number"
-      name="card_radius"
-      value="{{ old('card_radius', $theme->card_radius ?? 28) }}"
-      class="form-control"
-      min="0"
-    >
-  </div>
-
-  <div class="col-md-3">
-    <label class="form-label">มุมโค้ง Input</label>
-
-    <input
-      type="number"
-      name="input_radius"
-      value="{{ old('input_radius', $theme->input_radius ?? 16) }}"
-      class="form-control"
-      min="0"
-    >
   </div>
 
   <div class="col-12">
-    <hr>
-    <h6 class="mb-1">โลโก้ธีม</h6>
+    <hr class="my-2">
+    <h6 class="mb-1">สีและพื้นหลัง</h6>
+    <p class="text-muted mb-0">
+      กำหนดสีตัวอักษร และเลือกพื้นหลังเป็นสี รูปภาพ หรือวิดีโอ
+    </p>
   </div>
 
-  <div class="col-md-6">
-    <label class="form-label">อัปโหลดโลโก้</label>
+  <div class="col-md-4">
+    <label class="form-label">สีตัวอักษร</label>
 
-    <input
-      type="file"
-      name="logo"
-      id="themeLogoInput"
-      class="form-control @error('logo') is-invalid @enderror"
-      accept=".jpg,.jpeg,.png,.webp,.svg"
+    <div class="input-group">
+      <input
+        type="color"
+        value="{{ old('text_color', $theme->text_color ?? '#111827') }}"
+        class="form-control form-control-color theme-color-picker"
+        data-target="text_color"
+        style="max-width: 64px;"
+      >
+
+      <input
+        type="text"
+        name="text_color"
+        id="text_color"
+        value="{{ old('text_color', $theme->text_color ?? '#111827') }}"
+        class="form-control @error('text_color') is-invalid @enderror"
+        placeholder="#111827"
+      >
+    </div>
+
+    @error('text_color')
+      <div class="text-danger small mt-1">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">
+      ประเภทพื้นหลัง <span class="text-danger">*</span>
+    </label>
+
+    @php
+      $backgroundType = old(
+          'background_type',
+          $theme->background_type ?? 'color'
+      );
+    @endphp
+
+    <select
+      name="background_type"
+      id="backgroundType"
+      class="form-select @error('background_type') is-invalid @enderror"
+      required
     >
+      <option value="color" {{ $backgroundType === 'color' ? 'selected' : '' }}>
+        สีพื้นหลัง
+      </option>
 
-    @error('logo')
+      <option value="image" {{ $backgroundType === 'image' ? 'selected' : '' }}>
+        รูปภาพพื้นหลัง
+      </option>
+
+      <option value="video" {{ $backgroundType === 'video' ? 'selected' : '' }}>
+        วิดีโอพื้นหลัง
+      </option>
+    </select>
+
+    @error('background_type')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
 
-  <div class="col-md-6">
-    <label class="form-label d-block">ตัวอย่างโลโก้</label>
+  <div class="col-md-4 background-color-field">
+    <label class="form-label">สีพื้นหลัง</label>
 
-    <div
-      id="themeLogoPreviewWrapper"
-      class="{{ isset($theme) && $theme->logo ? '' : 'd-none' }}"
-    >
-      <img
-        id="themeLogoPreview"
-        src="{{ isset($theme) && $theme->logo ? asset('assets/img/kiosk/themes/' . $theme->logo) : '' }}"
-        class="rounded border p-2"
-        style="max-width: 180px; max-height: 90px; object-fit: contain;"
-        alt="Theme Logo"
+    <div class="input-group">
+      <input
+        type="color"
+        value="{{ old('background_color', $theme->background_color ?? '#FFFFFF') }}"
+        class="form-control form-control-color theme-color-picker"
+        data-target="background_color"
+        style="max-width: 64px;"
+      >
+
+      <input
+        type="text"
+        name="background_color"
+        id="background_color"
+        value="{{ old('background_color', $theme->background_color ?? '#FFFFFF') }}"
+        class="form-control @error('background_color') is-invalid @enderror"
+        placeholder="#FFFFFF"
       >
     </div>
 
-    @if (isset($theme) && $theme->logo)
-      <div class="form-check mt-2">
-        <input
-          type="checkbox"
-          name="remove_logo"
-          value="1"
-          class="form-check-input"
-          id="remove_logo"
-        >
+    @error('background_color')
+      <div class="text-danger small mt-1">{{ $message }}</div>
+    @enderror
+  </div>
 
-        <label class="form-check-label" for="remove_logo">
-          ลบโลโก้เดิม
-        </label>
+  <div class="col-md-6 background-image-field">
+    <label class="form-label">รูปภาพพื้นหลัง</label>
+
+    <input
+      type="file"
+      name="background_image"
+      id="backgroundImageInput"
+      class="form-control @error('background_image') is-invalid @enderror"
+      accept=".jpg,.jpeg,.png,.webp,.svg"
+    >
+
+    @error('background_image')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+
+    <div class="form-text">
+      ใช้เมื่อเลือกประเภทพื้นหลังเป็น “รูปภาพ”
+    </div>
+  </div>
+
+  <div class="col-md-6 background-video-field">
+    <label class="form-label">วิดีโอพื้นหลัง</label>
+
+    <input
+      type="file"
+      name="background_video"
+      id="backgroundVideoInput"
+      class="form-control @error('background_video') is-invalid @enderror"
+      accept=".mp4,.webm,.mov"
+    >
+
+    @error('background_video')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+
+    <div class="form-text">
+      ใช้เมื่อเลือกประเภทพื้นหลังเป็น “วิดีโอ”
+    </div>
+  </div>
+
+  @if (isset($theme) && ($theme->background_image || $theme->background_video))
+    <div class="col-12">
+      <div class="card border shadow-none mb-0">
+        <div class="card-body">
+          <label class="form-label d-block">ไฟล์พื้นหลังปัจจุบัน</label>
+
+          @if ($theme->background_image)
+            <div class="mb-3">
+              <img
+                src="{{ asset('assets/img/kiosk/themes/' . $theme->background_image) }}"
+                alt="Background Image"
+                class="rounded border"
+                style="max-width: 260px; max-height: 160px; object-fit: cover;"
+              >
+            </div>
+
+            <div class="form-check">
+              <input
+                type="checkbox"
+                name="remove_background_image"
+                value="1"
+                id="remove_background_image"
+                class="form-check-input"
+              >
+
+              <label class="form-check-label" for="remove_background_image">
+                ลบรูปภาพพื้นหลังเดิม
+              </label>
+            </div>
+          @endif
+
+          @if ($theme->background_video)
+            <div class="mb-3">
+              <video
+                src="{{ asset('assets/videos/kiosk/themes/' . $theme->background_video) }}"
+                controls
+                muted
+                style="max-width: 320px; max-height: 180px;"
+                class="rounded border"
+              ></video>
+            </div>
+
+            <div class="form-check">
+              <input
+                type="checkbox"
+                name="remove_background_video"
+                value="1"
+                id="remove_background_video"
+                class="form-check-input"
+              >
+
+              <label class="form-check-label" for="remove_background_video">
+                ลบวิดีโอพื้นหลังเดิม
+              </label>
+            </div>
+          @endif
+        </div>
       </div>
-    @endif
+    </div>
+  @endif
+
+  <div class="col-12">
+    <hr class="my-2">
+    <h6 class="mb-1">ปุ่ม</h6>
+    <p class="text-muted mb-0">
+      กำหนดสีปุ่ม สีตัวอักษรปุ่ม และสีเส้นตอน hover
+    </p>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">สีปุ่ม</label>
+
+    <div class="input-group">
+      <input
+        type="color"
+        value="{{ old('button_color', $theme->button_color ?? '#00AEEF') }}"
+        class="form-control form-control-color theme-color-picker"
+        data-target="button_color"
+        style="max-width: 64px;"
+      >
+
+      <input
+        type="text"
+        name="button_color"
+        id="button_color"
+        value="{{ old('button_color', $theme->button_color ?? '#00AEEF') }}"
+        class="form-control @error('button_color') is-invalid @enderror"
+        placeholder="#00AEEF"
+      >
+    </div>
+
+    @error('button_color')
+      <div class="text-danger small mt-1">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">สีตัวอักษรปุ่ม</label>
+
+    <div class="input-group">
+      <input
+        type="color"
+        value="{{ old('button_text_color', $theme->button_text_color ?? '#FFFFFF') }}"
+        class="form-control form-control-color theme-color-picker"
+        data-target="button_text_color"
+        style="max-width: 64px;"
+      >
+
+      <input
+        type="text"
+        name="button_text_color"
+        id="button_text_color"
+        value="{{ old('button_text_color', $theme->button_text_color ?? '#FFFFFF') }}"
+        class="form-control @error('button_text_color') is-invalid @enderror"
+        placeholder="#FFFFFF"
+      >
+    </div>
+
+    @error('button_text_color')
+      <div class="text-danger small mt-1">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">สีเส้นตอน Hover</label>
+
+    <div class="input-group">
+      <input
+        type="color"
+        value="{{ old('button_hover_border_color', $theme->button_hover_border_color ?? '#00AEEF') }}"
+        class="form-control form-control-color theme-color-picker"
+        data-target="button_hover_border_color"
+        style="max-width: 64px;"
+      >
+
+      <input
+        type="text"
+        name="button_hover_border_color"
+        id="button_hover_border_color"
+        value="{{ old('button_hover_border_color', $theme->button_hover_border_color ?? '#00AEEF') }}"
+        class="form-control @error('button_hover_border_color') is-invalid @enderror"
+        placeholder="#00AEEF"
+      >
+    </div>
+
+    @error('button_hover_border_color')
+      <div class="text-danger small mt-1">{{ $message }}</div>
+    @enderror
   </div>
 
   <div class="col-12">
-    <hr>
-    <h6 class="mb-1">ค่าเสริม</h6>
+    <hr class="my-2">
+    <h6 class="mb-1">ตัวอย่างธีม</h6>
   </div>
 
-  <div class="col-md-4">
-    <label class="form-label">Overlay Color</label>
-
-    <input
-      type="text"
-      name="overlay_color"
-      value="{{ old('overlay_color', $settings['overlay_color'] ?? '') }}"
-      class="form-control"
-      placeholder="rgba(0, 0, 0, 0.25)"
+  <div class="col-12">
+    <div
+      id="themePreview"
+      class="rounded border p-4"
+      style="
+        min-height: 220px;
+        color: {{ old('text_color', $theme->text_color ?? '#111827') }};
+        background: {{ old('background_color', $theme->background_color ?? '#FFFFFF') }};
+      "
     >
-  </div>
+      <h5 id="previewTitle" class="mb-2">
+        ตัวอย่างหน้าตู้
+      </h5>
 
-  <div class="col-md-4">
-    <label class="form-label">Shadow</label>
+      <p id="previewText" class="mb-4">
+        ข้อความตัวอย่างจะแสดงตามสีตัวอักษรของธีม
+      </p>
 
-    <input
-      type="text"
-      name="shadow"
-      value="{{ old('shadow', $settings['shadow'] ?? '') }}"
-      class="form-control"
-      placeholder="0 16px 40px rgba(0,0,0,.12)"
-    >
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Disabled Color</label>
-
-    <input
-      type="text"
-      name="disabled_color"
-      value="{{ old('disabled_color', $settings['disabled_color'] ?? '') }}"
-      class="form-control"
-      placeholder="#D1D5DB"
-    >
+      <button
+        type="button"
+        id="previewButton"
+        style="
+          background: {{ old('button_color', $theme->button_color ?? '#00AEEF') }};
+          color: {{ old('button_text_color', $theme->button_text_color ?? '#FFFFFF') }};
+          border: 2px solid transparent;
+          border-radius: 999px;
+          padding: .75rem 1.75rem;
+          font-weight: 600;
+        "
+      >
+        ปุ่มตัวอย่าง
+      </button>
+    </div>
   </div>
 
   <div class="col-12">
@@ -253,8 +375,12 @@
     <textarea
       name="remark"
       rows="3"
-      class="form-control"
+      class="form-control @error('remark') is-invalid @enderror"
     >{{ old('remark', $theme->remark ?? '') }}</textarea>
+
+    @error('remark')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
   </div>
 
   <div class="col-md-6">
@@ -295,54 +421,6 @@
     </div>
   </div>
 
-  <div class="col-12">
-    <div class="card border shadow-none">
-      <div class="card-header">
-        <h6 class="mb-0">ตัวอย่างธีม</h6>
-      </div>
-
-      <div class="card-body">
-        <div
-          id="themePreview"
-          class="p-4 rounded"
-          style="
-            background: {{ old('background_color', $theme->background_color ?? '#FFFFFF') }};
-            color: {{ old('text_color', $theme->text_color ?? '#111827') }};
-            border: 1px solid {{ old('card_border_color', $theme->card_border_color ?? '#E5E7EB') }};
-          "
-        >
-          <div
-            class="p-3 mb-3"
-            id="themePreviewCard"
-            style="
-              background: {{ old('card_background_color', $theme->card_background_color ?? '#FFFFFF') }};
-              color: {{ old('card_text_color', $theme->card_text_color ?? '#111827') }};
-              border-radius: {{ old('card_radius', $theme->card_radius ?? 28) }}px;
-              border: 1px solid {{ old('card_border_color', $theme->card_border_color ?? '#E5E7EB') }};
-            "
-          >
-            <h5 class="mb-1">ตัวอย่างหน้าตู้</h5>
-            <p class="mb-0">ข้อความ ตัวการ์ด และปุ่มจะใช้สีจากธีมนี้</p>
-          </div>
-
-          <button
-            type="button"
-            id="themePreviewButton"
-            style="
-              background: {{ old('button_background_color', $theme->button_background_color ?? '#00AEEF') }};
-              color: {{ old('button_text_color', $theme->button_text_color ?? '#FFFFFF') }};
-              border-radius: {{ old('button_radius', $theme->button_radius ?? 24) }}px;
-              border: 1px solid {{ old('button_border_color', $theme->button_border_color ?? 'transparent') }};
-              padding: .75rem 1.5rem;
-            "
-          >
-            ปุ่มตัวอย่าง
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="col-12 d-flex justify-content-end gap-2">
     <a href="{{ route('kiosk.themes.index') }}" class="btn btn-label-secondary">
       ยกเลิก
@@ -358,6 +436,31 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  const backgroundType = document.getElementById('backgroundType');
+
+  const backgroundColorFields = document.querySelectorAll('.background-color-field');
+  const backgroundImageFields = document.querySelectorAll('.background-image-field');
+  const backgroundVideoFields = document.querySelectorAll('.background-video-field');
+
+  function toggleBackgroundFields() {
+    const type = backgroundType?.value || 'color';
+
+    backgroundColorFields.forEach(el => {
+      el.classList.toggle('d-none', type !== 'color');
+    });
+
+    backgroundImageFields.forEach(el => {
+      el.classList.toggle('d-none', type !== 'image');
+    });
+
+    backgroundVideoFields.forEach(el => {
+      el.classList.toggle('d-none', type !== 'video');
+    });
+  }
+
+  backgroundType?.addEventListener('change', toggleBackgroundFields);
+  toggleBackgroundFields();
+
   const pickers = document.querySelectorAll('.theme-color-picker');
 
   pickers.forEach(function (picker) {
@@ -366,23 +469,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (target) {
         target.value = this.value;
+        updatePreview();
       }
     });
   });
 
-  const logoInput = document.getElementById('themeLogoInput');
-  const logoWrapper = document.getElementById('themeLogoPreviewWrapper');
-  const logoPreview = document.getElementById('themeLogoPreview');
+  const textInputs = [
+    'text_color',
+    'background_color',
+    'button_color',
+    'button_text_color',
+    'button_hover_border_color',
+  ];
 
-  logoInput?.addEventListener('change', function () {
-    const file = this.files?.[0];
+  textInputs.forEach(function (id) {
+    const input = document.getElementById(id);
 
-    if (!file) {
-      return;
+    input?.addEventListener('input', updatePreview);
+  });
+
+  function updatePreview() {
+    const preview = document.getElementById('themePreview');
+    const button = document.getElementById('previewButton');
+
+    const textColor = document.getElementById('text_color')?.value || '#111827';
+    const backgroundColor = document.getElementById('background_color')?.value || '#FFFFFF';
+    const buttonColor = document.getElementById('button_color')?.value || '#00AEEF';
+    const buttonTextColor = document.getElementById('button_text_color')?.value || '#FFFFFF';
+    const hoverBorderColor = document.getElementById('button_hover_border_color')?.value || '#00AEEF';
+
+    if (preview) {
+      preview.style.color = textColor;
+      preview.style.background = backgroundColor;
     }
 
-    logoPreview.src = URL.createObjectURL(file);
-    logoWrapper.classList.remove('d-none');
-  });
+    if (button) {
+      button.style.background = buttonColor;
+      button.style.color = buttonTextColor;
+
+      button.onmouseenter = function () {
+        button.style.borderColor = hoverBorderColor;
+      };
+
+      button.onmouseleave = function () {
+        button.style.borderColor = 'transparent';
+      };
+    }
+  }
+
+  updatePreview();
 });
 </script>

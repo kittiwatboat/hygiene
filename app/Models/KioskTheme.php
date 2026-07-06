@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KioskTheme extends Model
 {
@@ -14,38 +13,16 @@ class KioskTheme extends Model
         'name',
         'slug',
 
-        'primary_color',
-        'secondary_color',
-        'accent_color',
-
-        'background_color',
         'text_color',
-        'muted_text_color',
 
-        'button_background_color',
+        'background_type',
+        'background_color',
+        'background_image',
+        'background_video',
+
+        'button_color',
         'button_text_color',
-        'button_border_color',
-        'button_hover_background_color',
-        'button_hover_text_color',
-
-        'card_background_color',
-        'card_text_color',
-        'card_border_color',
-
-        'success_color',
-        'warning_color',
-        'danger_color',
-        'info_color',
-
-        'font_family',
-
-        'button_radius',
-        'card_radius',
-        'input_radius',
-
-        'logo',
-
-        'settings_json',
+        'button_hover_border_color',
 
         'is_default',
         'is_active',
@@ -53,21 +30,26 @@ class KioskTheme extends Model
     ];
 
     protected $casts = [
-        'button_radius' => 'integer',
-        'card_radius' => 'integer',
-        'input_radius' => 'integer',
-        'settings_json' => 'array',
         'is_default' => 'boolean',
         'is_active' => 'boolean',
     ];
 
-    public function getLogoUrlAttribute(): ?string
+    public function getBackgroundImageUrlAttribute(): ?string
     {
-        if (!$this->logo) {
+        if (!$this->background_image) {
             return null;
         }
 
-        return asset('assets/img/kiosk/themes/' . $this->logo);
+        return asset('assets/img/kiosk/themes/' . $this->background_image);
+    }
+
+    public function getBackgroundVideoUrlAttribute(): ?string
+    {
+        if (!$this->background_video) {
+            return null;
+        }
+
+        return asset('assets/videos/kiosk/themes/' . $this->background_video);
     }
 
     public function getStatusTextAttribute(): string
@@ -81,12 +63,4 @@ class KioskTheme extends Model
             ? 'bg-label-success'
             : 'bg-label-secondary';
     }
-    public function layouts(): HasMany
-{
-    return $this->hasMany(KioskLayout::class, 'theme_id');
-}
-public function screens(): HasMany
-{
-    return $this->hasMany(KioskScreen::class, 'theme_id');
-}
 }
