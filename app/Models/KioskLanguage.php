@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class KioskLanguage extends Model
 {
@@ -45,4 +46,8 @@ class KioskLanguage extends Model
             ? 'bg-label-success'
             : 'bg-label-secondary';
     }
+    public function setting(): HasOne
+{
+    return $this->hasOne(KioskLanguageSetting::class, 'language_id');
+}
 }
