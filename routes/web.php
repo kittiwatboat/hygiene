@@ -21,7 +21,7 @@ use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
 use App\Http\Controllers\customers\CustomerController;
-use App\Http\Controllers\language\KioskLanguageController;
+use App\Http\Controllers\kiosk\KioskLanguageController;
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
 

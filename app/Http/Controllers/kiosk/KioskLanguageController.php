@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\language;
+namespace App\Http\Controllers\kiosk;
 
 use App\Http\Controllers\Controller;
 use App\Models\KioskLanguage;
@@ -8,6 +8,8 @@ use App\Models\KioskLanguageSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Models\KioskMachineLanguageSetting;
+use App\Models\Machine;
 
 class KioskLanguageController extends Controller
 {
@@ -291,4 +293,29 @@ class KioskLanguageController extends Controller
             unlink($filePath);
         }
     }
+    private function getLanguagesForMachine($machine)
+{
+    $machineSettings = KioskMachineLanguageSetting::with('language')
+        ->where('machine_id', $machine->id)
+        ->where('is_active', true)
+        ->whereHas('language', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->orderBy('sort_order')
+        ->limit(3)
+        ->get();
+
+    if ($machineSettings->count() > 0) {
+        return $machineSettings;
+    }
+
+    return KioskLanguageSetting::with('language')
+        ->where('is_active', true)
+        ->whereHas('language', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->orderBy('sort_order')
+        ->limit(3)
+        ->get();
+}
 }

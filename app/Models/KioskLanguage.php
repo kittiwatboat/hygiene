@@ -50,4 +50,8 @@ class KioskLanguage extends Model
 {
     return $this->hasOne(KioskLanguageSetting::class, 'language_id');
 }
+public function machineSettings()
+{
+    return $this->hasMany(\App\Models\KioskMachineLanguageSetting::class, 'language_id');
+}
 }

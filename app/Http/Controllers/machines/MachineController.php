@@ -8,6 +8,8 @@ use App\Models\Machine;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\KioskLanguage;
+use App\Models\KioskMachineLanguageSetting;
 
 class MachineController extends Controller
 {
@@ -21,15 +23,23 @@ class MachineController extends Controller
     }
 
     public function create()
-    {
-        $locations = Location::orderBy('name')->get();
+{
+    $locations = Location::orderBy('name')->get();
 
-        $products = Product::where('is_active', 1)
-            ->orderBy('name')
-            ->get();
+    $products = Product::where('is_active', 1)
+        ->orderBy('name')
+        ->get();
 
-        return view('content.pages.machines.create', compact('locations', 'products'));
-    }
+    $kioskLanguages = KioskLanguage::where('is_active', 1)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get();
+
+    return view(
+        'content.pages.machines.create',
+        compact('locations', 'products', 'kioskLanguages')
+    );
+}
 
     public function store(Request $request)
     {
@@ -55,6 +65,10 @@ class MachineController extends Controller
                 'tanks.*.volume_per_press_ml' => ['nullable', 'numeric', 'min:0'],
                 'tanks.*.price_per_press' => ['nullable', 'numeric', 'min:0'],
                 'tanks.*.is_active' => ['nullable', 'boolean'],
+                'use_custom_languages' => ['nullable', 'boolean'],
+                'machine_language_ids' => ['nullable', 'array', 'max:3'],
+                'machine_language_ids.*' => ['exists:kiosk_languages,id'],
+                'default_machine_language_id' => ['nullable', 'exists:kiosk_languages,id'],
             ],
             [
                 'name.required' => 'กรุณากรอกชื่อตู้',
@@ -63,7 +77,7 @@ class MachineController extends Controller
                 'status.required' => 'กรุณาเลือกสถานะตู้',
             ]
         );
-
+        $this->validateMachineLanguages($request);
         DB::transaction(function () use ($request) {
             $machine = Machine::create([
                 'name' => $request->name,
@@ -97,6 +111,7 @@ for ($i = 1; $i <= 4; $i++) {
         'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
     ]);
 }
+$this->syncMachineLanguages($request, $machine);
         });
 
         return redirect()
@@ -112,17 +127,28 @@ for ($i = 1; $i <= 4; $i++) {
     }
 
     public function edit(Machine $machine)
-    {
-        $machine->load(['tanks.product']);
+{
+    $machine->load([
+        'tanks.product',
+        'kioskLanguageSettings.language',
+    ]);
 
-        $locations = Location::orderBy('name')->get();
+    $locations = Location::orderBy('name')->get();
 
-        $products = Product::where('is_active', 1)
-            ->orderBy('name')
-            ->get();
+    $products = Product::where('is_active', 1)
+        ->orderBy('name')
+        ->get();
 
-        return view('content.pages.machines.edit', compact('machine', 'locations', 'products'));
-    }
+    $kioskLanguages = KioskLanguage::where('is_active', 1)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get();
+
+    return view(
+        'content.pages.machines.edit',
+        compact('machine', 'locations', 'products', 'kioskLanguages')
+    );
+}
 
     public function update(Request $request, Machine $machine)
     {
@@ -156,7 +182,7 @@ for ($i = 1; $i <= 4; $i++) {
                 'status.required' => 'กรุณาเลือกสถานะตู้',
             ]
         );
-
+$this->validateMachineLanguages($request);
         DB::transaction(function () use ($request, $machine) {
             $machine->update([
                 'name' => $request->name,
@@ -192,6 +218,8 @@ for ($i = 1; $i <= 4; $i++) {
         ]
     );
 }
+$this->syncMachineLanguages($request, $machine);
+
         });
 
         return redirect()
@@ -207,4 +235,56 @@ for ($i = 1; $i <= 4; $i++) {
             ->route('machines.index')
             ->with('success', 'ลบข้อมูลตู้สำเร็จ');
     }
+    private function validateMachineLanguages(Request $request): void
+{
+    if (!$request->boolean('use_custom_languages')) {
+        return;
+    }
+
+    $languageIds = $request->input('machine_language_ids', []);
+    $defaultLanguageId = $request->input('default_machine_language_id');
+
+    if (count($languageIds) < 1) {
+        abort(422, 'กรุณาเลือกภาษาอย่างน้อย 1 ภาษา');
+    }
+
+    if (count($languageIds) > 3) {
+        abort(422, 'เลือกภาษาได้สูงสุด 3 ภาษา');
+    }
+
+    if (!$defaultLanguageId || !in_array($defaultLanguageId, $languageIds)) {
+        abort(422, 'ภาษาหลักต้องอยู่ในภาษาที่เลือกใช้งาน');
+    }
+}
+
+private function syncMachineLanguages(Request $request, Machine $machine): void
+{
+    /*
+    |--------------------------------------------------------------------------
+    | ถ้าไม่ใช้ภาษาเฉพาะตู้ ให้ลบ setting เฉพาะตู้ทิ้ง
+    |--------------------------------------------------------------------------
+    */
+    if (!$request->boolean('use_custom_languages')) {
+        KioskMachineLanguageSetting::where('machine_id', $machine->id)
+            ->delete();
+
+        return;
+    }
+
+    $languageIds = array_values($request->input('machine_language_ids', []));
+    $defaultLanguageId = $request->input('default_machine_language_id');
+
+    KioskMachineLanguageSetting::where('machine_id', $machine->id)
+        ->delete();
+
+    foreach ($languageIds as $index => $languageId) {
+        KioskMachineLanguageSetting::create([
+            'machine_id' => $machine->id,
+            'language_id' => $languageId,
+            'sort_order' => $index + 1,
+            'is_default' => (string) $languageId === (string) $defaultLanguageId,
+            'is_active' => true,
+        ]);
+    }
+}
 }

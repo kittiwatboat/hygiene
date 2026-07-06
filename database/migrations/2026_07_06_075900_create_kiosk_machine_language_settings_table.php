@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (!Schema::hasTable('kiosk_machine_language_settings')) {
+            Schema::create('kiosk_machine_language_settings', function (Blueprint $table) {
+                $table->id();
+
+                $table->foreignId('machine_id')
+                    ->constrained('machines')
+                    ->cascadeOnDelete();
+
+                $table->foreignId('language_id')
+                    ->constrained('kiosk_languages')
+                    ->cascadeOnDelete();
+
+                $table->unsignedInteger('sort_order')->default(0);
+
+                $table->boolean('is_default')->default(false);
+                $table->boolean('is_active')->default(true);
+
+                $table->timestamps();
+
+                $table->unique(['machine_id', 'language_id']);
+                $table->index(['machine_id', 'is_active', 'sort_order']);
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('kiosk_machine_language_settings');
+    }
+};

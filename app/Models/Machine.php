@@ -75,4 +75,9 @@ public function sales()
 {
     return $this->hasMany(Sale::class, 'machine_id');
 }
+
+public function kioskLanguageSettings()
+{
+    return $this->hasMany(\App\Models\KioskMachineLanguageSetting::class, 'machine_id');
+}
 }

@@ -322,7 +322,129 @@
       </div>
     </div>
   @endfor
+<div class="col-12">
+  <hr class="my-2">
 
+  <h6 class="mb-1">ตั้งค่าภาษาหน้าตู้</h6>
+  <p class="text-muted mb-0">
+    หากไม่กำหนดภาษาเฉพาะ ระบบจะใช้ค่าภาษากลางจากเมนูตั้งค่าภาษา
+  </p>
+</div>
+
+@php
+  $useCustomLanguages = old(
+      'use_custom_languages',
+      isset($machine) && $machine->kioskLanguageSettings->count() > 0 ? 1 : 0
+  );
+
+  $selectedMachineLanguageIds = old(
+      'machine_language_ids',
+      isset($machine)
+          ? $machine->kioskLanguageSettings->pluck('language_id')->map(fn ($id) => (string) $id)->toArray()
+          : []
+  );
+
+  $defaultMachineLanguageId = old(
+      'default_machine_language_id',
+      isset($machine)
+          ? optional($machine->kioskLanguageSettings->firstWhere('is_default', true))->language_id
+          : null
+  );
+@endphp
+
+<div class="col-12">
+  <div class="form-check form-switch">
+    <input type="hidden" name="use_custom_languages" value="0">
+
+    <input
+      type="checkbox"
+      name="use_custom_languages"
+      value="1"
+      id="use_custom_languages"
+      class="form-check-input"
+      {{ (int) $useCustomLanguages === 1 ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="use_custom_languages">
+      กำหนดภาษาเฉพาะสำหรับตู้นี้
+    </label>
+  </div>
+</div>
+
+<div class="col-12" id="machineLanguageWrapper">
+  <div class="card border shadow-none mb-0">
+    <div class="card-body">
+      <div class="row g-3">
+
+        <div class="col-md-8">
+          <label class="form-label">
+            ภาษาที่เปิดใช้บนตู้นี้
+          </label>
+
+          <div class="row g-2">
+            @foreach ($kioskLanguages as $language)
+              <div class="col-md-4">
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    name="machine_language_ids[]"
+                    value="{{ $language->id }}"
+                    id="machine_language_{{ $language->id }}"
+                    class="form-check-input machine-language-checkbox"
+                    {{ in_array((string) $language->id, $selectedMachineLanguageIds) ? 'checked' : '' }}
+                  >
+
+                  <label
+                    class="form-check-label"
+                    for="machine_language_{{ $language->id }}"
+                  >
+                    {{ $language->native_name }}
+                    <small class="text-muted">({{ $language->code }})</small>
+                  </label>
+                </div>
+              </div>
+            @endforeach
+          </div>
+
+          <div class="form-text">
+            เลือกได้สูงสุด 3 ภาษา
+          </div>
+
+          @error('machine_language_ids')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+          @enderror
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">
+            ภาษาหลักของตู้นี้
+          </label>
+
+          <select
+            name="default_machine_language_id"
+            class="form-select @error('default_machine_language_id') is-invalid @enderror"
+          >
+            <option value="">-- เลือกภาษาหลัก --</option>
+
+            @foreach ($kioskLanguages as $language)
+              <option
+                value="{{ $language->id }}"
+                {{ (string) $defaultMachineLanguageId === (string) $language->id ? 'selected' : '' }}
+              >
+                {{ $language->native_name }} ({{ $language->code }})
+              </option>
+            @endforeach
+          </select>
+
+          @error('default_machine_language_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
   <div class="col-12">
     <label class="form-label">หมายเหตุ</label>
     <textarea
@@ -368,3 +490,30 @@
   </div>
 
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const useCustomLanguages = document.getElementById('use_custom_languages');
+  const wrapper = document.getElementById('machineLanguageWrapper');
+  const checkboxes = document.querySelectorAll('.machine-language-checkbox');
+
+  function toggleMachineLanguages() {
+    if (!useCustomLanguages || !wrapper) return;
+
+    wrapper.classList.toggle('d-none', !useCustomLanguages.checked);
+  }
+
+  useCustomLanguages?.addEventListener('change', toggleMachineLanguages);
+  toggleMachineLanguages();
+
+  checkboxes.forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
+      const checked = document.querySelectorAll('.machine-language-checkbox:checked');
+
+      if (checked.length > 3) {
+        this.checked = false;
+        alert('เลือกภาษาได้สูงสุด 3 ภาษา');
+      }
+    });
+  });
+});
+</script>
