@@ -125,7 +125,7 @@
     <hr class="my-2">
     <h6 class="mb-1">ตั้งค่าน้ำยาในตู้</h6>
     <p class="text-muted mb-0">
-      ตู้ 1 เครื่องสามารถตั้งค่าน้ำยาได้สูงสุด 3 ช่อง
+      ตู้ 1 เครื่องสามารถตั้งค่าน้ำยาได้สูงสุด 4 ช่อง
     </p>
   </div>
 
@@ -134,7 +134,7 @@
     $machineTanks = isset($machine) ? $machine->tanks->keyBy('tank_no') : collect();
   @endphp
 
-  @for ($i = 1; $i <= 3; $i++)
+  @for ($i = 1; $i <= 4; $i++)
     @php
       $tank = $machineTanks->get($i);
 
