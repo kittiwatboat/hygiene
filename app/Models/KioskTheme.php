@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KioskTheme extends Model
 {
@@ -80,4 +81,12 @@ class KioskTheme extends Model
             ? 'bg-label-success'
             : 'bg-label-secondary';
     }
+    public function layouts(): HasMany
+{
+    return $this->hasMany(KioskLayout::class, 'theme_id');
+}
+public function screens(): HasMany
+{
+    return $this->hasMany(KioskScreen::class, 'theme_id');
+}
 }
