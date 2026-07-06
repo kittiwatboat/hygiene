@@ -45,7 +45,7 @@ class MachineController extends Controller
                 'is_active' => ['nullable', 'boolean'],
 
                 'tanks' => ['required', 'array'],
-                'tanks.*.tank_no' => ['required', 'integer', 'between:1,3'],
+                'tanks.*.tank_no' => ['required', 'integer', 'between:1,4'],
                 'tanks.*.product_id' => ['nullable', 'exists:products,id'],
                 'tanks.*.tank_name' => ['nullable', 'string', 'max:255'],
                 'tanks.*.capacity_liters' => ['nullable', 'numeric', 'min:0'],
@@ -76,22 +76,27 @@ class MachineController extends Controller
                 'is_active' => $request->boolean('is_active'),
             ]);
 
-            foreach ($request->input('tanks', []) as $tank) {
-                $hasProduct = !empty($tank['product_id']);
+           $tanksInput = collect($request->input('tanks', []))
+    ->keyBy('tank_no');
 
-                $machine->tanks()->create([
-                    'tank_no' => $tank['tank_no'],
-                    'product_id' => $hasProduct ? $tank['product_id'] : null,
-                    'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $tank['tank_no']),
-                    'capacity_liters' => $tank['capacity_liters'] ?? 0,
-                    'remaining_liters' => $tank['remaining_liters'] ?? 0,
-                    'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
-                    'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
-                    'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
-                    'price_per_press' => $tank['price_per_press'] ?? 0,
-                    'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
-                ]);
-            }
+for ($i = 1; $i <= 4; $i++) {
+    $tank = $tanksInput->get($i, []);
+
+    $hasProduct = !empty($tank['product_id']);
+
+    $machine->tanks()->create([
+        'tank_no' => $i,
+        'product_id' => $hasProduct ? $tank['product_id'] : null,
+        'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $i),
+        'capacity_liters' => $tank['capacity_liters'] ?? 0,
+        'remaining_liters' => $tank['remaining_liters'] ?? 0,
+        'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
+        'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
+        'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
+        'price_per_press' => $tank['price_per_press'] ?? 0,
+        'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
+    ]);
+}
         });
 
         return redirect()
@@ -133,7 +138,7 @@ class MachineController extends Controller
                 'is_active' => ['nullable', 'boolean'],
 
                 'tanks' => ['required', 'array'],
-                'tanks.*.tank_no' => ['required', 'integer', 'between:1,3'],
+                'tanks.*.tank_no' => ['required', 'integer', 'between:1,4'],
                 'tanks.*.product_id' => ['nullable', 'exists:products,id'],
                 'tanks.*.tank_name' => ['nullable', 'string', 'max:255'],
                 'tanks.*.capacity_liters' => ['nullable', 'numeric', 'min:0'],
@@ -164,24 +169,29 @@ class MachineController extends Controller
                 'is_active' => $request->boolean('is_active'),
             ]);
 
-            foreach ($request->input('tanks', []) as $tank) {
-                $machine->tanks()->updateOrCreate(
-                    [
-                        'tank_no' => $tank['tank_no'],
-                    ],
-                    [
-                        'product_id' => !empty($tank['product_id']) ? $tank['product_id'] : null,
-                        'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $tank['tank_no']),
-                        'capacity_liters' => $tank['capacity_liters'] ?? 0,
-                        'remaining_liters' => $tank['remaining_liters'] ?? 0,
-                        'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
-                        'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
-                        'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
-                        'price_per_press' => $tank['price_per_press'] ?? 0,
-                        'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
-                    ]
-                );
-            }
+            $tanksInput = collect($request->input('tanks', []))
+    ->keyBy('tank_no');
+
+for ($i = 1; $i <= 4; $i++) {
+    $tank = $tanksInput->get($i, []);
+
+    $machine->tanks()->updateOrCreate(
+        [
+            'tank_no' => $i,
+        ],
+        [
+            'product_id' => !empty($tank['product_id']) ? $tank['product_id'] : null,
+            'tank_name' => $tank['tank_name'] ?? ('ช่องน้ำยาที่ ' . $i),
+            'capacity_liters' => $tank['capacity_liters'] ?? 0,
+            'remaining_liters' => $tank['remaining_liters'] ?? 0,
+            'low_stock_liters' => $tank['low_stock_liters'] ?? 0,
+            'empty_stock_liters' => $tank['empty_stock_liters'] ?? 0,
+            'volume_per_press_ml' => $tank['volume_per_press_ml'] ?? 0,
+            'price_per_press' => $tank['price_per_press'] ?? 0,
+            'is_active' => isset($tank['is_active']) ? (bool) $tank['is_active'] : false,
+        ]
+    );
+}
         });
 
         return redirect()
