@@ -21,7 +21,7 @@ use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
 use App\Http\Controllers\customers\CustomerController;
-
+use App\Http\Controllers\language\KioskLanguageController;
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
 
@@ -337,4 +337,31 @@ Route::prefix('promotions')
             CustomerController::class,
             'destroy',
         ])->name('destroy');
+    });
+
+    Route::prefix('kiosk/languages')
+    ->name('kiosk.languages.')
+    ->group(function () {
+        Route::get('/', [KioskLanguageController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [KioskLanguageController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [KioskLanguageController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{language}/edit', [KioskLanguageController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{language}', [KioskLanguageController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{language}', [KioskLanguageController::class, 'destroy'])
+            ->name('destroy');
+
+        Route::post('/settings/update', [
+            KioskLanguageController::class,
+            'updateSettings',
+        ])->name('settings.update');
     });
