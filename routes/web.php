@@ -22,6 +22,9 @@ use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
 use App\Http\Controllers\customers\CustomerController;
 use App\Http\Controllers\kiosk\KioskLanguageController;
+use App\Http\Controllers\kiosk\KioskController;
+use App\Http\Controllers\kiosk\KioskThemeController;
+
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
 
@@ -364,4 +367,26 @@ Route::prefix('promotions')
             KioskLanguageController::class,
             'updateSettings',
         ])->name('settings.update');
+    });
+
+    Route::prefix('kiosk/themes')
+    ->name('kiosk.themes.')
+    ->group(function () {
+        Route::get('/', [KioskThemeController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [KioskThemeController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [KioskThemeController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{theme}/edit', [KioskThemeController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{theme}', [KioskThemeController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{theme}', [KioskThemeController::class, 'destroy'])
+            ->name('destroy');
     });
