@@ -27,6 +27,15 @@ class KioskTheme extends Model
         'is_default',
         'is_active',
         'remark',
+
+        'header_type',
+        'header_background_color',
+        'header_background_image',
+        'header_background_video',
+        'header_logo_main',
+        'header_logo_right_1',
+        'header_logo_right_2',
+        'header_height',
     ];
 
     protected $casts = [
@@ -63,4 +72,21 @@ class KioskTheme extends Model
             ? 'bg-label-success'
             : 'bg-label-secondary';
     }
+    public function getHeaderBackgroundImageUrlAttribute(): ?string
+{
+    if (!$this->header_background_image) {
+        return null;
+    }
+
+    return asset('assets/img/kiosk/themes/' . $this->header_background_image);
+}
+
+public function getHeaderBackgroundVideoUrlAttribute(): ?string
+{
+    if (!$this->header_background_video) {
+        return null;
+    }
+
+    return asset('assets/videos/kiosk/themes/' . $this->header_background_video);
+}
 }

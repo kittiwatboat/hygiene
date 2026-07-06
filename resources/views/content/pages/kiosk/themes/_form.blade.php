@@ -421,6 +421,86 @@
     </div>
   </div>
 
+  <div class="col-12">
+  <hr class="my-2">
+  <h6 class="mb-1">Header ด้านบน</h6>
+  <p class="text-muted mb-0">
+    ตั้งค่าพื้นหลัง header และโลโก้ที่ซ้อนอยู่ด้านบน
+  </p>
+</div>
+
+@php
+  $headerType = old('header_type', $theme->header_type ?? 'none');
+@endphp
+
+<div class="col-md-4">
+  <label class="form-label">ประเภท Header</label>
+  <select name="header_type" id="headerType" class="form-select">
+    <option value="none" {{ $headerType === 'none' ? 'selected' : '' }}>ไม่ใช้</option>
+    <option value="color" {{ $headerType === 'color' ? 'selected' : '' }}>สีพื้นหลัง</option>
+    <option value="image" {{ $headerType === 'image' ? 'selected' : '' }}>รูปภาพ</option>
+    <option value="video" {{ $headerType === 'video' ? 'selected' : '' }}>วิดีโอ</option>
+  </select>
+</div>
+
+<div class="col-md-4 header-color-field">
+  <label class="form-label">สีพื้นหลัง Header</label>
+  <div class="input-group">
+    <input
+      type="color"
+      value="{{ old('header_background_color', $theme->header_background_color ?? '#1EB5F0') }}"
+      class="form-control form-control-color theme-color-picker"
+      data-target="header_background_color"
+      style="max-width:64px;"
+    >
+    <input
+      type="text"
+      name="header_background_color"
+      id="header_background_color"
+      value="{{ old('header_background_color', $theme->header_background_color ?? '#1EB5F0') }}"
+      class="form-control"
+      placeholder="#1EB5F0"
+    >
+  </div>
+</div>
+
+<div class="col-md-4">
+  <label class="form-label">ความสูง Header (px)</label>
+  <input
+    type="number"
+    name="header_height"
+    value="{{ old('header_height', $theme->header_height ?? 82) }}"
+    class="form-control"
+    min="40"
+    max="300"
+  >
+</div>
+
+<div class="col-md-6 header-image-field">
+  <label class="form-label">รูปภาพ Header</label>
+  <input type="file" name="header_background_image" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
+</div>
+
+<div class="col-md-6 header-video-field">
+  <label class="form-label">วิดีโอ Header</label>
+  <input type="file" name="header_background_video" class="form-control" accept=".mp4,.webm,.mov">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label">โลโก้หลัก</label>
+  <input type="file" name="header_logo_main" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label">โลโก้ขวา 1</label>
+  <input type="file" name="header_logo_right_1" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
+</div>
+
+<div class="col-md-4">
+  <label class="form-label">โลโก้ขวา 2</label>
+  <input type="file" name="header_logo_right_2" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
+</div>
+
   <div class="col-12 d-flex justify-content-end gap-2">
     <a href="{{ route('kiosk.themes.index') }}" class="btn btn-label-secondary">
       ยกเลิก
@@ -519,4 +599,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
   updatePreview();
 });
+
+const headerType = document.getElementById('headerType');
+const headerColorFields = document.querySelectorAll('.header-color-field');
+const headerImageFields = document.querySelectorAll('.header-image-field');
+const headerVideoFields = document.querySelectorAll('.header-video-field');
+
+function toggleHeaderFields() {
+  const type = headerType?.value || 'none';
+
+  headerColorFields.forEach(el => {
+    el.classList.toggle('d-none', type !== 'color');
+  });
+
+  headerImageFields.forEach(el => {
+    el.classList.toggle('d-none', type !== 'image');
+  });
+
+  headerVideoFields.forEach(el => {
+    el.classList.toggle('d-none', type !== 'video');
+  });
+}
+
+headerType?.addEventListener('change', toggleHeaderFields);
+toggleHeaderFields();
 </script>
