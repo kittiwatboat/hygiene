@@ -368,60 +368,7 @@
       </button>
     </div>
   </div>
-
-  <div class="col-12">
-    <label class="form-label">หมายเหตุ</label>
-
-    <textarea
-      name="remark"
-      rows="3"
-      class="form-control @error('remark') is-invalid @enderror"
-    >{{ old('remark', $theme->remark ?? '') }}</textarea>
-
-    @error('remark')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
-
-  <div class="col-md-6">
-    <div class="form-check form-switch">
-      <input type="hidden" name="is_active" value="0">
-
-      <input
-        type="checkbox"
-        name="is_active"
-        value="1"
-        id="is_active"
-        class="form-check-input"
-        {{ old('is_active', isset($theme) ? (int) $theme->is_active : 1) ? 'checked' : '' }}
-      >
-
-      <label class="form-check-label" for="is_active">
-        เปิดใช้งานธีม
-      </label>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="form-check form-switch">
-      <input type="hidden" name="is_default" value="0">
-
-      <input
-        type="checkbox"
-        name="is_default"
-        value="1"
-        id="is_default"
-        class="form-check-input"
-        {{ old('is_default', isset($theme) ? (int) $theme->is_default : 0) ? 'checked' : '' }}
-      >
-
-      <label class="form-check-label" for="is_default">
-        ตั้งเป็นธีมเริ่มต้น
-      </label>
-    </div>
-  </div>
-
-  <div class="col-12">
+    <div class="col-12">
   <hr class="my-2">
   <h6 class="mb-1">Header ด้านบน</h6>
   <p class="text-muted mb-0">
@@ -500,6 +447,60 @@
   <label class="form-label">โลโก้ขวา 2</label>
   <input type="file" name="header_logo_right_2" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
 </div>
+
+  <div class="col-12">
+    <label class="form-label">หมายเหตุ</label>
+
+    <textarea
+      name="remark"
+      rows="3"
+      class="form-control @error('remark') is-invalid @enderror"
+    >{{ old('remark', $theme->remark ?? '') }}</textarea>
+
+    @error('remark')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+  </div>
+
+  <div class="col-md-6">
+    <div class="form-check form-switch">
+      <input type="hidden" name="is_active" value="0">
+
+      <input
+        type="checkbox"
+        name="is_active"
+        value="1"
+        id="is_active"
+        class="form-check-input"
+        {{ old('is_active', isset($theme) ? (int) $theme->is_active : 1) ? 'checked' : '' }}
+      >
+
+      <label class="form-check-label" for="is_active">
+        เปิดใช้งานธีม
+      </label>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="form-check form-switch">
+      <input type="hidden" name="is_default" value="0">
+
+      <input
+        type="checkbox"
+        name="is_default"
+        value="1"
+        id="is_default"
+        class="form-check-input"
+        {{ old('is_default', isset($theme) ? (int) $theme->is_default : 0) ? 'checked' : '' }}
+      >
+
+      <label class="form-check-label" for="is_default">
+        ตั้งเป็นธีมเริ่มต้น
+      </label>
+    </div>
+  </div>
+
+
 
   <div class="col-12 d-flex justify-content-end gap-2">
     <a href="{{ route('kiosk.themes.index') }}" class="btn btn-label-secondary">
