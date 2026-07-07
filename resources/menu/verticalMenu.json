@@ -72,6 +72,19 @@
     }
   ]
 },
+{
+  "name": "จัดการหน้าบ้าน",
+  "icon": "menu-icon icon-base ti tabler-layout-dashboard",
+  "slug": "frontend-management",
+  "submenu": [
+    {
+      "url": "/frontend/pages",
+      "name": "จัดการหน้า",
+      "icon": "menu-icon icon-base ti tabler-device-desktop",
+      "slug": "frontend-pages"
+    }
+  ]
+},
     {
       "menuHeader": "การทำงาน"
     },

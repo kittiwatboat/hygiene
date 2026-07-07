@@ -24,6 +24,7 @@ use App\Http\Controllers\customers\CustomerController;
 use App\Http\Controllers\kiosk\KioskLanguageController;
 use App\Http\Controllers\kiosk\KioskController;
 use App\Http\Controllers\kiosk\KioskThemeController;
+use App\Http\Controllers\FrontendPageController;
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -389,4 +390,26 @@ Route::prefix('promotions')
 
         Route::delete('/{theme}', [KioskThemeController::class, 'destroy'])
             ->name('destroy');
+    });
+
+    Route::prefix('frontend/pages')
+    ->name('frontend.pages.')
+    ->group(function () {
+        Route::get('/', [FrontendPageController::class, 'index'])
+            ->name('index');
+
+        Route::get('/{page}/edit', [FrontendPageController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{page}', [FrontendPageController::class, 'update'])
+            ->name('update');
+
+        Route::post('/{page}/media', [FrontendPageController::class, 'storeMedia'])
+            ->name('media.store');
+
+        Route::put('/media/{media}', [FrontendPageController::class, 'updateMedia'])
+            ->name('media.update');
+
+        Route::delete('/media/{media}', [FrontendPageController::class, 'destroyMedia'])
+            ->name('media.destroy');
     });
