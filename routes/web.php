@@ -21,8 +21,8 @@ use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
 use App\Http\Controllers\customers\CustomerController;
-use App\Http\Controllers\frontend_theme\KioskLanguageController;
-use App\Http\Controllers\frontend_theme\KioskThemeController;
+use App\Http\Controllers\frontend_theme\FrontendLanguageController;
+use App\Http\Controllers\frontend_theme\FrontendThemeController;
 use App\Http\Controllers\FrontendPageController;
 
 Route::get('/cookie-test', function () {
@@ -342,8 +342,8 @@ Route::prefix('promotions')
         ])->name('destroy');
     });
 
-    Route::prefix('kiosk/languages')
-    ->name('kiosk.languages.')
+    Route::prefix('frontend/languages')
+    ->name('frontend.languages.')
     ->group(function () {
         Route::get('/', [FrontendLanguageController::class, 'index'])
             ->name('index');
@@ -369,8 +369,8 @@ Route::prefix('promotions')
         ])->name('settings.update');
     });
 
-    Route::prefix('kiosk/themes')
-    ->name('kiosk.themes.')
+    Route::prefix('frontend/themes')
+    ->name('frontend.themes.')
     ->group(function () {
         Route::get('/', [FrontendThemeController::class, 'index'])
             ->name('index');
