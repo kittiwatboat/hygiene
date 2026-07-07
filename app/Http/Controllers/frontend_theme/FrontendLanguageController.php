@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\kiosk;
+namespace App\Http\Controllers\frontend_theme;
 
 use App\Http\Controllers\Controller;
-use App\Models\KioskLanguage;
-use App\Models\KioskLanguageSetting;
+use App\Models\FrontendLanguage;
+use App\Models\FrontendLanguageSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\KioskMachineLanguageSetting;
+use App\Models\FrontendMachineLanguageSetting;
 use App\Models\Machine;
 
-class KioskLanguageController extends Controller
+class FrontendLanguageController extends Controller
 {
     public function index()
     {
-        $languages = KioskLanguage::query()
+        $languages = FrontendLanguage::query()
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
 
-        $activeSettings = KioskLanguageSetting::with('language')
+        $activeSettings = FrontendLanguageSetting::with('language')
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
@@ -62,7 +62,7 @@ class KioskLanguageController extends Controller
             );
         }
 
-        KioskLanguage::create([
+        FrontendLanguage::create([
             'code' => strtolower($validated['code']),
             'name' => $validated['name'],
             'native_name' => $validated['native_name'],
@@ -78,12 +78,12 @@ class KioskLanguageController extends Controller
             ->with('success', 'เพิ่มภาษาสำเร็จ');
     }
 
-    public function edit(KioskLanguage $language)
+    public function edit(FrontendLanguage $language)
     {
         return view('content.pages.kiosk.languages.edit', compact('language'));
     }
 
-    public function update(Request $request, KioskLanguage $language)
+    public function update(Request $request, FrontendLanguage $language)
     {
         $validated = $this->validateLanguage($request, $language);
 
@@ -122,7 +122,7 @@ class KioskLanguageController extends Controller
             ->with('success', 'แก้ไขภาษาสำเร็จ');
     }
 
-    public function destroy(KioskLanguage $language)
+    public function destroy(FrontendLanguage $language)
     {
         if ($language->setting()->exists()) {
             return back()->with(
@@ -152,11 +152,11 @@ class KioskLanguageController extends Controller
                 ],
                 'language_ids.*' => [
                     'required',
-                    'exists:kiosk_languages,id',
+                    'exists:frontend_languages,id',
                 ],
                 'default_language_id' => [
                     'required',
-                    'exists:kiosk_languages,id',
+                    'exists:frontend_languages,id',
                 ],
             ],
             [
@@ -179,10 +179,10 @@ class KioskLanguageController extends Controller
         }
 
         DB::transaction(function () use ($languageIds, $defaultLanguageId) {
-            KioskLanguageSetting::query()->delete();
+            FrontendLanguageSetting::query()->delete();
 
             foreach ($languageIds as $index => $languageId) {
-                KioskLanguageSetting::create([
+                FrontendLanguageSetting::create([
                     'language_id' => $languageId,
                     'sort_order' => $index + 1,
                     'is_default' => (string) $languageId === (string) $defaultLanguageId,
@@ -198,7 +198,7 @@ class KioskLanguageController extends Controller
 
     private function validateLanguage(
         Request $request,
-        ?KioskLanguage $language = null
+        ?FrontendLanguage $language = null
     ): array {
         return $request->validate(
             [
@@ -206,7 +206,7 @@ class KioskLanguageController extends Controller
                     'required',
                     'string',
                     'max:20',
-                    Rule::unique('kiosk_languages', 'code')
+                    Rule::unique('frontend_languages', 'code')
                         ->ignore($language?->id),
                 ],
                 'name' => [
@@ -295,7 +295,7 @@ class KioskLanguageController extends Controller
     }
     private function getLanguagesForMachine($machine)
 {
-    $machineSettings = KioskMachineLanguageSetting::with('language')
+    $machineSettings = FrontendMachineLanguageSetting::with('language')
         ->where('machine_id', $machine->id)
         ->where('is_active', true)
         ->whereHas('language', function ($query) {
@@ -309,7 +309,7 @@ class KioskLanguageController extends Controller
         return $machineSettings;
     }
 
-    return KioskLanguageSetting::with('language')
+    return FrontendLanguageSetting::with('language')
         ->where('is_active', true)
         ->whereHas('language', function ($query) {
             $query->where('is_active', true);

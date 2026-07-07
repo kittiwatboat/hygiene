@@ -21,9 +21,8 @@ use App\Http\Controllers\maintenance\MaintenanceController;
 use App\Http\Controllers\banners\BannerController;
 use App\Http\Controllers\promotions\PromotionController;
 use App\Http\Controllers\customers\CustomerController;
-use App\Http\Controllers\kiosk\KioskLanguageController;
-use App\Http\Controllers\kiosk\KioskController;
-use App\Http\Controllers\kiosk\KioskThemeController;
+use App\Http\Controllers\frontend_theme\KioskLanguageController;
+use App\Http\Controllers\frontend_theme\KioskThemeController;
 use App\Http\Controllers\FrontendPageController;
 
 Route::get('/cookie-test', function () {
@@ -346,26 +345,26 @@ Route::prefix('promotions')
     Route::prefix('kiosk/languages')
     ->name('kiosk.languages.')
     ->group(function () {
-        Route::get('/', [KioskLanguageController::class, 'index'])
+        Route::get('/', [FrontendLanguageController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', [KioskLanguageController::class, 'create'])
+        Route::get('/create', [FrontendLanguageController::class, 'create'])
             ->name('create');
 
-        Route::post('/', [KioskLanguageController::class, 'store'])
+        Route::post('/', [FrontendLanguageController::class, 'store'])
             ->name('store');
 
-        Route::get('/{language}/edit', [KioskLanguageController::class, 'edit'])
+        Route::get('/{language}/edit', [FrontendLanguageController::class, 'edit'])
             ->name('edit');
 
-        Route::put('/{language}', [KioskLanguageController::class, 'update'])
+        Route::put('/{language}', [FrontendLanguageController::class, 'update'])
             ->name('update');
 
-        Route::delete('/{language}', [KioskLanguageController::class, 'destroy'])
+        Route::delete('/{language}', [FrontendLanguageController::class, 'destroy'])
             ->name('destroy');
 
         Route::post('/settings/update', [
-            KioskLanguageController::class,
+            FrontendLanguageController::class,
             'updateSettings',
         ])->name('settings.update');
     });
@@ -373,22 +372,22 @@ Route::prefix('promotions')
     Route::prefix('kiosk/themes')
     ->name('kiosk.themes.')
     ->group(function () {
-        Route::get('/', [KioskThemeController::class, 'index'])
+        Route::get('/', [FrontendThemeController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', [KioskThemeController::class, 'create'])
+        Route::get('/create', [FrontendThemeController::class, 'create'])
             ->name('create');
 
-        Route::post('/', [KioskThemeController::class, 'store'])
+        Route::post('/', [FrontendThemeController::class, 'store'])
             ->name('store');
 
-        Route::get('/{theme}/edit', [KioskThemeController::class, 'edit'])
+        Route::get('/{theme}/edit', [FrontendThemeController::class, 'edit'])
             ->name('edit');
 
-        Route::put('/{theme}', [KioskThemeController::class, 'update'])
+        Route::put('/{theme}', [FrontendThemeController::class, 'update'])
             ->name('update');
 
-        Route::delete('/{theme}', [KioskThemeController::class, 'destroy'])
+        Route::delete('/{theme}', [FrontendThemeController::class, 'destroy'])
             ->name('destroy');
     });
 

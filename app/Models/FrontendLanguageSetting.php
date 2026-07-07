@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class KioskMachineLanguageSetting extends Model
+class FrontendLanguageSetting extends Model
 {
+  protected $table = 'frontend_language_settings';
     protected $fillable = [
-        'machine_id',
         'language_id',
         'sort_order',
         'is_default',
@@ -21,13 +21,8 @@ class KioskMachineLanguageSetting extends Model
         'is_active' => 'boolean',
     ];
 
-    public function machine(): BelongsTo
-    {
-        return $this->belongsTo(Machine::class);
-    }
-
     public function language(): BelongsTo
     {
-        return $this->belongsTo(KioskLanguage::class);
+        return $this->belongsTo(FrontendLanguage::class);
     }
 }

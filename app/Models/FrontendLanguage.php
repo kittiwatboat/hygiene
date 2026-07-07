@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class KioskLanguage extends Model
+class FrontendLanguage extends Model
 {
     use SoftDeletes;
-
+protected $table = 'frontend_languages';
     protected $fillable = [
         'code',
         'name',

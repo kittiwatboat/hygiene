@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\kiosk;
+namespace App\Http\Controllers\frontend_theme;
 
 use App\Http\Controllers\Controller;
-use App\Models\KioskTheme;
+use App\Models\FrontendTheme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-class KioskThemeController extends Controller
+class FrontendThemeController extends Controller
 {
     public function index()
     {
-        $themes = KioskTheme::query()
+        $themes = FrontendTheme::query()
             ->orderByDesc('is_default')
             ->orderBy('name')
             ->get();
@@ -49,7 +49,7 @@ if ($request->hasFile('background_video')) {
     );
 }
 
-      $theme = KioskTheme::create([
+      $theme = FrontendTheme::create([
     'name' => $validated['name'],
     'slug' => $validated['slug'] ?: Str::slug($validated['name']),
 
@@ -78,12 +78,12 @@ if ($request->hasFile('background_video')) {
             ->with('success', 'เพิ่มธีมหน้าตู้สำเร็จ');
     }
 
-    public function edit(KioskTheme $theme)
+    public function edit(FrontendTheme $theme)
     {
         return view('content.pages.kiosk.themes.edit', compact('theme'));
     }
 
-    public function update(Request $request, KioskTheme $theme)
+    public function update(Request $request, FrontendTheme $theme)
     {
         $validated = $this->validateTheme($request, $theme);
 
@@ -165,7 +165,7 @@ $theme->update([
             ->with('success', 'แก้ไขธีมหน้าตู้สำเร็จ');
     }
 
-    public function destroy(KioskTheme $theme)
+    public function destroy(FrontendTheme $theme)
     {
         if ($theme->is_default) {
             return back()->with('error', 'ไม่สามารถลบธีมเริ่มต้นได้');
@@ -186,7 +186,7 @@ $theme->update([
             ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
     }
 
-private function validateTheme(Request $request, ?KioskTheme $theme = null): array
+private function validateTheme(Request $request, ?FrontendTheme $theme = null): array
 {
     return $request->validate(
         [
@@ -363,9 +363,9 @@ private function validateTheme(Request $request, ?KioskTheme $theme = null): arr
     );
 }
 
-    private function clearOtherDefaultThemes(KioskTheme $theme): void
+    private function clearOtherDefaultThemes(FrontendTheme $theme): void
     {
-        KioskTheme::where('id', '!=', $theme->id)
+        FrontendTheme::where('id', '!=', $theme->id)
             ->update([
                 'is_default' => false,
             ]);
