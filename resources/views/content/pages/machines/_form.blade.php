@@ -332,23 +332,32 @@
 </div>
 
 @php
+  $machineLanguageSettings = collect();
+
+  if (isset($machine)) {
+      $machineLanguageSettings = $machine->kioskLanguageSettings ?? collect();
+
+      if (! $machineLanguageSettings instanceof \Illuminate\Support\Collection) {
+          $machineLanguageSettings = collect($machineLanguageSettings);
+      }
+  }
+
   $useCustomLanguages = old(
       'use_custom_languages',
-      isset($machine) && $machine->kioskLanguageSettings->count() > 0 ? 1 : 0
+      $machineLanguageSettings->count() > 0 ? 1 : 0
   );
 
   $selectedMachineLanguageIds = old(
       'machine_language_ids',
-      isset($machine)
-          ? $machine->kioskLanguageSettings->pluck('language_id')->map(fn ($id) => (string) $id)->toArray()
-          : []
+      $machineLanguageSettings
+          ->pluck('language_id')
+          ->map(fn ($id) => (string) $id)
+          ->toArray()
   );
 
   $defaultMachineLanguageId = old(
       'default_machine_language_id',
-      isset($machine)
-          ? optional($machine->kioskLanguageSettings->firstWhere('is_default', true))->language_id
-          : null
+      optional($machineLanguageSettings->firstWhere('is_default', true))->language_id
   );
 @endphp
 
