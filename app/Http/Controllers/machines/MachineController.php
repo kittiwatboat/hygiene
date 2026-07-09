@@ -8,8 +8,8 @@ use App\Models\Machine;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\frontend_theme\FrontendLanguage;
-use App\Models\frontend_theme\FrontendMachineLanguageSetting;
+use App\Models\FrontendLanguage;
+use App\Models\FrontendMachineLanguageSetting;
 
 class MachineController extends Controller
 {
