@@ -58,7 +58,7 @@
 
             <td>
               <span class="badge bg-label-primary">
-                {{ $page->page_key }}
+                {{ $page->screen_key }}
               </span>
             </td>
 
