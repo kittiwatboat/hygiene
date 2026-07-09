@@ -8,8 +8,8 @@ use App\Models\Machine;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\KioskLanguage;
-use App\Models\KioskMachineLanguageSetting;
+use App\Models\frontend_theme\FrontendLanguage;
+use App\Models\frontend_theme\FrontendMachineLanguageSetting;
 
 class MachineController extends Controller
 {
@@ -30,14 +30,14 @@ class MachineController extends Controller
         ->orderBy('name')
         ->get();
 
-    $kioskLanguages = KioskLanguage::where('is_active', 1)
+    $frontendLanguages = FrontendLanguage::where('is_active', 1)
         ->orderBy('sort_order')
         ->orderBy('id')
         ->get();
 
     return view(
         'content.pages.machines.create',
-        compact('locations', 'products', 'kioskLanguages')
+        compact('locations', 'products', 'frontendLanguages')
     );
 }
 
@@ -67,8 +67,8 @@ class MachineController extends Controller
                 'tanks.*.is_active' => ['nullable', 'boolean'],
                 'use_custom_languages' => ['nullable', 'boolean'],
                 'machine_language_ids' => ['nullable', 'array', 'max:3'],
-                'machine_language_ids.*' => ['exists:kiosk_languages,id'],
-                'default_machine_language_id' => ['nullable', 'exists:kiosk_languages,id'],
+                'machine_language_ids.*' => ['exists:frontend_languages,id'],
+                'default_machine_language_id' => ['nullable', 'exists:frontend_languages,id'],
             ],
             [
                 'name.required' => 'กรุณากรอกชื่อตู้',
@@ -130,7 +130,7 @@ $this->syncMachineLanguages($request, $machine);
 {
     $machine->load([
         'tanks.product',
-        'kioskLanguageSettings.language',
+        'frontendLanguageSettings.language',
     ]);
 
     $locations = Location::orderBy('name')->get();
@@ -139,14 +139,14 @@ $this->syncMachineLanguages($request, $machine);
         ->orderBy('name')
         ->get();
 
-    $kioskLanguages = KioskLanguage::where('is_active', 1)
+    $frontendLanguages = FrontendLanguage::where('is_active', 1)
         ->orderBy('sort_order')
         ->orderBy('id')
         ->get();
 
     return view(
         'content.pages.machines.edit',
-        compact('machine', 'locations', 'products', 'kioskLanguages')
+        compact('machine', 'locations', 'products', 'frontendLanguages')
     );
 }
 
@@ -265,7 +265,7 @@ private function syncMachineLanguages(Request $request, Machine $machine): void
     |--------------------------------------------------------------------------
     */
     if (!$request->boolean('use_custom_languages')) {
-        KioskMachineLanguageSetting::where('machine_id', $machine->id)
+        FrontendMachineLanguageSetting::where('machine_id', $machine->id)
             ->delete();
 
         return;
@@ -274,11 +274,11 @@ private function syncMachineLanguages(Request $request, Machine $machine): void
     $languageIds = array_values($request->input('machine_language_ids', []));
     $defaultLanguageId = $request->input('default_machine_language_id');
 
-    KioskMachineLanguageSetting::where('machine_id', $machine->id)
+    FrontendMachineLanguageSetting::where('machine_id', $machine->id)
         ->delete();
 
     foreach ($languageIds as $index => $languageId) {
-        KioskMachineLanguageSetting::create([
+        FrontendMachineLanguageSetting::create([
             'machine_id' => $machine->id,
             'language_id' => $languageId,
             'sort_order' => $index + 1,
