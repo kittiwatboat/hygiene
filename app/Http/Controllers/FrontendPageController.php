@@ -75,28 +75,27 @@ class FrontendPageController extends Controller
     | ตั้งค่าเฉพาะหน้าเลือกภาษา
     |--------------------------------------------------------------------------
     */
-    if ($page->page_key === 'language_page') {
-        $settings = array_merge($settings, [
-            'language_button_shape' => $validated['language_button_shape'] ?? 'circle',
-            'language_button_style' => $validated['language_button_style'] ?? 'icon_top_text_bottom',
-            'language_button_size' => $validated['language_button_size'] ?? 'medium',
+    $settings = $page->settings_json ?? [];
 
+switch ($page->page_key) {
+    case 'first_page':
+        $settings = array_merge($settings, [
+            'show_start_button' => $request->boolean('show_start_button'),
+            'start_button_text' => $request->input('start_button_text', 'เลือกเติมน้ำยา'),
+            'start_button_action' => $request->input('start_button_action', 'language_page'),
+        ]);
+        break;
+
+    case 'language_page':
+        $settings = array_merge($settings, [
+            'language_button_shape' => $request->input('language_button_shape', 'circle'),
+            'language_button_style' => $request->input('language_button_style', 'icon_top_text_bottom'),
+            'language_button_size' => $request->input('language_button_size', 'medium'),
             'show_button_border' => $request->boolean('show_button_border'),
             'show_button_shadow' => $request->boolean('show_button_shadow'),
-
-            'show_home_button' => $request->boolean('show_home_button'),
-            'show_phone_button' => $request->boolean('show_phone_button'),
-            'show_skip_button' => $request->boolean('show_skip_button'),
-
-            'home_button_text' => $validated['home_button_text'] ?? 'หน้าหลัก',
-            'phone_button_text' => $validated['phone_button_text'] ?? 'กรอกเบอร์โทร',
-            'skip_button_text' => $validated['skip_button_text'] ?? 'ข้าม',
-
-            'home_button_action' => $validated['home_button_action'] ?? 'first_page',
-            'phone_button_action' => $validated['phone_button_action'] ?? 'member_page',
-            'skip_button_action' => $validated['skip_button_action'] ?? 'select_product_page',
         ]);
-    }
+        break;
+}
 
     $page->update([
         'name' => $validated['name'],
