@@ -13,7 +13,7 @@
       </p>
     </div>
 
-    <a href="{{ route('kiosk.themes.create') }}" class="btn btn-primary">
+    <a href="{{ route('frontend.themes.create') }}" class="btn btn-primary">
       <i class="icon-base ti tabler-plus me-1"></i>
       เพิ่มธีม
     </a>
@@ -104,7 +104,7 @@
             <td>
               @if ($theme->logo)
                 <img
-                  src="{{ asset('assets/img/kiosk/themes/' . $theme->logo) }}"
+                  src="{{ asset('assets/img/frontend/themes/' . $theme->logo) }}"
                   alt="{{ $theme->name }}"
                   class="rounded border p-1"
                   style="width:80px;height:42px;object-fit:contain;"
@@ -132,7 +132,7 @@
 
                 <div class="dropdown-menu dropdown-menu-end">
                   <a
-                    href="{{ route('kiosk.themes.edit', $theme) }}"
+                    href="{{ route('frontend.themes.edit', $theme) }}"
                     class="dropdown-item"
                   >
                     <i class="icon-base ti tabler-pencil me-2"></i>
@@ -142,7 +142,7 @@
                   <div class="dropdown-divider"></div>
 
                   <form
-                    action="{{ route('kiosk.themes.destroy', $theme) }}"
+                    action="{{ route('frontend.themes.destroy', $theme) }}"
                     method="POST"
                     onsubmit="return confirm('ยืนยันการลบธีมนี้?')"
                   >
@@ -176,7 +176,7 @@
                 เพิ่มธีมเพื่อกำหนดรูปแบบหน้าตู้
               </p>
 
-              <a href="{{ route('kiosk.themes.create') }}" class="btn btn-primary">
+              <a href="{{ route('frontend.themes.create') }}" class="btn btn-primary">
                 เพิ่มธีม
               </a>
             </td>

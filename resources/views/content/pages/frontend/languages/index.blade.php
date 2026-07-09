@@ -47,7 +47,7 @@
         </div>
 
         <a
-          href="{{ route('kiosk.languages.create') }}"
+          href="{{ route('frontend.languages.create') }}"
           class="btn btn-primary"
         >
           <i class="icon-base ti tabler-plus me-1"></i>
@@ -92,7 +92,7 @@
 
       <div class="card-body">
         <form
-          action="{{ route('kiosk.languages.settings.update') }}"
+          action="{{ route('frontend.languages.settings.update') }}"
           method="POST"
         >
           @csrf
@@ -282,7 +282,7 @@
 
                     <div class="dropdown-menu dropdown-menu-end">
                       <a
-                        href="{{ route('kiosk.languages.edit', $language) }}"
+                        href="{{ route('frontend.languages.edit', $language) }}"
                         class="dropdown-item"
                       >
                         <i class="icon-base ti tabler-pencil me-2"></i>
@@ -292,7 +292,7 @@
                       <div class="dropdown-divider"></div>
 
                       <form
-                        action="{{ route('kiosk.languages.destroy', $language) }}"
+                        action="{{ route('frontend.languages.destroy', $language) }}"
                         method="POST"
                         onsubmit="return confirm('ยืนยันการลบภาษานี้?')"
                       >
@@ -328,7 +328,7 @@
                   </p>
 
                   <a
-                    href="{{ route('kiosk.languages.create') }}"
+                    href="{{ route('frontend.languages.create') }}"
                     class="btn btn-primary"
                   >
                     เพิ่มภาษา

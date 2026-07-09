@@ -184,7 +184,7 @@
 
   <div class="col-12 d-flex justify-content-end gap-2">
     <a
-      href="{{ route('kiosk.languages.index') }}"
+      href="{{ route('frontend.languages.index') }}"
       class="btn btn-label-secondary"
     >
       ยกเลิก

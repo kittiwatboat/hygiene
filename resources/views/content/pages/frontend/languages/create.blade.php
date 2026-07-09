@@ -13,11 +13,11 @@
 
   <div class="card-body">
     <form
-      action="{{ route('kiosk.languages.store') }}"
+      action="{{ route('frontend.languages.store') }}"
       method="POST"
       enctype="multipart/form-data"
     >
-      @include('content.pages.kiosk.languages._form')
+      @include('content.pages.frontend.languages._form')
     </form>
   </div>
 </div>

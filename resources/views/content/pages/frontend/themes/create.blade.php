@@ -13,11 +13,11 @@
 
   <div class="card-body">
     <form
-      action="{{ route('kiosk.themes.store') }}"
+      action="{{ route('frontend.themes.store') }}"
       method="POST"
       enctype="multipart/form-data"
     >
-      @include('content.pages.kiosk.themes._form')
+      @include('content.pages.frontend.themes._form')
     </form>
   </div>
 </div>

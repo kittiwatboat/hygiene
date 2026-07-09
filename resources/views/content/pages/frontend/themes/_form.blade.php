@@ -188,7 +188,7 @@
           @if ($theme->background_image)
             <div class="mb-3">
               <img
-                src="{{ asset('assets/img/kiosk/themes/' . $theme->background_image) }}"
+                src="{{ asset('assets/img/frontend/themes/' . $theme->background_image) }}"
                 alt="Background Image"
                 class="rounded border"
                 style="max-width: 260px; max-height: 160px; object-fit: cover;"
@@ -213,7 +213,7 @@
           @if ($theme->background_video)
             <div class="mb-3">
               <video
-                src="{{ asset('assets/videos/kiosk/themes/' . $theme->background_video) }}"
+                src="{{ asset('assets/videos/frontend/themes/' . $theme->background_video) }}"
                 controls
                 muted
                 style="max-width: 320px; max-height: 180px;"
@@ -503,7 +503,7 @@
 
 
   <div class="col-12 d-flex justify-content-end gap-2">
-    <a href="{{ route('kiosk.themes.index') }}" class="btn btn-label-secondary">
+    <a href="{{ route('frontend.themes.index') }}" class="btn btn-label-secondary">
       ยกเลิก
     </a>
 

@@ -13,12 +13,12 @@
 
   <div class="card-body">
     <form
-      action="{{ route('kiosk.languages.update', $language) }}"
+      action="{{ route('frontend.languages.update', $language) }}"
       method="POST"
       enctype="multipart/form-data"
     >
       @method('PUT')
-      @include('content.pages.kiosk.languages._form')
+      @include('content.pages.frontend.languages._form')
     </form>
   </div>
 </div>
