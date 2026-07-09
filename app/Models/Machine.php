@@ -76,8 +76,11 @@ public function sales()
     return $this->hasMany(Sale::class, 'machine_id');
 }
 
-public function frontendLanguageSettings()
+public function frontendMachineLanguageSettings()
 {
-    return $this->hasMany(\App\Models\FrontendMachineLanguageSetting::class, 'machine_id');
+    return $this->hasMany(
+        \App\Models\FrontendMachineLanguageSetting::class,
+        'machine_id'
+    );
 }
 }

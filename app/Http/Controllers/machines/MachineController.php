@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\FrontendLanguage;
 use App\Models\FrontendMachineLanguageSetting;
+use Illuminate\Validation\ValidationException;
 
 class MachineController extends Controller
 {
@@ -129,9 +130,9 @@ $this->syncMachineLanguages($request, $machine);
     public function edit(Machine $machine)
 {
     $machine->load([
-        'tanks.product',
-        'FrontendLanguageSettings.language',
-    ]);
+    'tanks.product',
+    'frontendMachineLanguageSettings.language',
+]);
 
     $locations = Location::orderBy('name')->get();
 
@@ -174,6 +175,11 @@ $this->syncMachineLanguages($request, $machine);
                 'tanks.*.volume_per_press_ml' => ['nullable', 'numeric', 'min:0'],
                 'tanks.*.price_per_press' => ['nullable', 'numeric', 'min:0'],
                 'tanks.*.is_active' => ['nullable', 'boolean'],
+
+                'use_custom_languages' => ['nullable', 'boolean'],
+                'machine_language_ids' => ['nullable', 'array', 'max:3'],
+                'machine_language_ids.*' => ['exists:frontend_languages,id'],
+                'default_machine_language_id' => ['nullable', 'exists:frontend_languages,id'],
             ],
             [
                 'name.required' => 'กรุณากรอกชื่อตู้',
@@ -241,19 +247,31 @@ $this->syncMachineLanguages($request, $machine);
         return;
     }
 
-    $languageIds = $request->input('machine_language_ids', []);
-    $defaultLanguageId = $request->input('default_machine_language_id');
+    $languageIds = array_values(
+        array_map(
+            'strval',
+            $request->input('machine_language_ids', [])
+        )
+    );
+
+    $defaultLanguageId = (string) $request->input('default_machine_language_id');
 
     if (count($languageIds) < 1) {
-        abort(422, 'กรุณาเลือกภาษาอย่างน้อย 1 ภาษา');
+        throw ValidationException::withMessages([
+            'machine_language_ids' => 'กรุณาเลือกภาษาอย่างน้อย 1 ภาษา',
+        ]);
     }
 
     if (count($languageIds) > 3) {
-        abort(422, 'เลือกภาษาได้สูงสุด 3 ภาษา');
+        throw ValidationException::withMessages([
+            'machine_language_ids' => 'เลือกภาษาได้สูงสุด 3 ภาษา',
+        ]);
     }
 
-    if (!$defaultLanguageId || !in_array($defaultLanguageId, $languageIds)) {
-        abort(422, 'ภาษาหลักต้องอยู่ในภาษาที่เลือกใช้งาน');
+    if (!$defaultLanguageId || !in_array($defaultLanguageId, $languageIds, true)) {
+        throw ValidationException::withMessages([
+            'default_machine_language_id' => 'ภาษาหลักต้องอยู่ในภาษาที่เลือกใช้งาน',
+        ]);
     }
 }
 
@@ -271,9 +289,14 @@ private function syncMachineLanguages(Request $request, Machine $machine): void
         return;
     }
 
-    $languageIds = array_values($request->input('machine_language_ids', []));
-    $defaultLanguageId = $request->input('default_machine_language_id');
+    $languageIds = array_values(
+    array_map(
+        'strval',
+        $request->input('machine_language_ids', [])
+    )
+);
 
+$defaultLanguageId = (string) $request->input('default_machine_language_id');
     FrontendMachineLanguageSetting::where('machine_id', $machine->id)
         ->delete();
 

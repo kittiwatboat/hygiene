@@ -335,7 +335,7 @@
   $machineLanguageSettings = collect();
 
   if (isset($machine)) {
-      $machineLanguageSettings = $machine->kioskLanguageSettings ?? collect();
+      $machineLanguageSettings = $machine->frontendMachineLanguageSettings ?? collect();
 
       if (! $machineLanguageSettings instanceof \Illuminate\Support\Collection) {
           $machineLanguageSettings = collect($machineLanguageSettings);
@@ -420,8 +420,8 @@
           </div>
 
           @error('machine_language_ids')
-            <div class="text-danger small mt-1">{{ $message }}</div>
-          @enderror
+  <div class="text-danger small mt-1">{{ $message }}</div>
+@enderror
         </div>
 
         <div class="col-md-4">
@@ -446,8 +446,8 @@
           </select>
 
           @error('default_machine_language_id')
-            <div class="invalid-feedback">{{ $message }}</div>
-          @enderror
+  <div class="invalid-feedback">{{ $message }}</div>
+@enderror
         </div>
 
       </div>
