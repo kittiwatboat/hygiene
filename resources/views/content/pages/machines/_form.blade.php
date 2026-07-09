@@ -391,7 +391,7 @@
           </label>
 
           <div class="row g-2">
-            @foreach ($kioskLanguages as $language)
+            @foreach ($frontendLanguages as $language)
               <div class="col-md-4">
                 <div class="form-check">
                   <input
@@ -435,7 +435,7 @@
           >
             <option value="">-- เลือกภาษาหลัก --</option>
 
-            @foreach ($kioskLanguages as $language)
+            @foreach ($frontendLanguages as $language)
               <option
                 value="{{ $language->id }}"
                 {{ (string) $defaultMachineLanguageId === (string) $language->id ? 'selected' : '' }}
