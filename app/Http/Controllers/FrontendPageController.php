@@ -26,7 +26,7 @@ class FrontendPageController extends Controller
             $query->orderBy('sort_order')->orderBy('id');
         },
     ]);
-        return view('content.pages.frontend.page.edit', compact('page'));
+        return view('content.pages.frontend.pages.edit', compact('page'));
     }
 
     public function update(Request $request, FrontendPage $page)
