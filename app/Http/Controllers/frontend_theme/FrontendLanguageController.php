@@ -74,7 +74,7 @@ class FrontendLanguageController extends Controller
         ]);
 
         return redirect()
-            ->route('content.pages.frontend.languages.index')
+            ->route('frontend.languages.index')
             ->with('success', 'เพิ่มภาษาสำเร็จ');
     }
 
