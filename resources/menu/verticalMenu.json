@@ -44,19 +44,19 @@
     {
   "name": "จัดการหน้าตู้",
   "icon": "menu-icon icon-base ti tabler-device-desktop",
-  "slug": "kiosk-management",
+  "slug": "frontend-management",
   "submenu": [
     {
-      "url": "/kiosk/languages",
+      "url": "/frontend/languages",
       "name": "ตั้งค่าภาษา",
       "icon": "menu-icon icon-base ti tabler-language",
-      "slug": "kiosk-languages"
+      "slug": "frontend-languages"
     },
     {
       "url": "/frontend/themes",
       "name": "ธีมหน้าตู้",
       "icon": "menu-icon icon-base ti tabler-palette",
-      "slug": "kiosk-themes"
+      "slug": "frontend-themes"
     }
   ]
 },
