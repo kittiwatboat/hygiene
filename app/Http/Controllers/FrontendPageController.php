@@ -16,7 +16,7 @@ class FrontendPageController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('content.pages.frontend.page.index', compact('pages'));
+        return view('content.pages.frontend.pages.index', compact('pages'));
     }
 
     public function edit(FrontendPage $page)
