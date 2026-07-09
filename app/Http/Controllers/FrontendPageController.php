@@ -16,14 +16,14 @@ class FrontendPageController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('frontend.pages.index', compact('pages'));
+        return view('content.pages.frontend.page.index', compact('pages'));
     }
 
     public function edit(FrontendPage $page)
     {
         $page->load('media');
 
-        return view('frontend.pages.edit', compact('page'));
+        return view('content.pages.frontend.page.edit', compact('page'));
     }
 
     public function update(Request $request, FrontendPage $page)
