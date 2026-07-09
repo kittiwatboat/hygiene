@@ -162,6 +162,164 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+          @if ($page->page_key === 'language_page')
+  @php
+    $settings = $page->settings_json ?? [];
+  @endphp
+
+  <hr class="my-4">
+
+  <h6 class="mb-2">ตั้งค่าหน้าเลือกภาษา</h6>
+
+  <div class="mb-3">
+    <div class="form-check form-switch mb-2">
+      <input type="hidden" name="show_flag" value="0">
+
+      <input
+        type="checkbox"
+        name="show_flag"
+        value="1"
+        id="show_flag"
+        class="form-check-input"
+        {{ old('show_flag', $settings['show_flag'] ?? true) ? 'checked' : '' }}
+      >
+
+      <label class="form-check-label" for="show_flag">
+        แสดงรูปธง
+      </label>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">รูปแบบปุ่มภาษา</label>
+
+    <select name="language_button_style" class="form-select">
+      <option
+        value="flag_top_text_bottom"
+        {{ old('language_button_style', $settings['language_button_style'] ?? 'flag_top_text_bottom') === 'flag_top_text_bottom' ? 'selected' : '' }}
+      >
+        ธงอยู่บน / ข้อความอยู่ล่าง
+      </option>
+
+      <option
+        value="text_only"
+        {{ old('language_button_style', $settings['language_button_style'] ?? '') === 'text_only' ? 'selected' : '' }}
+      >
+        แสดงเฉพาะข้อความ
+      </option>
+    </select>
+
+    <div class="form-text">
+      ภาษาที่แสดงจะอ้างอิงจากเมนูตั้งค่าภาษา และแสดงสูงสุด 3 ภาษา
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <h6 class="mb-2">ปุ่มด้านล่าง</h6>
+
+  <div class="form-check form-switch mb-3">
+    <input type="hidden" name="show_home_button" value="0">
+
+    <input
+      type="checkbox"
+      name="show_home_button"
+      value="1"
+      id="show_home_button"
+      class="form-check-input"
+      {{ old('show_home_button', $settings['show_home_button'] ?? true) ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="show_home_button">
+      แสดงปุ่มหน้าหลัก
+    </label>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">ข้อความปุ่มหน้าหลัก</label>
+
+    <input
+      type="text"
+      name="home_button_text"
+      value="{{ old('home_button_text', $settings['home_button_text'] ?? 'หน้าหลัก') }}"
+      class="form-control"
+    >
+  </div>
+
+  <input
+    type="hidden"
+    name="home_button_action"
+    value="{{ old('home_button_action', $settings['home_button_action'] ?? 'first_page') }}"
+  >
+
+  <div class="form-check form-switch mb-3">
+    <input type="hidden" name="show_phone_button" value="0">
+
+    <input
+      type="checkbox"
+      name="show_phone_button"
+      value="1"
+      id="show_phone_button"
+      class="form-check-input"
+      {{ old('show_phone_button', $settings['show_phone_button'] ?? true) ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="show_phone_button">
+      แสดงปุ่มกรอกเบอร์โทร
+    </label>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">ข้อความปุ่มกรอกเบอร์โทร</label>
+
+    <input
+      type="text"
+      name="phone_button_text"
+      value="{{ old('phone_button_text', $settings['phone_button_text'] ?? 'กรอกเบอร์โทร') }}"
+      class="form-control"
+    >
+  </div>
+
+  <input
+    type="hidden"
+    name="phone_button_action"
+    value="{{ old('phone_button_action', $settings['phone_button_action'] ?? 'member_page') }}"
+  >
+
+  <div class="form-check form-switch mb-3">
+    <input type="hidden" name="show_skip_button" value="0">
+
+    <input
+      type="checkbox"
+      name="show_skip_button"
+      value="1"
+      id="show_skip_button"
+      class="form-check-input"
+      {{ old('show_skip_button', $settings['show_skip_button'] ?? true) ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="show_skip_button">
+      แสดงปุ่มข้าม
+    </label>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">ข้อความปุ่มข้าม</label>
+
+    <input
+      type="text"
+      name="skip_button_text"
+      value="{{ old('skip_button_text', $settings['skip_button_text'] ?? 'ข้าม') }}"
+      class="form-control"
+    >
+  </div>
+
+  <input
+    type="hidden"
+    name="skip_button_action"
+    value="{{ old('skip_button_action', $settings['skip_button_action'] ?? 'select_product_page') }}"
+  >
+@endif
 
           <div class="mb-3">
             <label class="form-label">หมายเหตุ</label>
@@ -209,6 +367,7 @@
           เพิ่มรูปหรือวิดีโอสำหรับหน้านี้
         </p>
       </div>
+@if ($page->page_key === 'first_page')
 
       <div class="card-body">
         <form
@@ -350,6 +509,7 @@
           </button>
         </form>
       </div>
+      @endif
     </div>
   </div>
 

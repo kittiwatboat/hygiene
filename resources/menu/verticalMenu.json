@@ -57,18 +57,6 @@
       "name": "ธีมหน้าตู้",
       "icon": "menu-icon icon-base ti tabler-palette",
       "slug": "kiosk-themes"
-    },
-    {
-      "url": "/kiosk/layouts",
-      "name": "ส่วนกลางหน้าตู้",
-      "icon": "menu-icon icon-base ti tabler-layout-navbar",
-      "slug": "kiosk-layouts"
-    },
-    {
-      "url": "/kiosk/screens",
-      "name": "หน้าจอการใช้งาน",
-      "icon": "menu-icon icon-base ti tabler-device-tv",
-      "slug": "kiosk-screens"
     }
   ]
 },

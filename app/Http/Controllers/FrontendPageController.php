@@ -27,28 +27,65 @@ class FrontendPageController extends Controller
     }
 
     public function update(Request $request, FrontendPage $page)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'title' => ['nullable', 'string', 'max:255'],
-            'subtitle' => ['nullable', 'string', 'max:255'],
-            'is_active' => ['nullable', 'boolean'],
-            'remark' => ['nullable', 'string'],
-        ]);
+{
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'title' => ['nullable', 'string', 'max:255'],
+        'subtitle' => ['nullable', 'string', 'max:255'],
+        'is_active' => ['nullable', 'boolean'],
+        'remark' => ['nullable', 'string'],
 
-        $page->update([
-            'name' => $validated['name'],
-            'title' => $validated['title'] ?? null,
-            'subtitle' => $validated['subtitle'] ?? null,
-            'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+        'show_home_button' => ['nullable', 'boolean'],
+        'show_phone_button' => ['nullable', 'boolean'],
+        'show_skip_button' => ['nullable', 'boolean'],
 
-        return redirect()
-            ->route('frontend.pages.edit', $page)
-            ->with('success', 'บันทึกข้อมูลหน้าสำเร็จ');
+        'home_button_text' => ['nullable', 'string', 'max:100'],
+        'phone_button_text' => ['nullable', 'string', 'max:100'],
+        'skip_button_text' => ['nullable', 'string', 'max:100'],
+
+        'home_button_action' => ['nullable', 'string', 'max:100'],
+        'phone_button_action' => ['nullable', 'string', 'max:100'],
+        'skip_button_action' => ['nullable', 'string', 'max:100'],
+
+        'show_flag' => ['nullable', 'boolean'],
+        'language_button_style' => ['nullable', 'string', 'max:100'],
+    ]);
+
+    $settings = $page->settings_json ?? [];
+
+    if ($page->page_key === 'language_page') {
+        $settings = array_merge($settings, [
+            'show_home_button' => $request->boolean('show_home_button'),
+            'show_phone_button' => $request->boolean('show_phone_button'),
+            'show_skip_button' => $request->boolean('show_skip_button'),
+
+            'home_button_text' => $validated['home_button_text'] ?? 'หน้าหลัก',
+            'phone_button_text' => $validated['phone_button_text'] ?? 'กรอกเบอร์โทร',
+            'skip_button_text' => $validated['skip_button_text'] ?? 'ข้าม',
+
+            'home_button_action' => $validated['home_button_action'] ?? 'first_page',
+            'phone_button_action' => $validated['phone_button_action'] ?? 'member_page',
+            'skip_button_action' => $validated['skip_button_action'] ?? 'select_product_page',
+
+            'show_flag' => $request->boolean('show_flag'),
+            'language_button_style' => $validated['language_button_style'] ?? 'flag_top_text_bottom',
+            'max_languages' => 3,
+        ]);
     }
 
+    $page->update([
+        'name' => $validated['name'],
+        'title' => $validated['title'] ?? null,
+        'subtitle' => $validated['subtitle'] ?? null,
+        'settings_json' => $settings,
+        'is_active' => $request->boolean('is_active'),
+        'remark' => $validated['remark'] ?? null,
+    ]);
+
+    return redirect()
+        ->route('frontend.pages.edit', $page)
+        ->with('success', 'บันทึกข้อมูลหน้าสำเร็จ');
+}
     public function storeMedia(Request $request, FrontendPage $page)
     {
         $validated = $request->validate(

@@ -11,15 +11,17 @@ class FrontendPage extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'page_key',
-        'name',
-        'title',
-        'subtitle',
-        'is_active',
-        'remark',
-    ];
+    'page_key',
+    'name',
+    'title',
+    'subtitle',
+    'settings_json',
+    'is_active',
+    'remark',
+];
 
     protected $casts = [
+        'settings_json' => 'array',
         'is_active' => 'boolean',
     ];
 
