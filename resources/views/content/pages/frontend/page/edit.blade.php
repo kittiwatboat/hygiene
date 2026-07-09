@@ -50,11 +50,10 @@
 @php
   $slideEnabledPages = [
     'first_page',
-    'language_page',
   ];
 
   $canManageSlides = in_array($page->page_key, $slideEnabledPages, true);
-  $settings = $page->settings_json ?? [];
+$settings = $page->settings_json ?? [];
 @endphp
 
 <div class="row g-4">
@@ -198,8 +197,104 @@
               >
               @break
 
-            @case('language_page')
-              <hr class="my-4">
+@case('language_page')
+  <hr class="my-4">
+
+  <h6 class="mb-2">ตั้งค่าหน้าเลือกภาษา</h6>
+
+  <div class="mb-3">
+    <label class="form-label">รูปทรงปุ่มภาษา</label>
+
+    <select name="language_button_shape" class="form-select">
+      <option value="circle" {{ old('language_button_shape', $settings['language_button_shape'] ?? 'circle') === 'circle' ? 'selected' : '' }}>
+        วงกลม
+      </option>
+
+      <option value="rounded-square" {{ old('language_button_shape', $settings['language_button_shape'] ?? '') === 'rounded-square' ? 'selected' : '' }}>
+        สี่เหลี่ยมมุมมน
+      </option>
+
+      <option value="square" {{ old('language_button_shape', $settings['language_button_shape'] ?? '') === 'square' ? 'selected' : '' }}>
+        สี่เหลี่ยม
+      </option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">รูปแบบปุ่มภาษา</label>
+
+    <select name="language_button_style" class="form-select">
+      <option value="icon_top_text_bottom" {{ old('language_button_style', $settings['language_button_style'] ?? 'icon_top_text_bottom') === 'icon_top_text_bottom' ? 'selected' : '' }}>
+        Icon ด้านบน / ข้อความด้านล่าง
+      </option>
+
+      <option value="icon_only" {{ old('language_button_style', $settings['language_button_style'] ?? '') === 'icon_only' ? 'selected' : '' }}>
+        แสดงเฉพาะ Icon
+      </option>
+
+      <option value="text_only" {{ old('language_button_style', $settings['language_button_style'] ?? '') === 'text_only' ? 'selected' : '' }}>
+        แสดงเฉพาะข้อความ
+      </option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">ขนาดปุ่มภาษา</label>
+
+    <select name="language_button_size" class="form-select">
+      <option value="small" {{ old('language_button_size', $settings['language_button_size'] ?? '') === 'small' ? 'selected' : '' }}>
+        เล็ก
+      </option>
+
+      <option value="medium" {{ old('language_button_size', $settings['language_button_size'] ?? 'medium') === 'medium' ? 'selected' : '' }}>
+        กลาง
+      </option>
+
+      <option value="large" {{ old('language_button_size', $settings['language_button_size'] ?? '') === 'large' ? 'selected' : '' }}>
+        ใหญ่
+      </option>
+    </select>
+  </div>
+
+  <div class="form-check form-switch mb-2">
+    <input type="hidden" name="show_button_border" value="0">
+
+    <input
+      type="checkbox"
+      name="show_button_border"
+      value="1"
+      id="show_button_border"
+      class="form-check-input"
+      {{ old('show_button_border', $settings['show_button_border'] ?? true) ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="show_button_border">
+      แสดงเส้นขอบปุ่มภาษา
+    </label>
+  </div>
+
+  <div class="form-check form-switch mb-4">
+    <input type="hidden" name="show_button_shadow" value="0">
+
+    <input
+      type="checkbox"
+      name="show_button_shadow"
+      value="1"
+      id="show_button_shadow"
+      class="form-check-input"
+      {{ old('show_button_shadow', $settings['show_button_shadow'] ?? true) ? 'checked' : '' }}
+    >
+
+    <label class="form-check-label" for="show_button_shadow">
+      แสดงเงาปุ่มภาษา
+    </label>
+  </div>
+
+  <div class="alert alert-info mb-0">
+    หากต้องการเปลี่ยนภาษาและ icon ของปุ่มภาษา ให้ไปที่เมนู
+    <strong>จัดการภาษา</strong>
+  </div>
+  @break              <hr class="my-4">
               <h6 class="mb-2">ตั้งค่าหน้าเลือกภาษา</h6>
 
               <div class="mb-3">
