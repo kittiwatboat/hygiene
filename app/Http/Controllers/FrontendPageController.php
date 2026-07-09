@@ -35,6 +35,26 @@ class FrontendPageController extends Controller
         'is_active' => ['nullable', 'boolean'],
         'remark' => ['nullable', 'string'],
 
+        /*
+        |--------------------------------------------------------------------------
+        | เฉพาะหน้าเลือกภาษา
+        |--------------------------------------------------------------------------
+        */
+        'language_button_shape' => [
+            'nullable',
+            'in:circle,rounded-square,square',
+        ],
+        'language_button_style' => [
+            'nullable',
+            'in:icon_top_text_bottom,icon_only,text_only',
+        ],
+        'language_button_size' => [
+            'nullable',
+            'in:small,medium,large',
+        ],
+        'show_button_border' => ['nullable', 'boolean'],
+        'show_button_shadow' => ['nullable', 'boolean'],
+
         'show_home_button' => ['nullable', 'boolean'],
         'show_phone_button' => ['nullable', 'boolean'],
         'show_skip_button' => ['nullable', 'boolean'],
@@ -46,15 +66,24 @@ class FrontendPageController extends Controller
         'home_button_action' => ['nullable', 'string', 'max:100'],
         'phone_button_action' => ['nullable', 'string', 'max:100'],
         'skip_button_action' => ['nullable', 'string', 'max:100'],
-
-        'show_flag' => ['nullable', 'boolean'],
-        'language_button_style' => ['nullable', 'string', 'max:100'],
     ]);
 
     $settings = $page->settings_json ?? [];
 
+    /*
+    |--------------------------------------------------------------------------
+    | ตั้งค่าเฉพาะหน้าเลือกภาษา
+    |--------------------------------------------------------------------------
+    */
     if ($page->page_key === 'language_page') {
         $settings = array_merge($settings, [
+            'language_button_shape' => $validated['language_button_shape'] ?? 'circle',
+            'language_button_style' => $validated['language_button_style'] ?? 'icon_top_text_bottom',
+            'language_button_size' => $validated['language_button_size'] ?? 'medium',
+
+            'show_button_border' => $request->boolean('show_button_border'),
+            'show_button_shadow' => $request->boolean('show_button_shadow'),
+
             'show_home_button' => $request->boolean('show_home_button'),
             'show_phone_button' => $request->boolean('show_phone_button'),
             'show_skip_button' => $request->boolean('show_skip_button'),
@@ -66,10 +95,6 @@ class FrontendPageController extends Controller
             'home_button_action' => $validated['home_button_action'] ?? 'first_page',
             'phone_button_action' => $validated['phone_button_action'] ?? 'member_page',
             'skip_button_action' => $validated['skip_button_action'] ?? 'select_product_page',
-
-            'show_flag' => $request->boolean('show_flag'),
-            'language_button_style' => $validated['language_button_style'] ?? 'flag_top_text_bottom',
-            'max_languages' => 3,
         ]);
     }
 

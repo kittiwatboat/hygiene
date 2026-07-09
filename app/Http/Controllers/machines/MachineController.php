@@ -32,9 +32,13 @@ class MachineController extends Controller
         ->get();
 
     $frontendLanguages = FrontendLanguage::where('is_active', 1)
-        ->orderBy('sort_order')
-        ->orderBy('id')
-        ->get();
+    ->whereHas('setting', function ($query) {
+        $query->where('is_active', 1);
+    })
+    ->with('setting')
+    ->orderBy('sort_order')
+    ->orderBy('id')
+    ->get();
 
     return view(
         'content.pages.machines.create',
@@ -141,9 +145,13 @@ $this->syncMachineLanguages($request, $machine);
         ->get();
 
     $frontendLanguages = FrontendLanguage::where('is_active', 1)
-        ->orderBy('sort_order')
-        ->orderBy('id')
-        ->get();
+    ->whereHas('setting', function ($query) {
+        $query->where('is_active', 1);
+    })
+    ->with('setting')
+    ->orderBy('sort_order')
+    ->orderBy('id')
+    ->get();
 
     return view(
         'content.pages.machines.edit',
