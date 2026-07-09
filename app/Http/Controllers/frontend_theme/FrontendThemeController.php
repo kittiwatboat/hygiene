@@ -17,12 +17,12 @@ class FrontendThemeController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('content.pages.kiosk.themes.index', compact('themes'));
+        return view('content.pages.frontend.themes.index', compact('themes'));
     }
 
     public function create()
     {
-        return view('content.pages.kiosk.themes.create');
+        return view('content.pages.frontend.themes.create');
     }
 
     public function store(Request $request)
@@ -74,13 +74,13 @@ if ($request->hasFile('background_video')) {
         }
 
         return redirect()
-            ->route('kiosk.themes.index')
+            ->route('frontend.themes.index')
             ->with('success', 'เพิ่มธีมหน้าตู้สำเร็จ');
     }
 
     public function edit(FrontendTheme $theme)
     {
-        return view('content.pages.kiosk.themes.edit', compact('theme'));
+        return view('content.pages.frontend.themes.edit', compact('theme'));
     }
 
     public function update(Request $request, FrontendTheme $theme)
@@ -161,7 +161,7 @@ $theme->update([
         }
 
         return redirect()
-            ->route('kiosk.themes.index')
+            ->route('frontend.themes.index')
             ->with('success', 'แก้ไขธีมหน้าตู้สำเร็จ');
     }
 
@@ -182,7 +182,7 @@ $theme->update([
         $theme->delete();
 
         return redirect()
-            ->route('kiosk.themes.index')
+            ->route('frontend.themes.index')
             ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
     }
 
@@ -199,7 +199,7 @@ private function validateTheme(Request $request, ?FrontendTheme $theme = null): 
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('kiosk_themes', 'slug')->ignore($theme?->id),
+                Rule::unique('frontend_themes', 'slug')->ignore($theme?->id),
             ],
 
             /*
@@ -373,7 +373,7 @@ private function validateTheme(Request $request, ?FrontendTheme $theme = null): 
 
     private function uploadLogo($image): string
     {
-        $uploadPath = base_path('../public_html/assets/img/kiosk/themes');
+        $uploadPath = base_path('../public_html/assets/img/frontend/themes');
 
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0755, true);
@@ -394,7 +394,7 @@ private function validateTheme(Request $request, ?FrontendTheme $theme = null): 
             return;
         }
 
-        $filePath = base_path('../public_html/assets/img/kiosk/themes/' . $fileName);
+        $filePath = base_path('../public_html/assets/img/frontend/themes/' . $fileName);
 
         if (file_exists($filePath)) {
             unlink($filePath);
@@ -402,7 +402,7 @@ private function validateTheme(Request $request, ?FrontendTheme $theme = null): 
     }
     private function uploadThemeImage($image): string
 {
-    $uploadPath = base_path('../public_html/assets/img/kiosk/themes');
+    $uploadPath = base_path('../public_html/assets/img/frontend/themes');
 
     if (!is_dir($uploadPath)) {
         mkdir($uploadPath, 0755, true);
@@ -419,7 +419,7 @@ private function validateTheme(Request $request, ?FrontendTheme $theme = null): 
 
 private function uploadThemeVideo($video): string
 {
-    $uploadPath = base_path('../public_html/assets/videos/kiosk/themes');
+    $uploadPath = base_path('../public_html/assets/videos/frontend/themes');
 
     if (!is_dir($uploadPath)) {
         mkdir($uploadPath, 0755, true);
@@ -440,7 +440,7 @@ private function deleteThemeImage(?string $fileName): void
         return;
     }
 
-    $filePath = base_path('../public_html/assets/img/kiosk/themes/' . $fileName);
+    $filePath = base_path('../public_html/assets/img/frontend/themes/' . $fileName);
 
     if (file_exists($filePath)) {
         unlink($filePath);
@@ -453,7 +453,7 @@ private function deleteThemeVideo(?string $fileName): void
         return;
     }
 
-    $filePath = base_path('../public_html/assets/videos/kiosk/themes/' . $fileName);
+    $filePath = base_path('../public_html/assets/videos/frontend/themes/' . $fileName);
 
     if (file_exists($filePath)) {
         unlink($filePath);

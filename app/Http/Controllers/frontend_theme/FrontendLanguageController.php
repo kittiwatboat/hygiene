@@ -118,7 +118,7 @@ class FrontendLanguageController extends Controller
         ]);
 
         return redirect()
-            ->route('kiosk.languages.index')
+            ->route('frontend.languages.index')
             ->with('success', 'แก้ไขภาษาสำเร็จ');
     }
 
@@ -136,7 +136,7 @@ class FrontendLanguageController extends Controller
         $language->delete();
 
         return redirect()
-            ->route('kiosk.languages.index')
+            ->route('frontend.languages.index')
             ->with('success', 'ลบภาษาสำเร็จ');
     }
 
@@ -192,7 +192,7 @@ class FrontendLanguageController extends Controller
         });
 
         return redirect()
-            ->route('kiosk.languages.index')
+            ->route('frontend.languages.index')
             ->with('success', 'บันทึกภาษาที่ใช้หน้าตู้สำเร็จ');
     }
 
