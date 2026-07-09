@@ -73,11 +73,11 @@
   @endif
 
   @if ($page->page_key === 'first_page' || (int) $page->id === 1)
-    @include('content.pages.frontend.page.form.first-page')
+    @include('content.pages.frontend.pages.form.first-page')
   @elseif ($page->page_key === 'language_page' || (int) $page->id === 2)
-    @include('content.pages.frontend.page.form.language-page')
+    @include('content.pages.frontend.pages.form.language-page')
   @else
-    @include('content.pages.frontend.page.form.default-page')
+    @include('content.pages.frontend.pages.form.default-page')
   @endif
 
 
