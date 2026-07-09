@@ -35,7 +35,7 @@ class FrontendLanguageController extends Controller
         )->language_id;
 
         return view(
-            'content.pages.kiosk.languages.index',
+            'content.pages.frontend.languages.index',
             compact(
                 'languages',
                 'activeSettings',
@@ -47,7 +47,7 @@ class FrontendLanguageController extends Controller
 
     public function create()
     {
-        return view('content.pages.kiosk.languages.create');
+        return view('content.pages.frontend.languages.create');
     }
 
     public function store(Request $request)
@@ -74,13 +74,13 @@ class FrontendLanguageController extends Controller
         ]);
 
         return redirect()
-            ->route('kiosk.languages.index')
+            ->route('content.pages.frontend.languages.index')
             ->with('success', 'เพิ่มภาษาสำเร็จ');
     }
 
     public function edit(FrontendLanguage $language)
     {
-        return view('content.pages.kiosk.languages.edit', compact('language'));
+        return view('content.pages.frontend.languages.edit', compact('language'));
     }
 
     public function update(Request $request, FrontendLanguage $language)

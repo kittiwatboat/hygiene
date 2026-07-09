@@ -53,7 +53,7 @@
       "slug": "kiosk-languages"
     },
     {
-      "url": "/kiosk/themes",
+      "url": "/frontend/themes",
       "name": "ธีมหน้าตู้",
       "icon": "menu-icon icon-base ti tabler-palette",
       "slug": "kiosk-themes"
