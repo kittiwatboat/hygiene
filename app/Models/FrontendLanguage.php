@@ -48,10 +48,10 @@ protected $table = 'frontend_languages';
     }
     public function setting(): HasOne
 {
-    return $this->hasOne(KioskLanguageSetting::class, 'language_id');
+    return $this->hasOne(FrontendLanguageSetting::class, 'language_id');
 }
 public function machineSettings()
 {
-    return $this->hasMany(\App\Models\KioskMachineLanguageSetting::class, 'language_id');
+    return $this->hasMany(\App\Models\FrontendMachineLanguageSetting::class, 'language_id');
 }
 }

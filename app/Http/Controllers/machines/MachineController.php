@@ -130,7 +130,7 @@ $this->syncMachineLanguages($request, $machine);
 {
     $machine->load([
         'tanks.product',
-        'frontendLanguageSettings.language',
+        'FrontendLanguageSettings.language',
     ]);
 
     $locations = Location::orderBy('name')->get();
