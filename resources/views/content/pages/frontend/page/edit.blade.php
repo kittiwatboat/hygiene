@@ -72,18 +72,14 @@
     </div>
   @endif
 
-  @switch($page->page_key)
-    @case('first_page')
-      @include('frontend.pages.forms.first-page')
-      @break
+  @if ($page->page_key === 'first_page' || (int) $page->id === 1)
+    @include('frontend.pages.forms.first-page')
+  @elseif ($page->page_key === 'language_page' || (int) $page->id === 2)
+    @include('frontend.pages.forms.language-page')
+  @else
+    @include('frontend.pages.forms.default-page')
+  @endif
 
-    @case('language_page')
-      @include('frontend.pages.forms.language-page')
-      @break
-
-    @default
-      @include('frontend.pages.forms.default-page')
-  @endswitch
 
 </div>
 @endsection

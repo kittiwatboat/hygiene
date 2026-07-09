@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header">
       <h5 class="mb-1">ข้อมูลหน้าแรก</h5>
-      <p class="text-muted mb-0">ตั้งค่าข้อความและปุ่มของหน้าแรก</p>
+      <p class="text-muted mb-0">ตั้งค่าข้อมูลพื้นฐานของหน้าแรก</p>
     </div>
 
     <div class="card-body">
@@ -29,31 +29,6 @@
           <input type="text" name="subtitle" value="{{ old('subtitle', $page->subtitle) }}" class="form-control">
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">ข้อความปุ่มเริ่มต้น</label>
-          <input
-            type="text"
-            name="start_button_text"
-            value="{{ old('start_button_text', $settings['start_button_text'] ?? 'เลือกเติมน้ำยา') }}"
-            class="form-control"
-          >
-        </div>
-
-        <input type="hidden" name="start_button_action" value="language_page">
-
-        <div class="form-check form-switch mb-3">
-          <input type="hidden" name="show_start_button" value="0">
-          <input
-            type="checkbox"
-            name="show_start_button"
-            value="1"
-            id="show_start_button"
-            class="form-check-input"
-            {{ old('show_start_button', $settings['show_start_button'] ?? true) ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="show_start_button">แสดงปุ่มเริ่มต้น</label>
-        </div>
-
         <div class="form-check form-switch mb-4">
           <input type="hidden" name="is_active" value="0">
           <input
@@ -67,15 +42,17 @@
           <label class="form-check-label" for="is_active">เปิดใช้งานหน้านี้</label>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">บันทึกข้อมูลหน้าแรก</button>
+        <button type="submit" class="btn btn-primary w-100">
+          บันทึกข้อมูลหน้าแรก
+        </button>
       </form>
     </div>
   </div>
 
   <div class="card mt-4">
     <div class="card-header">
-      <h5 class="mb-1">เพิ่ม Banner / Video</h5>
-      <p class="text-muted mb-0">เพิ่มรูปหรือวิดีโอ และจัดลำดับการเล่น</p>
+      <h5 class="mb-1">เพิ่ม Slide / Banner</h5>
+      <p class="text-muted mb-0">เพิ่มได้ทั้งรูปภาพและวิดีโอ</p>
     </div>
 
     <div class="card-body">
@@ -93,16 +70,18 @@
         <div class="mb-3">
           <label class="form-label">ไฟล์</label>
           <input type="file" name="file" id="mediaFileInput" class="form-control" required>
-          <div class="form-text">รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV</div>
+          <div class="form-text">
+            รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV
+          </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">หัวข้อสไลด์</label>
+          <label class="form-label">หัวข้อ Slide</label>
           <input type="text" name="title" class="form-control">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">คำอธิบายสไลด์</label>
+          <label class="form-label">คำอธิบาย Slide</label>
           <input type="text" name="subtitle" class="form-control">
         </div>
 
@@ -129,11 +108,12 @@
         <div class="form-check form-switch mt-3 mb-4">
           <input type="hidden" name="is_active" value="0">
           <input type="checkbox" name="is_active" value="1" id="media_is_active" class="form-check-input" checked>
-          <label class="form-check-label" for="media_is_active">เปิดใช้งานสไลด์นี้</label>
+          <label class="form-check-label" for="media_is_active">เปิดใช้งาน Slide นี้</label>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">
-          เพิ่ม Banner / Video
+          <i class="icon-base ti tabler-plus me-1"></i>
+          เพิ่ม Slide / Banner
         </button>
       </form>
     </div>
@@ -144,7 +124,7 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between gap-3">
       <div>
-        <h5 class="mb-1">รายการ Banner / Video</h5>
+        <h5 class="mb-1">รายการ Slide / Banner</h5>
         <p class="text-muted mb-0">ระบบจะเล่นตามลำดับจากน้อยไปมาก</p>
       </div>
 
@@ -157,12 +137,12 @@
       <table class="table table-hover">
         <thead class="table-light">
           <tr>
-            <th>ลำดับ</th>
-            <th>ตัวอย่าง</th>
+            <th style="width: 80px;">ลำดับ</th>
+            <th style="width: 220px;">ตัวอย่าง</th>
             <th>รายละเอียด</th>
-            <th>เวลา</th>
-            <th>สถานะ</th>
-            <th class="text-center">จัดการ</th>
+            <th style="width: 100px;">เวลา</th>
+            <th style="width: 110px;">สถานะ</th>
+            <th style="width: 100px;" class="text-center">จัดการ</th>
           </tr>
         </thead>
 
@@ -183,8 +163,18 @@
                 <span class="badge {{ $media->media_type === 'video' ? 'bg-label-danger' : 'bg-label-info' }}">
                   {{ $media->media_type === 'video' ? 'Video' : 'Image' }}
                 </span>
-                <div class="fw-medium mt-1">{{ $media->title ?: '-' }}</div>
-                <small class="text-muted">{{ $media->subtitle }}</small>
+
+                <div class="fw-medium mt-1">
+                  {{ $media->title ?: '-' }}
+                </div>
+
+                @if ($media->subtitle)
+                  <small class="text-muted d-block">{{ $media->subtitle }}</small>
+                @endif
+
+                <small class="text-muted d-block">
+                  object-fit: {{ $media->object_fit }}
+                </small>
               </td>
 
               <td>{{ $media->duration_seconds }} วิ</td>
@@ -199,18 +189,21 @@
                 <form
                   action="{{ route('frontend.pages.media.destroy', $media) }}"
                   method="POST"
-                  onsubmit="return confirm('ยืนยันการลบรายการนี้?')"
+                  onsubmit="return confirm('ยืนยันการลบ Slide นี้?')"
                 >
                   @csrf
                   @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-danger">ลบ</button>
+
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    ลบ
+                  </button>
                 </form>
               </td>
             </tr>
           @empty
             <tr>
               <td colspan="6" class="text-center py-5">
-                ยังไม่มี Banner / Video
+                ยังไม่มี Slide / Banner
               </td>
             </tr>
           @endforelse

@@ -391,24 +391,12 @@ Route::prefix('promotions')
             ->name('destroy');
     });
 
-    Route::prefix('frontend/pages')
-    ->name('frontend.pages.')
-    ->group(function () {
-        Route::get('/', [FrontendPageController::class, 'index'])
-            ->name('index');
+    Route::prefix('frontend/pages')->name('frontend.pages.')->group(function () {
+    Route::get('/', [FrontendPageController::class, 'index'])->name('index');
+    Route::get('/{page}/edit', [FrontendPageController::class, 'edit'])->name('edit');
+    Route::put('/{page}', [FrontendPageController::class, 'update'])->name('update');
 
-        Route::get('/{page}/edit', [FrontendPageController::class, 'edit'])
-            ->name('edit');
-
-        Route::put('/{page}', [FrontendPageController::class, 'update'])
-            ->name('update');
-
-        Route::post('/{page}/media', [FrontendPageController::class, 'storeMedia'])
-            ->name('media.store');
-
-        Route::put('/media/{media}', [FrontendPageController::class, 'updateMedia'])
-            ->name('media.update');
-
-        Route::delete('/media/{media}', [FrontendPageController::class, 'destroyMedia'])
-            ->name('media.destroy');
-    });
+    Route::post('/{page}/media', [FrontendPageController::class, 'storeMedia'])->name('media.store');
+    Route::put('/media/{media}', [FrontendPageController::class, 'updateMedia'])->name('media.update');
+    Route::delete('/media/{media}', [FrontendPageController::class, 'destroyMedia'])->name('media.destroy');
+});

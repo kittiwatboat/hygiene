@@ -21,8 +21,11 @@ class FrontendPageController extends Controller
 
     public function edit(FrontendPage $page)
     {
-        $page->load('media');
-
+        $page->load([
+        'media' => function ($query) {
+            $query->orderBy('sort_order')->orderBy('id');
+        },
+    ]);
         return view('content.pages.frontend.page.edit', compact('page'));
     }
 
