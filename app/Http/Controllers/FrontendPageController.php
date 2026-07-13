@@ -58,17 +58,9 @@ class FrontendPageController extends Controller
         'show_button_border' => ['nullable', 'boolean'],
         'show_button_shadow' => ['nullable', 'boolean'],
 
-        'show_home_button' => ['nullable', 'boolean'],
         'show_phone_button' => ['nullable', 'boolean'],
-        'show_skip_button' => ['nullable', 'boolean'],
 
-        'home_button_text' => ['nullable', 'string', 'max:100'],
         'phone_button_text' => ['nullable', 'string', 'max:100'],
-        'skip_button_text' => ['nullable', 'string', 'max:100'],
-
-        'home_button_action' => ['nullable', 'string', 'max:100'],
-        'phone_button_action' => ['nullable', 'string', 'max:100'],
-        'skip_button_action' => ['nullable', 'string', 'max:100'],
 
         'language_button_shape' => ['nullable', 'in:circle,rounded-square,square'],
 'language_button_style' => ['nullable', 'in:icon_top_text_bottom,icon_left_text_right,icon_only,text_only'],
@@ -77,17 +69,6 @@ class FrontendPageController extends Controller
 'show_button_border' => ['nullable', 'boolean'],
 'show_button_shadow' => ['nullable', 'boolean'],
 
-'show_home_button' => ['nullable', 'boolean'],
-'home_button_text' => ['nullable', 'string', 'max:100'],
-'home_button_icon' => ['nullable', 'string', 'max:100'],
-
-'show_phone_button' => ['nullable', 'boolean'],
-'phone_button_text' => ['nullable', 'string', 'max:100'],
-'phone_button_icon' => ['nullable', 'string', 'max:100'],
-
-'show_skip_button' => ['nullable', 'boolean'],
-'skip_button_text' => ['nullable', 'string', 'max:100'],
-'skip_button_icon' => ['nullable', 'string', 'max:100'],
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -115,24 +96,8 @@ switch ($page->page_key) {
         'language_button_size' => $request->input('language_button_size', 'medium'),
         'show_button_border' => $request->boolean('show_button_border'),
         'show_button_shadow' => $request->boolean('show_button_shadow'),
-
-        'show_home_button' => $request->boolean('show_home_button'),
-        'home_button_text' => $request->input('home_button_text', 'หน้าหลัก'),
-        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
-        'home_button_action' => $request->input('home_button_action', 'first_page'),
-
-        'show_phone_button' => $request->boolean('show_phone_button'),
-        'phone_button_text' => $request->input('phone_button_text', 'กรอกเบอร์โทร'),
-        'phone_button_icon' => $request->input('phone_button_icon', 'tabler-phone'),
-        'phone_button_action' => $request->input('phone_button_action', 'member_page'),
-
-        'show_skip_button' => $request->boolean('show_skip_button'),
-        'skip_button_text' => $request->input('skip_button_text', 'ข้าม'),
-        'skip_button_icon' => $request->input('skip_button_icon', 'tabler-chevrons-right'),
-        'skip_button_action' => $request->input('skip_button_action', 'select_product_page'),
     ]);
     break;
-        break;
 }
 
     $page->update([
