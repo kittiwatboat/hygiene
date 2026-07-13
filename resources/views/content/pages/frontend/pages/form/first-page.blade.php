@@ -1,8 +1,10 @@
 <div class="col-lg-4">
   <div class="card">
     <div class="card-header">
-      <h5 class="mb-1">ข้อมูลหน้าแรก</h5>
-      <p class="text-muted mb-0">ตั้งค่าข้อมูลพื้นฐานของหน้าแรก</p>
+      <h5 class="mb-1">ตั้งค่าหน้าแรก</h5>
+      <p class="text-muted mb-0">
+        หน้านี้ใช้สำหรับแสดง Banner / Video และปุ่มเริ่มต้นบนหน้าจอตู้
+      </p>
     </div>
 
     <div class="card-body">
@@ -15,22 +17,86 @@
         @endphp
 
         <div class="mb-3">
-          <label class="form-label">ชื่อหน้า</label>
-          <input type="text" name="name" value="{{ old('name', $page->name) }}" class="form-control" required>
+          <label class="form-label">
+            ชื่อหน้า <span class="text-danger">*</span>
+          </label>
+
+          <input
+            type="text"
+            name="name"
+            value="{{ old('name', $page->name) }}"
+            class="form-control @error('name') is-invalid @enderror"
+            required
+          >
+
+          @error('name')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        <hr class="my-4">
+
+        <h6 class="mb-3">ปุ่มเริ่มต้น</h6>
+
+        <div class="form-check form-switch mb-3">
+          <input type="hidden" name="show_start_button" value="0">
+
+          <input
+            type="checkbox"
+            name="show_start_button"
+            value="1"
+            id="show_start_button"
+            class="form-check-input"
+            {{ old('show_start_button', $settings['show_start_button'] ?? true) ? 'checked' : '' }}
+          >
+
+          <label class="form-check-label" for="show_start_button">
+            แสดงปุ่มเริ่มต้น
+          </label>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">หัวข้อ</label>
-          <input type="text" name="title" value="{{ old('title', $page->title) }}" class="form-control">
+          <label class="form-label">Translation Key ข้อความปุ่ม</label>
+
+          <input
+            type="text"
+            value="first_page.start_button"
+            class="form-control"
+            readonly
+          >
+
+          <div class="form-text">
+            ข้อความปุ่มจะถูกแปลอัตโนมัติตามภาษาที่ผู้ใช้เลือก
+          </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">คำอธิบาย</label>
-          <input type="text" name="subtitle" value="{{ old('subtitle', $page->subtitle) }}" class="form-control">
+          <label class="form-label">Icon ปุ่มเริ่มต้น</label>
+
+          <input
+            type="text"
+            name="start_button_icon"
+            value="{{ old('start_button_icon', $settings['start_button_icon'] ?? 'tabler-bottle') }}"
+            class="form-control"
+            placeholder="เช่น tabler-bottle"
+          >
+
+          <div class="form-text">
+            ตัวอย่าง icon: tabler-bottle, tabler-droplet, tabler-shopping-cart
+          </div>
         </div>
 
-        {{-- <div class="form-check form-switch mb-4">
+        <input
+          type="hidden"
+          name="start_button_action"
+          value="{{ old('start_button_action', $settings['start_button_action'] ?? 'language_page') }}"
+        >
+
+        <hr class="my-4">
+
+        <div class="form-check form-switch mb-4">
           <input type="hidden" name="is_active" value="0">
+
           <input
             type="checkbox"
             name="is_active"
@@ -39,11 +105,15 @@
             class="form-check-input"
             {{ old('is_active', (int) $page->is_active) ? 'checked' : '' }}
           >
-          <label class="form-check-label" for="is_active">เปิดใช้งานหน้านี้</label>
-        </div> --}}
+
+          <label class="form-check-label" for="is_active">
+            เปิดใช้งานหน้านี้
+          </label>
+        </div>
 
         <button type="submit" class="btn btn-primary w-100">
-          บันทึกข้อมูลหน้าแรก
+          <i class="icon-base ti tabler-device-floppy me-1"></i>
+          บันทึกหน้าแรก
         </button>
       </form>
     </div>
@@ -51,69 +121,122 @@
 
   <div class="card mt-4">
     <div class="card-header">
-      <h5 class="mb-1">เพิ่ม Slide / Banner</h5>
-      <p class="text-muted mb-0">เพิ่มได้ทั้งรูปภาพและวิดีโอ</p>
+      <h5 class="mb-1">เพิ่ม Banner / Video</h5>
+      <p class="text-muted mb-0">
+        เพิ่มรูปภาพหรือวิดีโอสำหรับแสดงเป็นพื้นหลังหน้าแรก
+      </p>
     </div>
 
     <div class="card-body">
-      <form action="{{ route('frontend.pages.media.store', $page) }}" method="POST" enctype="multipart/form-data">
+      <form
+        action="{{ route('frontend.pages.media.store', $page) }}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         @csrf
 
         <div class="mb-3">
-          <label class="form-label">ประเภทไฟล์</label>
-          <select name="media_type" id="mediaType" class="form-select" required>
+          <label class="form-label">
+            ประเภทไฟล์ <span class="text-danger">*</span>
+          </label>
+
+          <select
+            name="media_type"
+            id="mediaType"
+            class="form-select @error('media_type') is-invalid @enderror"
+            required
+          >
             <option value="image">รูปภาพ</option>
             <option value="video">วิดีโอ</option>
           </select>
+
+          @error('media_type')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="mb-3">
-          <label class="form-label">ไฟล์</label>
-          <input type="file" name="file" id="mediaFileInput" class="form-control" required>
+          <label class="form-label">
+            ไฟล์ <span class="text-danger">*</span>
+          </label>
+
+          <input
+            type="file"
+            name="file"
+            id="mediaFileInput"
+            class="form-control @error('file') is-invalid @enderror"
+            required
+          >
+
+          @error('file')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+
           <div class="form-text">
-            รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV
+            แนะนำขนาด 1920x1080 / รูปภาพ: JPG, PNG, WEBP / วิดีโอ: MP4, WEBM, MOV
           </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">หัวข้อ Slide</label>
-          <input type="text" name="title" class="form-control">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">คำอธิบาย Slide</label>
-          <input type="text" name="subtitle" class="form-control">
         </div>
 
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label">เวลาแสดง / วินาที</label>
-            <input type="number" name="duration_seconds" value="5" class="form-control" min="1">
+
+            <input
+              type="number"
+              name="duration_seconds"
+              value="{{ old('duration_seconds', 5) }}"
+              class="form-control"
+              min="1"
+            >
           </div>
 
           <div class="col-md-6">
             <label class="form-label">ลำดับ</label>
-            <input type="number" name="sort_order" value="0" class="form-control" min="0">
+
+            <input
+              type="number"
+              name="sort_order"
+              value="{{ old('sort_order', 0) }}"
+              class="form-control"
+              min="0"
+            >
           </div>
         </div>
 
         <div class="mt-3">
           <label class="form-label">การแสดงผล</label>
+
           <select name="object_fit" class="form-select">
-            <option value="cover">Cover - เต็มพื้นที่</option>
-            <option value="contain">Contain - เห็นครบทั้งภาพ</option>
+            <option value="cover" {{ old('object_fit', 'cover') === 'cover' ? 'selected' : '' }}>
+              Cover - เต็มพื้นที่
+            </option>
+
+            <option value="contain" {{ old('object_fit') === 'contain' ? 'selected' : '' }}>
+              Contain - เห็นครบทั้งภาพ
+            </option>
           </select>
         </div>
 
         <div class="form-check form-switch mt-3 mb-4">
           <input type="hidden" name="is_active" value="0">
-          <input type="checkbox" name="is_active" value="1" id="media_is_active" class="form-check-input" checked>
-          <label class="form-check-label" for="media_is_active">เปิดใช้งาน Slide นี้</label>
+
+          <input
+            type="checkbox"
+            name="is_active"
+            value="1"
+            id="media_is_active"
+            class="form-check-input"
+            checked
+          >
+
+          <label class="form-check-label" for="media_is_active">
+            เปิดใช้งาน Banner / Video นี้
+          </label>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-plus me-1"></i>
-          เพิ่ม Slide / Banner
+          เพิ่ม Banner / Video
         </button>
       </form>
     </div>
@@ -124,8 +247,10 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between gap-3">
       <div>
-        <h5 class="mb-1">รายการ Slide / Banner</h5>
-        <p class="text-muted mb-0">ระบบจะเล่นตามลำดับจากน้อยไปมาก</p>
+        <h5 class="mb-1">รายการ Banner / Video</h5>
+        <p class="text-muted mb-0">
+          ระบบจะเล่นตามลำดับจากน้อยไปมาก
+        </p>
       </div>
 
       <span class="badge bg-label-primary align-self-start">
@@ -149,13 +274,22 @@
         <tbody>
           @forelse ($page->media as $media)
             <tr>
-              <td>{{ $media->sort_order }}</td>
+              <td>{{ number_format((int) $media->sort_order) }}</td>
 
               <td>
                 @if ($media->media_type === 'video')
-                  <video src="{{ $media->file_url }}" class="frontend-media-thumb" muted controls></video>
+                  <video
+                    src="{{ $media->file_url }}"
+                    class="frontend-media-thumb"
+                    muted
+                    controls
+                  ></video>
                 @else
-                  <img src="{{ $media->file_url }}" class="frontend-media-thumb" alt="">
+                  <img
+                    src="{{ $media->file_url }}"
+                    class="frontend-media-thumb"
+                    alt="Banner"
+                  >
                 @endif
               </td>
 
@@ -169,7 +303,9 @@
                 </div>
 
                 @if ($media->subtitle)
-                  <small class="text-muted d-block">{{ $media->subtitle }}</small>
+                  <small class="text-muted d-block">
+                    {{ $media->subtitle }}
+                  </small>
                 @endif
 
                 <small class="text-muted d-block">
@@ -177,7 +313,7 @@
                 </small>
               </td>
 
-              <td>{{ $media->duration_seconds }} วิ</td>
+              <td>{{ number_format((int) $media->duration_seconds) }} วิ</td>
 
               <td>
                 <span class="badge {{ $media->status_class }}">
@@ -189,7 +325,7 @@
                 <form
                   action="{{ route('frontend.pages.media.destroy', $media) }}"
                   method="POST"
-                  onsubmit="return confirm('ยืนยันการลบ Slide นี้?')"
+                  onsubmit="return confirm('ยืนยันการลบ Banner / Video นี้?')"
                 >
                   @csrf
                   @method('DELETE')
@@ -203,7 +339,7 @@
           @empty
             <tr>
               <td colspan="6" class="text-center py-5">
-                ยังไม่มี Slide / Banner
+                ยังไม่มี Banner / Video
               </td>
             </tr>
           @endforelse

@@ -68,6 +68,9 @@ class FrontendPageController extends Controller
 
 'show_button_border' => ['nullable', 'boolean'],
 'show_button_shadow' => ['nullable', 'boolean'],
+'show_start_button' => ['nullable', 'boolean'],
+'start_button_icon' => ['nullable', 'string', 'max:100'],
+'start_button_action' => ['nullable', 'string', 'max:100'],
 
     ]);
 
@@ -81,13 +84,13 @@ class FrontendPageController extends Controller
     $settings = $page->settings_json ?? [];
 
 switch ($page->page_key) {
-    case 'first_page':
-        $settings = array_merge($settings, [
-            'show_start_button' => $request->boolean('show_start_button'),
-            'start_button_text' => $request->input('start_button_text', 'เลือกเติมน้ำยา'),
-            'start_button_action' => $request->input('start_button_action', 'language_page'),
-        ]);
-        break;
+   case 'first_page':
+    $settings = array_merge($settings, [
+        'show_start_button' => $request->boolean('show_start_button'),
+        'start_button_icon' => $request->input('start_button_icon', 'tabler-bottle'),
+        'start_button_action' => $request->input('start_button_action', 'language_page'),
+    ]);
+    break;
 
    case 'language_page':
     $settings = array_merge($settings, [
