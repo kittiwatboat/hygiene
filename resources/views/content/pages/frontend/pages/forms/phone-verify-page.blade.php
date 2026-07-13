@@ -1,4 +1,3 @@
-
 <div class="col-lg-4">
   <div class="card">
     <div class="card-header">
@@ -9,11 +8,8 @@
     </div>
 
     <div class="card-body">
-<form
-  action="{{ route('frontend.pages.update', $page) }}"
-  method="POST"
-  enctype="multipart/form-data"
->        @csrf
+      <form action="{{ route('frontend.pages.update', $page) }}" method="POST">
+        @csrf
         @method('PUT')
 
         @php
@@ -159,68 +155,30 @@
         </div>
 
         <div class="mb-3">
-  <label class="form-label">รูปแบบ Icon ปุ่มกลับ</label>
+  <label class="form-label">Icon ปุ่มกลับ</label>
 
-  <select name="back_button_icon_type" class="form-select">
-    <option
-      value="icon"
-      {{ old('back_button_icon_type', $settings['back_button_icon_type'] ?? 'icon') === 'icon' ? 'selected' : '' }}
-    >
-      ใช้ Icon จากระบบ
-    </option>
+  <select name="back_button_icon" class="form-select">
+    @php
+      $backIcon = old('back_button_icon', $settings['back_button_icon'] ?? 'tabler-arrow-left');
 
-    <option
-      value="image"
-      {{ old('back_button_icon_type', $settings['back_button_icon_type'] ?? '') === 'image' ? 'selected' : '' }}
-    >
-      อัปโหลดรูปเอง
-    </option>
+      $systemIcons = [
+        'tabler-arrow-left' => 'Arrow Left',
+        'tabler-chevron-left' => 'Chevron Left',
+        'tabler-home' => 'Home',
+        'tabler-circle-arrow-left' => 'Circle Arrow Left',
+        'tabler-caret-left' => 'Caret Left',
+      ];
+    @endphp
+
+    @foreach ($systemIcons as $iconClass => $iconLabel)
+      <option value="{{ $iconClass }}" {{ $backIcon === $iconClass ? 'selected' : '' }}>
+        {{ $iconLabel }}
+      </option>
+    @endforeach
   </select>
-</div>
-
-<div class="mb-3">
-  <label class="form-label">ชื่อ Icon ปุ่มกลับ</label>
-
-  <input
-    type="text"
-    name="back_button_icon"
-    value="{{ old('back_button_icon', $settings['back_button_icon'] ?? 'tabler-arrow-left') }}"
-    class="form-control"
-    placeholder="เช่น tabler-arrow-left"
-  >
 
   <div class="form-text">
-    ใช้เมื่อเลือกรูปแบบเป็น “ใช้ Icon จากระบบ”
-  </div>
-</div>
-
-<div class="mb-3">
-  <label class="form-label">อัปโหลดรูป Icon ปุ่มกลับ</label>
-
-  @if (!empty($settings['back_button_icon_image']))
-    <div class="mb-2">
-      <img
-        src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
-        alt="Back Icon"
-        class="border rounded p-1 bg-white"
-        style="width: 48px; height: 48px; object-fit: contain;"
-      >
-    </div>
-  @endif
-
-  <input
-    type="file"
-    name="back_button_icon_image"
-    class="form-control @error('back_button_icon_image') is-invalid @enderror"
-    accept=".jpg,.jpeg,.png,.webp,.svg"
-  >
-
-  @error('back_button_icon_image')
-    <div class="invalid-feedback">{{ $message }}</div>
-  @enderror
-
-  <div class="form-text">
-    ใช้เมื่อเลือกรูปแบบเป็น “อัปโหลดรูปเอง”
+    เลือก icon สำหรับปุ่มกลับ
   </div>
 </div>
 
@@ -248,68 +206,31 @@
         </div>
 
         <div class="mb-3">
-  <label class="form-label">รูปแบบ Icon ปุ่มตกลง</label>
+  <label class="form-label">Icon ปุ่มตกลง</label>
 
-  <select name="confirm_button_icon_type" class="form-select">
-    <option
-      value="icon"
-      {{ old('confirm_button_icon_type', $settings['confirm_button_icon_type'] ?? 'icon') === 'icon' ? 'selected' : '' }}
-    >
-      ใช้ Icon จากระบบ
-    </option>
+  <select name="confirm_button_icon" class="form-select">
+    @php
+      $confirmIcon = old('confirm_button_icon', $settings['confirm_button_icon'] ?? 'tabler-check');
 
-    <option
-      value="image"
-      {{ old('confirm_button_icon_type', $settings['confirm_button_icon_type'] ?? '') === 'image' ? 'selected' : '' }}
-    >
-      อัปโหลดรูปเอง
-    </option>
+      $confirmIcons = [
+        'tabler-check' => 'Check',
+        'tabler-circle-check' => 'Circle Check',
+        'tabler-arrow-right' => 'Arrow Right',
+        'tabler-chevron-right' => 'Chevron Right',
+        'tabler-circle-arrow-right' => 'Circle Arrow Right',
+        'tabler-login' => 'Login',
+      ];
+    @endphp
+
+    @foreach ($confirmIcons as $iconClass => $iconLabel)
+      <option value="{{ $iconClass }}" {{ $confirmIcon === $iconClass ? 'selected' : '' }}>
+        {{ $iconLabel }}
+      </option>
+    @endforeach
   </select>
-</div>
-
-<div class="mb-3">
-  <label class="form-label">ชื่อ Icon ปุ่มตกลง</label>
-
-  <input
-    type="text"
-    name="confirm_button_icon"
-    value="{{ old('confirm_button_icon', $settings['confirm_button_icon'] ?? 'tabler-check') }}"
-    class="form-control"
-    placeholder="เช่น tabler-check"
-  >
 
   <div class="form-text">
-    ใช้เมื่อเลือกรูปแบบเป็น “ใช้ Icon จากระบบ”
-  </div>
-</div>
-
-<div class="mb-3">
-  <label class="form-label">อัปโหลดรูป Icon ปุ่มตกลง</label>
-
-  @if (!empty($settings['confirm_button_icon_image']))
-    <div class="mb-2">
-      <img
-        src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
-        alt="Confirm Icon"
-        class="border rounded p-1 bg-white"
-        style="width: 48px; height: 48px; object-fit: contain;"
-      >
-    </div>
-  @endif
-
-  <input
-    type="file"
-    name="confirm_button_icon_image"
-    class="form-control @error('confirm_button_icon_image') is-invalid @enderror"
-    accept=".jpg,.jpeg,.png,.webp,.svg"
-  >
-
-  @error('confirm_button_icon_image')
-    <div class="invalid-feedback">{{ $message }}</div>
-  @enderror
-
-  <div class="form-text">
-    ใช้เมื่อเลือกรูปแบบเป็น “อัปโหลดรูปเอง”
+    เลือก icon สำหรับปุ่มตกลง
   </div>
 </div>
 
@@ -332,23 +253,6 @@
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
         </div>
-{{--
-        <div class="form-check form-switch mb-4">
-          <input type="hidden" name="is_active" value="0">
-
-          <input
-            type="checkbox"
-            name="is_active"
-            value="1"
-            id="is_active"
-            class="form-check-input"
-            {{ old('is_active', (int) $page->is_active) ? 'checked' : '' }}
-          >
-
-          <label class="form-check-label" for="is_active">
-            เปิดใช้งานหน้านี้
-          </label>
-        </div> --}}
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-device-floppy me-1"></i>
@@ -506,32 +410,15 @@
               <div class="row g-2 mt-2">
                 <div class="col-6">
                   <button type="button" class="btn btn-outline-primary w-100">
-                   @if (($settings['back_button_icon_type'] ?? 'icon') === 'image' && !empty($settings['back_button_icon_image']))
-  <img
-    src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
-    alt="Back"
-    class="me-1"
-    style="width: 18px; height: 18px; object-fit: contain;"
-  >
-@else
-  <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-arrow-left' }} me-1"></i>
-@endif
+                    <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-arrow-left' }} me-1"></i>
                     phone_verify_page.back_button
                   </button>
                 </div>
 
                 <div class="col-6">
                   <button type="button" class="btn btn-primary w-100">
-@if (($settings['confirm_button_icon_type'] ?? 'icon') === 'image' && !empty($settings['confirm_button_icon_image']))
-  <img
-    src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
-    alt="Confirm"
-    class="me-1"
-    style="width: 18px; height: 18px; object-fit: contain;"
-  >
-@else
-  <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-check' }} me-1"></i>
-@endif                   phone_verify_page.confirm_button
+                    <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-check' }} me-1"></i>
+                    phone_verify_page.confirm_button
                   </button>
                 </div>
               </div>
