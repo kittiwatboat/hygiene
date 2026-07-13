@@ -411,14 +411,12 @@
                 <div class="col-6">
                   <button type="button" class="btn btn-outline-primary w-100">
                     <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-arrow-left' }} me-1"></i>
-                    phone_verify_page.back_button
                   </button>
                 </div>
 
                 <div class="col-6">
                   <button type="button" class="btn btn-primary w-100">
                     <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-check' }} me-1"></i>
-                    phone_verify_page.confirm_button
                   </button>
                 </div>
               </div>
