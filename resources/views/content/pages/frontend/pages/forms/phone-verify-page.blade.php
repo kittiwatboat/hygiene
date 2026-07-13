@@ -264,9 +264,9 @@
 
   <div class="card mt-4">
     <div class="card-header">
-      <h5 class="mb-1">เพิ่ม Banner / Image ด้านซ้าย</h5>
+      <h5 class="mb-1">Banner / Image ด้านซ้าย</h5>
       <p class="text-muted mb-0">
-        เพิ่มภาพโปรโมชั่นหรือ QR สำหรับแสดงด้านซ้ายของหน้ากรอกเบอร์โทร
+        อัปโหลดได้ 1 รูปเท่านั้น หากอัปโหลดใหม่ ระบบจะแทนที่รูปเดิม
       </p>
     </div>
 
@@ -278,28 +278,51 @@
       >
         @csrf
 
-        <input type="hidden" name="media_type" value="image">
+<div class="mb-3">
+  <label class="form-label">
+    ประเภทไฟล์ <span class="text-danger">*</span>
+  </label>
+
+  <select
+    name="media_type"
+    id="mediaType"
+    class="form-select @error('media_type') is-invalid @enderror"
+    required
+  >
+    <option value="image" {{ old('media_type', 'image') === 'image' ? 'selected' : '' }}>
+      รูปภาพ
+    </option>
+
+    <option value="video" {{ old('media_type') === 'video' ? 'selected' : '' }}>
+      วิดีโอ
+    </option>
+  </select>
+
+  @error('media_type')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+</div>
 
         <div class="mb-3">
-          <label class="form-label">
-            ไฟล์รูปภาพ <span class="text-danger">*</span>
-          </label>
+         <label class="form-label">
+  ไฟล์รูปภาพ / วิดีโอ <span class="text-danger">*</span>
+</label>
 
           <input
-            type="file"
-            name="file"
-            class="form-control @error('file') is-invalid @enderror"
-            accept=".jpg,.jpeg,.png,.webp,.svg"
-            required
-          >
+  type="file"
+  name="file"
+  id="mediaFileInput"
+  class="form-control @error('file') is-invalid @enderror"
+  required
+>
 
           @error('file')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
 
           <div class="form-text">
-            แนะนำเป็นภาพแนวนอนหรือ QR ที่รวมกับโปรโมชั่น เช่น 800x600 หรือ 960x540
-          </div>
+  รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV — อัปโหลดได้ 1 รายการ หากอัปโหลดใหม่จะแทนที่ของเดิม
+</div>
         </div>
 
         <div class="mb-3">
@@ -338,7 +361,7 @@
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-plus me-1"></i>
-          เพิ่ม Banner / Image
+          บันทึก / เปลี่ยน Banner
         </button>
       </form>
     </div>
@@ -373,7 +396,14 @@
         <div class="row g-3">
           <div class="col-md-7">
             <div class="border rounded bg-white overflow-hidden" style="height: 260px;">
-              @if ($firstMedia)
+              @if ($firstMedia && $firstMedia->media_type === 'video')
+                <video
+                  src="{{ $firstMedia->file_url }}"
+                  style="width: 100%; height: 100%; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
+                  muted
+                  controls
+                ></video>
+              @elseif ($firstMedia && $firstMedia->media_type === 'image')
                 <img
                   src="{{ $firstMedia->file_url }}"
                   alt="Banner"
@@ -381,7 +411,7 @@
                 >
               @else
                 <div class="h-100 d-flex align-items-center justify-content-center text-muted">
-                  Banner / QR ด้านซ้าย
+                  Banner / Video ด้านซ้าย
                 </div>
               @endif
             </div>
@@ -431,7 +461,7 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between gap-3">
       <div>
-        <h5 class="mb-1">รายการ Banner / Image ด้านซ้าย</h5>
+        <h5 class="mb-1">Banner / Image ปัจจุบัน</h5>
         <p class="text-muted mb-0">
           ใช้สำหรับแสดงโปรโมชั่นหรือ QR ในหน้ากรอกเบอร์โทร
         </p>
@@ -461,15 +491,26 @@
               <td>{{ number_format((int) $media->sort_order) }}</td>
 
               <td>
-                <img
-                  src="{{ $media->file_url }}"
-                  class="frontend-media-thumb"
-                  alt="Banner"
-                >
+                @if ($media->media_type === 'video')
+                  <video
+                    src="{{ $media->file_url }}"
+                    class="frontend-media-thumb"
+                    muted
+                    controls
+                  ></video>
+                @else
+                  <img
+                    src="{{ $media->file_url }}"
+                    class="frontend-media-thumb"
+                    alt="Banner"
+                  >
+                @endif
               </td>
 
               <td>
-                <span class="badge bg-label-info">Image</span>
+                <span class="badge {{ $media->media_type === 'video' ? 'bg-label-danger' : 'bg-label-info' }}">
+  {{ $media->media_type === 'video' ? 'Video' : 'Image' }}
+</span>
 
                 <div class="fw-medium mt-1">
                   {{ $media->title ?: '-' }}

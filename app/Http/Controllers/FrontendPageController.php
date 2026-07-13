@@ -183,23 +183,43 @@ switch ($screenKey) {
             ]
         );
 
-        if ($validated['media_type'] === 'image') {
-            $request->validate([
-                'file' => ['image', 'mimes:jpg,jpeg,png,webp,svg'],
-            ]);
-        }
+        $screenKey = $page->screen_key ?? $page->page_key ?? null;
 
-        if ($validated['media_type'] === 'video') {
-            $request->validate([
-                'file' => ['mimes:mp4,webm,mov'],
-            ]);
-        }
+if ($validated['media_type'] === 'image') {
+    $request->validate([
+        'file' => ['image', 'mimes:jpg,jpeg,png,webp,svg'],
+    ]);
+}
 
-        $fileName = $this->uploadMediaFile(
-            $request->file('file'),
-            $validated['media_type']
+if ($validated['media_type'] === 'video') {
+    $request->validate([
+        'file' => ['mimes:mp4,webm,mov'],
+    ]);
+}
+
+/*
+|--------------------------------------------------------------------------
+| phone_verify_page มี Banner / Media ได้แค่ 1 รายการ
+| จะเป็น image หรือ video ก็ได้
+|--------------------------------------------------------------------------
+*/
+if ($screenKey === 'phone_verify_page') {
+    $oldMediaItems = $page->media()->get();
+
+    foreach ($oldMediaItems as $oldMedia) {
+        $this->deleteMediaFile(
+            $oldMedia->file_path,
+            $oldMedia->media_type
         );
 
+        $oldMedia->delete();
+    }
+}
+
+$fileName = $this->uploadMediaFile(
+    $request->file('file'),
+    $validated['media_type']
+);
         FrontendPageMedia::create([
             'frontend_page_id' => $page->id,
             'media_type' => $validated['media_type'],
@@ -215,7 +235,10 @@ switch ($screenKey) {
 
         return redirect()
             ->route('frontend.pages.edit', $page)
-            ->with('success', 'เพิ่มสไลด์สำเร็จ');
+->with('success', $screenKey === 'phone_verify_page'
+    ? 'บันทึก Banner / Media สำเร็จ'
+    : 'เพิ่มสไลด์สำเร็จ'
+);
     }
 
     public function updateMedia(Request $request, FrontendPageMedia $media)
