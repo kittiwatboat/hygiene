@@ -155,35 +155,25 @@ switch ($screenKey) {
     public function storeMedia(Request $request, FrontendPage $page)
     {
         $validated = $request->validate(
-            [
-                'media_type' => [
-                    'required',
-                    Rule::in(['image', 'video']),
-                ],
-                'file' => [
-                    'required',
-                    'file',
-                    'max:51200',
-                ],
-                'title' => ['nullable', 'string', 'max:255'],
-                'subtitle' => ['nullable', 'string', 'max:255'],
-                'duration_seconds' => ['nullable', 'integer', 'min:1'],
-                'object_fit' => [
-                    'required',
-                    Rule::in(['cover', 'contain']),
-                ],
-                'sort_order' => ['nullable', 'integer', 'min:0'],
-                //'is_active' => ['nullable', 'boolean'],
-                'remark' => ['nullable', 'string'],
-            ],
-            [
-                'media_type.required' => 'กรุณาเลือกประเภทไฟล์',
-                'file.required' => 'กรุณาเลือกไฟล์',
-                'file.max' => 'ไฟล์ต้องมีขนาดไม่เกิน 50 MB',
-            ]
-        );
+    [
+        'media_type' => [
+            'required',
+            Rule::in(['image', 'video']),
+        ],
+        'file' => [
+            'required',
+            'file',
+            'max:51200',
+        ],
+    ],
+    [
+        'media_type.required' => 'กรุณาเลือกประเภทไฟล์',
+        'file.required' => 'กรุณาเลือกไฟล์',
+        'file.max' => 'ไฟล์ต้องมีขนาดไม่เกิน 50 MB',
+    ]
+);
 
-        $screenKey = $page->screen_key ?? $page->page_key ?? null;
+       $screenKey = $page->screen_key ?? $page->page_key ?? null;
 
 if ($validated['media_type'] === 'image') {
     $request->validate([
@@ -197,12 +187,6 @@ if ($validated['media_type'] === 'video') {
     ]);
 }
 
-/*
-|--------------------------------------------------------------------------
-| phone_verify_page มี Banner / Media ได้แค่ 1 รายการ
-| จะเป็น image หรือ video ก็ได้
-|--------------------------------------------------------------------------
-*/
 if ($screenKey === 'phone_verify_page') {
     $oldMediaItems = $page->media()->get();
 
@@ -220,18 +204,18 @@ $fileName = $this->uploadMediaFile(
     $request->file('file'),
     $validated['media_type']
 );
-        FrontendPageMedia::create([
-            'frontend_page_id' => $page->id,
-            'media_type' => $validated['media_type'],
-            'file_path' => $fileName,
-            'title' => $validated['title'] ?? null,
-            'subtitle' => $validated['subtitle'] ?? null,
-            'duration_seconds' => $validated['duration_seconds'] ?? 5,
-            'object_fit' => $validated['object_fit'],
-            'sort_order' => $validated['sort_order'] ?? 0,
-            //'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+
+FrontendPageMedia::create([
+    'frontend_page_id' => $page->id,
+    'media_type' => $validated['media_type'],
+    'file_path' => $fileName,
+    'title' => null,
+    'subtitle' => null,
+    'duration_seconds' => 5,
+    'object_fit' => 'cover',
+    'sort_order' => 0,
+    'remark' => null,
+]);
 
         return redirect()
             ->route('frontend.pages.edit', $page)

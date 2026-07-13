@@ -262,110 +262,76 @@
     </div>
   </div>
 
-  <div class="card mt-4">
-    <div class="card-header">
-      <h5 class="mb-1">Banner / Image ด้านซ้าย</h5>
-      <p class="text-muted mb-0">
-        อัปโหลดได้ 1 รูปเท่านั้น หากอัปโหลดใหม่ ระบบจะแทนที่รูปเดิม
-      </p>
-    </div>
-
-    <div class="card-body">
-      <form
-        action="{{ route('frontend.pages.media.store', $page) }}"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        @csrf
-
-<div class="mb-3">
-  <label class="form-label">
-    ประเภทไฟล์ <span class="text-danger">*</span>
-  </label>
-
-  <select
-    name="media_type"
-    id="mediaType"
-    class="form-select @error('media_type') is-invalid @enderror"
-    required
-  >
-    <option value="image" {{ old('media_type', 'image') === 'image' ? 'selected' : '' }}>
-      รูปภาพ
-    </option>
-
-    <option value="video" {{ old('media_type') === 'video' ? 'selected' : '' }}>
-      วิดีโอ
-    </option>
-  </select>
-
-  @error('media_type')
-    <div class="invalid-feedback">{{ $message }}</div>
-  @enderror
-</div>
-
-        <div class="mb-3">
-         <label class="form-label">
-  ไฟล์รูปภาพ / วิดีโอ <span class="text-danger">*</span>
-</label>
-
-          <input
-  type="file"
-  name="file"
-  id="mediaFileInput"
-  class="form-control @error('file') is-invalid @enderror"
-  required
->
-
-          @error('file')
-            <div class="invalid-feedback">{{ $message }}</div>
-          @enderror
-
-          <div class="form-text">
-  รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV — อัปโหลดได้ 1 รายการ หากอัปโหลดใหม่จะแทนที่ของเดิม
-</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">ชื่อรูป</label>
-          <input type="text" name="title" class="form-control">
-        </div>
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">เวลาแสดง / วินาที</label>
-            <input type="number" name="duration_seconds" value="5" class="form-control" min="1">
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">ลำดับ</label>
-            <input type="number" name="sort_order" value="0" class="form-control" min="0">
-          </div>
-        </div>
-
-        <div class="mt-3">
-          <label class="form-label">การแสดงผล</label>
-
-          <select name="object_fit" class="form-select">
-            <option value="cover">Cover - เต็มพื้นที่</option>
-            <option value="contain">Contain - เห็นครบทั้งภาพ</option>
-          </select>
-        </div>
-
-        <div class="form-check form-switch mt-3 mb-4">
-          <input type="hidden" name="is_active" value="0">
-          <input type="checkbox" name="is_active" value="1" id="media_is_active" class="form-check-input" checked>
-          <label class="form-check-label" for="media_is_active">
-            เปิดใช้งานรูปนี้
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="icon-base ti tabler-plus me-1"></i>
-          บันทึก / เปลี่ยน Banner
-        </button>
-      </form>
-    </div>
+<div class="card mt-4">
+  <div class="card-header">
+    <h5 class="mb-1">Banner / Media ด้านซ้าย</h5>
+    <p class="text-muted mb-0">
+      อัปโหลดได้ 1 รายการเท่านั้น รองรับรูปภาพหรือวิดีโอ หากอัปโหลดใหม่ ระบบจะแทนที่ไฟล์เดิม
+    </p>
   </div>
+
+  <div class="card-body">
+    <form
+      action="{{ route('frontend.pages.media.store', $page) }}"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      @csrf
+
+      <div class="mb-3">
+        <label class="form-label">
+          ประเภทไฟล์ <span class="text-danger">*</span>
+        </label>
+
+        <select
+          name="media_type"
+          id="mediaType"
+          class="form-select @error('media_type') is-invalid @enderror"
+          required
+        >
+          <option value="image" {{ old('media_type', 'image') === 'image' ? 'selected' : '' }}>
+            รูปภาพ
+          </option>
+
+          <option value="video" {{ old('media_type') === 'video' ? 'selected' : '' }}>
+            วิดีโอ
+          </option>
+        </select>
+
+        @error('media_type')
+          <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">
+          ไฟล์รูปภาพ / วิดีโอ <span class="text-danger">*</span>
+        </label>
+
+        <input
+          type="file"
+          name="file"
+          id="mediaFileInput"
+          class="form-control @error('file') is-invalid @enderror"
+          required
+        >
+
+        @error('file')
+          <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+
+        <div class="form-text">
+          รูปภาพ: JPG, PNG, WEBP, SVG / วิดีโอ: MP4, WEBM, MOV
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">
+        <i class="icon-base ti tabler-upload me-1"></i>
+        บันทึก / เปลี่ยน Banner
+      </button>
+    </form>
+  </div>
+</div>
 </div>
 
 <div class="col-lg-8">
@@ -458,101 +424,5 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header d-flex justify-content-between gap-3">
-      <div>
-        <h5 class="mb-1">Banner / Image ปัจจุบัน</h5>
-        <p class="text-muted mb-0">
-          ใช้สำหรับแสดงโปรโมชั่นหรือ QR ในหน้ากรอกเบอร์โทร
-        </p>
-      </div>
 
-      <span class="badge bg-label-primary align-self-start">
-        {{ number_format($page->media->count()) }} รายการ
-      </span>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead class="table-light">
-          <tr>
-            <th style="width: 80px;">ลำดับ</th>
-            <th style="width: 220px;">ตัวอย่าง</th>
-            <th>รายละเอียด</th>
-            <th style="width: 100px;">เวลา</th>
-            <th style="width: 110px;">สถานะ</th>
-            <th style="width: 100px;" class="text-center">จัดการ</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @forelse ($page->media as $media)
-            <tr>
-              <td>{{ number_format((int) $media->sort_order) }}</td>
-
-              <td>
-                @if ($media->media_type === 'video')
-                  <video
-                    src="{{ $media->file_url }}"
-                    class="frontend-media-thumb"
-                    muted
-                    controls
-                  ></video>
-                @else
-                  <img
-                    src="{{ $media->file_url }}"
-                    class="frontend-media-thumb"
-                    alt="Banner"
-                  >
-                @endif
-              </td>
-
-              <td>
-                <span class="badge {{ $media->media_type === 'video' ? 'bg-label-danger' : 'bg-label-info' }}">
-  {{ $media->media_type === 'video' ? 'Video' : 'Image' }}
-</span>
-
-                <div class="fw-medium mt-1">
-                  {{ $media->title ?: '-' }}
-                </div>
-
-                <small class="text-muted d-block">
-                  object-fit: {{ $media->object_fit }}
-                </small>
-              </td>
-
-              <td>{{ number_format((int) $media->duration_seconds) }} วิ</td>
-
-              <td>
-                <span class="badge {{ $media->status_class }}">
-                  {{ $media->status_text }}
-                </span>
-              </td>
-
-              <td class="text-center">
-                <form
-                  action="{{ route('frontend.pages.media.destroy', $media) }}"
-                  method="POST"
-                  onsubmit="return confirm('ยืนยันการลบ Banner / Image นี้?')"
-                >
-                  @csrf
-                  @method('DELETE')
-
-                  <button type="submit" class="btn btn-sm btn-danger">
-                    ลบ
-                  </button>
-                </form>
-              </td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="6" class="text-center py-5">
-                ยังไม่มี Banner / Image
-              </td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
