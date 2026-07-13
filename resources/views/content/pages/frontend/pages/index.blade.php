@@ -41,23 +41,21 @@
       <tbody>
         @forelse ($pages as $index => $page)
           @php
-            $pageTypeLabels = [
-                'first_page' => 'หน้าแรก / Banner',
-                'language_page' => 'หน้าเลือกภาษา',
-                'select_product_page' => 'หน้าเลือกสินค้า',
-                'select_amount_page' => 'หน้าเลือกปริมาณ',
-                'member_page' => 'หน้าสมาชิก / เบอร์โทร',
-                'promotion_page' => 'หน้าโปรโมชั่น',
-                'payment_page' => 'หน้าชำระเงิน',
-                'dispensing_page' => 'หน้ากำลังจ่ายน้ำยา',
-                'receipt_page' => 'หน้าใบเสร็จ',
-                'thank_you_page' => 'หน้าขอบคุณ',
-                'error_page' => 'หน้าแจ้งปัญหา',
-            ];
+  $screenKey = $page->screen_key ?? $page->page_key ?? null;
 
-            $pageTypeLabel = $pageTypeLabels[$page->page_key] ?? 'หน้าทั่วไป';
-          @endphp
+  $pageTypeLabels = [
+      'first_page' => 'หน้าแรก / Banner',
+      'language_page' => 'หน้าเลือกภาษา',
+      'phone_verify_page' => 'หน้ากรอกเบอร์โทร',
+      'select_product_page' => 'หน้าเลือกสินค้า',
+      'select_amount_page' => 'หน้าเลือกปริมาณ',
+      'payment_page' => 'หน้าชำระเงิน',
+      'thank_you_page' => 'หน้าขอบคุณ',
+      'error_page' => 'หน้าแจ้งปัญหา',
+  ];
 
+  $pageTypeLabel = $pageTypeLabels[$screenKey] ?? 'หน้าทั่วไป';
+@endphp
           <tr>
             <td>{{ $index + 1 }}</td>
 

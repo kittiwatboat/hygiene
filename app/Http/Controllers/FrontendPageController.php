@@ -95,7 +95,9 @@ class FrontendPageController extends Controller
     */
     $settings = $page->settings_json ?? [];
 
-switch ($page->page_key) {
+$screenKey = $page->screen_key ?? $page->page_key ?? null;
+
+switch ($screenKey) {
    case 'first_page':
     $settings = array_merge($settings, [
         'show_start_button' => $request->boolean('show_start_button'),

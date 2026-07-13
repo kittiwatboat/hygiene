@@ -72,23 +72,26 @@
     </div>
   @endif
 
-@switch($page->page_key)
+@php
+  $screenKey = $page->screen_key ?? $page->page_key ?? null;
+@endphp
+
+@switch($screenKey)
   @case('first_page')
-    @include('frontend.pages.forms.first-page')
+    @include('content.pages.frontend.pages.forms.first-page')
     @break
 
   @case('language_page')
-    @include('frontend.pages.forms.language-page')
+    @include('content.pages.frontend.pages.forms.language-page')
     @break
 
   @case('phone_verify_page')
-    @include('frontend.pages.forms.phone-verify-page')
+    @include('content.pages.frontend.pages.forms.phone-verify-page')
     @break
 
   @default
-    @include('frontend.pages.forms.default-page')
+    @include('content.pages.frontend.pages.forms.default-page')
 @endswitch
-
 </div>
 @endsection
 
