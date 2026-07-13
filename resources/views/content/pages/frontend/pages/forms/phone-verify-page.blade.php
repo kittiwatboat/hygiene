@@ -109,7 +109,7 @@
 
         <hr class="my-4">
 
-        <h6 class="mb-3">Banner / QR ด้านซ้าย</h6>
+        <h6 class="mb-3">Banner</h6>
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="left_banner_enabled" value="0">
@@ -124,12 +124,12 @@
           >
 
           <label class="form-check-label" for="left_banner_enabled">
-            แสดง Banner / QR ด้านซ้าย
+            แสดง Banner ด้านซ้าย
           </label>
         </div>
 
         <div class="alert alert-info">
-          รูป Banner / QR ด้านซ้าย ให้เพิ่มในส่วน <strong>Banner / Image ด้านล่าง</strong>
+          รูป Banner ด้านซ้าย ให้เพิ่มในส่วน <strong>Banner / Image ด้านล่าง</strong>
           โดยระบบจะใช้รายการที่เปิดใช้งานตามลำดับ
         </div>
 
