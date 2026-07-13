@@ -170,7 +170,7 @@
         </div>
 
 
-        <div class="form-check form-switch mb-4">
+        {{-- <div class="form-check form-switch mb-4">
           <input type="hidden" name="is_active" value="0">
           <input
             type="checkbox"
@@ -183,7 +183,7 @@
           <label class="form-check-label" for="is_active">
             เปิดใช้งานหน้านี้
           </label>
-        </div>
+        </div> --}}
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-device-floppy me-1"></i>
@@ -243,7 +243,7 @@
           </div>
         </div>
 
-        
+
       </div>
     </div>
   </div>

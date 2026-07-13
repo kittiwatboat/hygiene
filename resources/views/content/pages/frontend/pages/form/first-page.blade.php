@@ -217,7 +217,7 @@
           </select>
         </div>
 
-        <div class="form-check form-switch mt-3 mb-4">
+        {{-- <div class="form-check form-switch mt-3 mb-4">
           <input type="hidden" name="is_active" value="0">
 
           <input
@@ -232,7 +232,7 @@
           <label class="form-check-label" for="media_is_active">
             เปิดใช้งาน Banner / Video นี้
           </label>
-        </div>
+        </div> --}}
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-plus me-1"></i>
