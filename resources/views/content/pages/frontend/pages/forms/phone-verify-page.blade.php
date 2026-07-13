@@ -1,3 +1,4 @@
+
 <div class="col-lg-4">
   <div class="card">
     <div class="card-header">
@@ -8,8 +9,11 @@
     </div>
 
     <div class="card-body">
-      <form action="{{ route('frontend.pages.update', $page) }}" method="POST">
-        @csrf
+<form
+  action="{{ route('frontend.pages.update', $page) }}"
+  method="POST"
+  enctype="multipart/form-data"
+>        @csrf
         @method('PUT')
 
         @php
@@ -155,16 +159,34 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Icon ปุ่มกลับ</label>
+  <label class="form-label">Icon ปุ่มกลับ</label>
 
-          <input
-            type="text"
-            name="back_button_icon"
-            value="{{ old('back_button_icon', $settings['back_button_icon'] ?? 'tabler-arrow-left') }}"
-            class="form-control"
-            placeholder="เช่น tabler-arrow-left"
-          >
-        </div>
+  @if (!empty($settings['back_button_icon_image']))
+    <div class="mb-2">
+      <img
+        src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
+        alt="Back Icon"
+        style="width: 48px; height: 48px; object-fit: contain;"
+        class="border rounded p-1 bg-white"
+      >
+    </div>
+  @endif
+
+  <input
+    type="file"
+    name="back_button_icon_image"
+    class="form-control @error('back_button_icon_image') is-invalid @enderror"
+    accept=".jpg,.jpeg,.png,.webp,.svg"
+  >
+
+  @error('back_button_icon_image')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+
+  <div class="form-text">
+    รองรับ JPG, PNG, WEBP, SVG
+  </div>
+</div>
 
         <input
           type="hidden"
@@ -190,16 +212,34 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Icon ปุ่มตกลง</label>
+  <label class="form-label">Icon ปุ่มตกลง</label>
 
-          <input
-            type="text"
-            name="confirm_button_icon"
-            value="{{ old('confirm_button_icon', $settings['confirm_button_icon'] ?? 'tabler-check') }}"
-            class="form-control"
-            placeholder="เช่น tabler-check"
-          >
-        </div>
+  @if (!empty($settings['confirm_button_icon_image']))
+    <div class="mb-2">
+      <img
+        src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
+        alt="Confirm Icon"
+        style="width: 48px; height: 48px; object-fit: contain;"
+        class="border rounded p-1 bg-white"
+      >
+    </div>
+  @endif
+
+  <input
+    type="file"
+    name="confirm_button_icon_image"
+    class="form-control @error('confirm_button_icon_image') is-invalid @enderror"
+    accept=".jpg,.jpeg,.png,.webp,.svg"
+  >
+
+  @error('confirm_button_icon_image')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+
+  <div class="form-text">
+    รองรับ JPG, PNG, WEBP, SVG
+  </div>
+</div>
 
         <input
           type="hidden"
@@ -220,7 +260,7 @@
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
         </div>
-
+{{--
         <div class="form-check form-switch mb-4">
           <input type="hidden" name="is_active" value="0">
 
@@ -236,7 +276,7 @@
           <label class="form-check-label" for="is_active">
             เปิดใช้งานหน้านี้
           </label>
-        </div>
+        </div> --}}
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-device-floppy me-1"></i>
@@ -394,15 +434,32 @@
               <div class="row g-2 mt-2">
                 <div class="col-6">
                   <button type="button" class="btn btn-outline-primary w-100">
-                    <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-arrow-left' }} me-1"></i>
+                    @if (!empty($settings['back_button_icon_image']))
+  <img
+    src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
+    alt="Back"
+    style="width: 18px; height: 18px; object-fit: contain;"
+    class="me-1"
+  >
+@else
+  <i class="icon-base ti tabler-arrow-left me-1"></i>
+@endif
                     phone_verify_page.back_button
                   </button>
                 </div>
 
                 <div class="col-6">
                   <button type="button" class="btn btn-primary w-100">
-                    <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-check' }} me-1"></i>
-                    phone_verify_page.confirm_button
+@if (!empty($settings['confirm_button_icon_image']))
+  <img
+    src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
+    alt="Confirm"
+    style="width: 18px; height: 18px; object-fit: contain;"
+    class="me-1"
+  >
+@else
+  <i class="icon-base ti tabler-check me-1"></i>
+@endif                    phone_verify_page.confirm_button
                   </button>
                 </div>
               </div>

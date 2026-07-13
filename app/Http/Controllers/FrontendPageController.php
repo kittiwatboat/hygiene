@@ -7,6 +7,7 @@ use App\Models\FrontendPageMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Models\FrontendLanguage;
 
 class FrontendPageController extends Controller
 {
@@ -83,6 +84,8 @@ class FrontendPageController extends Controller
 'show_confirm_button' => ['nullable', 'boolean'],
 'confirm_button_icon' => ['nullable', 'string', 'max:100'],
 'confirm_button_action' => ['nullable', 'string', 'max:100'],
+'back_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
+'confirm_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 
     ]);
 
@@ -116,6 +119,25 @@ switch ($screenKey) {
     ]);
     break;
     case 'phone_verify_page':
+    $backButtonIconImage = $settings['back_button_icon_image'] ?? null;
+    $confirmButtonIconImage = $settings['confirm_button_icon_image'] ?? null;
+
+    if ($request->hasFile('back_button_icon_image')) {
+        $backButtonIconImage = $this->uploadPageIcon(
+            $request->file('back_button_icon_image'),
+            $backButtonIconImage,
+            'back_button_'
+        );
+    }
+
+    if ($request->hasFile('confirm_button_icon_image')) {
+        $confirmButtonIconImage = $this->uploadPageIcon(
+            $request->file('confirm_button_icon_image'),
+            $confirmButtonIconImage,
+            'confirm_button_'
+        );
+    }
+
     $settings = array_merge($settings, [
         'phone_max_length' => (int) $request->input('phone_max_length', 10),
         'phone_placeholder_key' => 'phone_verify_page.phone_placeholder',
@@ -126,11 +148,11 @@ switch ($screenKey) {
         'left_banner_enabled' => $request->boolean('left_banner_enabled'),
 
         'show_back_button' => $request->boolean('show_back_button'),
-        'back_button_icon' => $request->input('back_button_icon', 'tabler-arrow-left'),
+        'back_button_icon_image' => $backButtonIconImage,
         'back_button_action' => $request->input('back_button_action', 'language_page'),
 
         'show_confirm_button' => $request->boolean('show_confirm_button'),
-        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-check'),
+        'confirm_button_icon_image' => $confirmButtonIconImage,
         'confirm_button_action' => $request->input('confirm_button_action', 'select_product_page'),
     ]);
     break;
@@ -300,4 +322,28 @@ switch ($screenKey) {
             unlink($filePath);
         }
     }
+    private function uploadPageIcon($file, ?string $oldFileName = null, string $prefix = 'page_icon_'): string
+{
+    $uploadPath = base_path('../public_html/assets/img/frontend/pages/icons');
+
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
+    }
+
+    if ($oldFileName) {
+        $oldPath = $uploadPath . '/' . $oldFileName;
+
+        if (file_exists($oldPath)) {
+            unlink($oldPath);
+        }
+    }
+
+    $fileName = uniqid($prefix, true)
+        . '.'
+        . strtolower($file->getClientOriginalExtension());
+
+    $file->move($uploadPath, $fileName);
+
+    return $fileName;
+}
 }
