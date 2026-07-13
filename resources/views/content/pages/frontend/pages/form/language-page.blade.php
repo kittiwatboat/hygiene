@@ -300,7 +300,7 @@
       <div class="border rounded p-4" style="background: #dff8ff;">
         <div class="text-center mb-4">
           <div class="fw-bold text-primary">
-            language_page.title
+            {{ __('language_page.title') }}
           </div>
           <small class="text-muted">
             ตัวอย่างจริงจะดึงคำแปลจาก frontend_translations
@@ -376,13 +376,13 @@
           <i class="icon-base ti tabler-language me-1"></i>
           จัดการภาษา
         </a>
-
+{{--
         @if (Route::has('frontend.translations.index'))
           <a href="{{ route('frontend.translations.index') }}" class="btn btn-label-primary">
             <i class="icon-base ti tabler-translate me-1"></i>
             จัดการคำแปล
           </a>
-        @endif
+        @endif --}}
       </div>
     </div>
   </div>
