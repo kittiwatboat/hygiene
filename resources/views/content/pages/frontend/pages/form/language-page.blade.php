@@ -243,28 +243,7 @@
           </div>
         </div>
 
-        <div class="row g-3">
-          <div class="col-md-4">
-            <button type="button" class="btn btn-outline-primary w-100">
-              <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }} me-1"></i>
-              language_page.home_button
-            </button>
-          </div>
-
-          <div class="col-md-4">
-            <button type="button" class="btn btn-primary w-100">
-              <i class="icon-base ti {{ $settings['phone_button_icon'] ?? 'tabler-phone' }} me-1"></i>
-              language_page.phone_button
-            </button>
-          </div>
-
-          <div class="col-md-4">
-            <button type="button" class="btn btn-outline-primary w-100">
-              <i class="icon-base ti {{ $settings['skip_button_icon'] ?? 'tabler-chevrons-right' }} me-1"></i>
-              language_page.skip_button
-            </button>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
