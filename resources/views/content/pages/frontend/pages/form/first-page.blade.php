@@ -29,7 +29,7 @@
           <input type="text" name="subtitle" value="{{ old('subtitle', $page->subtitle) }}" class="form-control">
         </div>
 
-        <div class="form-check form-switch mb-4">
+        {{-- <div class="form-check form-switch mb-4">
           <input type="hidden" name="is_active" value="0">
           <input
             type="checkbox"
@@ -40,7 +40,7 @@
             {{ old('is_active', (int) $page->is_active) ? 'checked' : '' }}
           >
           <label class="form-check-label" for="is_active">เปิดใช้งานหน้านี้</label>
-        </div>
+        </div> --}}
 
         <button type="submit" class="btn btn-primary w-100">
           บันทึกข้อมูลหน้าแรก

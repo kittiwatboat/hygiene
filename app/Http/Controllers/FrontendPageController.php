@@ -35,7 +35,7 @@ class FrontendPageController extends Controller
         'name' => ['required', 'string', 'max:255'],
         'title' => ['nullable', 'string', 'max:255'],
         'subtitle' => ['nullable', 'string', 'max:255'],
-        'is_active' => ['nullable', 'boolean'],
+        // 'is_active' => ['nullable', 'boolean'],
         'remark' => ['nullable', 'string'],
 
         /*
@@ -140,7 +140,7 @@ switch ($page->page_key) {
         'title' => $validated['title'] ?? null,
         'subtitle' => $validated['subtitle'] ?? null,
         'settings_json' => $settings,
-        'is_active' => $request->boolean('is_active'),
+        //'is_active' => $request->boolean('is_active'),
         'remark' => $validated['remark'] ?? null,
     ]);
 
@@ -169,7 +169,7 @@ switch ($page->page_key) {
                     Rule::in(['cover', 'contain']),
                 ],
                 'sort_order' => ['nullable', 'integer', 'min:0'],
-                'is_active' => ['nullable', 'boolean'],
+                //'is_active' => ['nullable', 'boolean'],
                 'remark' => ['nullable', 'string'],
             ],
             [
@@ -205,7 +205,7 @@ switch ($page->page_key) {
             'duration_seconds' => $validated['duration_seconds'] ?? 5,
             'object_fit' => $validated['object_fit'],
             'sort_order' => $validated['sort_order'] ?? 0,
-            'is_active' => $request->boolean('is_active'),
+            //'is_active' => $request->boolean('is_active'),
             'remark' => $validated['remark'] ?? null,
         ]);
 
@@ -225,7 +225,7 @@ switch ($page->page_key) {
                 Rule::in(['cover', 'contain']),
             ],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
+            //'is_active' => ['nullable', 'boolean'],
             'remark' => ['nullable', 'string'],
         ]);
 
@@ -235,7 +235,7 @@ switch ($page->page_key) {
             'duration_seconds' => $validated['duration_seconds'] ?? 5,
             'object_fit' => $validated['object_fit'],
             'sort_order' => $validated['sort_order'] ?? 0,
-            'is_active' => $request->boolean('is_active'),
+            //'is_active' => $request->boolean('is_active'),
             'remark' => $validated['remark'] ?? null,
         ]);
 

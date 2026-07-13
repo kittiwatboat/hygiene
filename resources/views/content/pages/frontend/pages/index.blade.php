@@ -9,7 +9,7 @@
     <div>
       <h5 class="mb-1">จัดการหน้าบ้าน</h5>
       <p class="text-muted mb-0">
-        จัดการหน้าแรก หน้าเลือกภาษา หน้าเลือกสินค้า และหน้าต่าง ๆ ของหน้าบ้าน
+        จัดการหน้าแรก หน้าเลือกภาษา หน้าเลือกสินค้า และหน้าต่าง ๆ ของหน้าจอตู้
       </p>
     </div>
   </div>
@@ -32,15 +32,32 @@
         <tr>
           <th style="width: 70px;">#</th>
           <th>หน้า</th>
-          <th>Page Key</th>
-          <th class="text-center">จำนวนสไลด์</th>
-          <th>สถานะ</th>
+          <th style="width: 220px;">ประเภทหน้า</th>
+          <th style="width: 130px;">สถานะ</th>
           <th style="width: 120px;" class="text-center">จัดการ</th>
         </tr>
       </thead>
 
       <tbody>
         @forelse ($pages as $index => $page)
+          @php
+            $pageTypeLabels = [
+                'first_page' => 'หน้าแรก / Banner',
+                'language_page' => 'หน้าเลือกภาษา',
+                'select_product_page' => 'หน้าเลือกสินค้า',
+                'select_amount_page' => 'หน้าเลือกปริมาณ',
+                'member_page' => 'หน้าสมาชิก / เบอร์โทร',
+                'promotion_page' => 'หน้าโปรโมชั่น',
+                'payment_page' => 'หน้าชำระเงิน',
+                'dispensing_page' => 'หน้ากำลังจ่ายน้ำยา',
+                'receipt_page' => 'หน้าใบเสร็จ',
+                'thank_you_page' => 'หน้าขอบคุณ',
+                'error_page' => 'หน้าแจ้งปัญหา',
+            ];
+
+            $pageTypeLabel = $pageTypeLabels[$page->page_key] ?? 'หน้าทั่วไป';
+          @endphp
+
           <tr>
             <td>{{ $index + 1 }}</td>
 
@@ -50,23 +67,22 @@
               </div>
 
               @if ($page->title)
-                <small class="text-muted">
+                <small class="text-muted d-block">
                   {{ $page->title }}
+                </small>
+              @endif
+
+              @if ($page->subtitle)
+                <small class="text-muted d-block">
+                  {{ $page->subtitle }}
                 </small>
               @endif
             </td>
 
             <td>
               <span class="badge bg-label-primary">
-                {{ $page->screen_key }}
+                {{ $pageTypeLabel }}
               </span>
-            </td>
-
-            <td class="text-center">
-              <span class="fw-medium">
-                {{ number_format((int) $page->media_count) }}
-              </span>
-              <small class="text-muted">รายการ</small>
             </td>
 
             <td>
@@ -87,7 +103,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="5" class="text-center py-5">
               <div class="mb-2">
                 <i
                   class="icon-base ti tabler-device-desktop-off text-muted"
