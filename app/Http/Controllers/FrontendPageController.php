@@ -84,7 +84,12 @@ class FrontendPageController extends Controller
 'show_confirm_button' => ['nullable', 'boolean'],
 'confirm_button_icon' => ['nullable', 'string', 'max:100'],
 'confirm_button_action' => ['nullable', 'string', 'max:100'],
+'back_button_icon_type' => ['nullable', 'in:icon,image'],
+'back_button_icon' => ['nullable', 'string', 'max:100'],
 'back_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
+
+'confirm_button_icon_type' => ['nullable', 'in:icon,image'],
+'confirm_button_icon' => ['nullable', 'string', 'max:100'],
 'confirm_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 
     ]);
@@ -148,10 +153,14 @@ switch ($screenKey) {
         'left_banner_enabled' => $request->boolean('left_banner_enabled'),
 
         'show_back_button' => $request->boolean('show_back_button'),
+        'back_button_icon_type' => $request->input('back_button_icon_type', 'icon'),
+        'back_button_icon' => $request->input('back_button_icon', 'tabler-arrow-left'),
         'back_button_icon_image' => $backButtonIconImage,
         'back_button_action' => $request->input('back_button_action', 'language_page'),
 
         'show_confirm_button' => $request->boolean('show_confirm_button'),
+        'confirm_button_icon_type' => $request->input('confirm_button_icon_type', 'icon'),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-check'),
         'confirm_button_icon_image' => $confirmButtonIconImage,
         'confirm_button_action' => $request->input('confirm_button_action', 'select_product_page'),
     ]);

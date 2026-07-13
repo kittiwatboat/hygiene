@@ -159,15 +159,51 @@
         </div>
 
         <div class="mb-3">
-  <label class="form-label">Icon ปุ่มกลับ</label>
+  <label class="form-label">รูปแบบ Icon ปุ่มกลับ</label>
+
+  <select name="back_button_icon_type" class="form-select">
+    <option
+      value="icon"
+      {{ old('back_button_icon_type', $settings['back_button_icon_type'] ?? 'icon') === 'icon' ? 'selected' : '' }}
+    >
+      ใช้ Icon จากระบบ
+    </option>
+
+    <option
+      value="image"
+      {{ old('back_button_icon_type', $settings['back_button_icon_type'] ?? '') === 'image' ? 'selected' : '' }}
+    >
+      อัปโหลดรูปเอง
+    </option>
+  </select>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">ชื่อ Icon ปุ่มกลับ</label>
+
+  <input
+    type="text"
+    name="back_button_icon"
+    value="{{ old('back_button_icon', $settings['back_button_icon'] ?? 'tabler-arrow-left') }}"
+    class="form-control"
+    placeholder="เช่น tabler-arrow-left"
+  >
+
+  <div class="form-text">
+    ใช้เมื่อเลือกรูปแบบเป็น “ใช้ Icon จากระบบ”
+  </div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">อัปโหลดรูป Icon ปุ่มกลับ</label>
 
   @if (!empty($settings['back_button_icon_image']))
     <div class="mb-2">
       <img
         src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
         alt="Back Icon"
-        style="width: 48px; height: 48px; object-fit: contain;"
         class="border rounded p-1 bg-white"
+        style="width: 48px; height: 48px; object-fit: contain;"
       >
     </div>
   @endif
@@ -184,7 +220,7 @@
   @enderror
 
   <div class="form-text">
-    รองรับ JPG, PNG, WEBP, SVG
+    ใช้เมื่อเลือกรูปแบบเป็น “อัปโหลดรูปเอง”
   </div>
 </div>
 
@@ -212,15 +248,51 @@
         </div>
 
         <div class="mb-3">
-  <label class="form-label">Icon ปุ่มตกลง</label>
+  <label class="form-label">รูปแบบ Icon ปุ่มตกลง</label>
+
+  <select name="confirm_button_icon_type" class="form-select">
+    <option
+      value="icon"
+      {{ old('confirm_button_icon_type', $settings['confirm_button_icon_type'] ?? 'icon') === 'icon' ? 'selected' : '' }}
+    >
+      ใช้ Icon จากระบบ
+    </option>
+
+    <option
+      value="image"
+      {{ old('confirm_button_icon_type', $settings['confirm_button_icon_type'] ?? '') === 'image' ? 'selected' : '' }}
+    >
+      อัปโหลดรูปเอง
+    </option>
+  </select>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">ชื่อ Icon ปุ่มตกลง</label>
+
+  <input
+    type="text"
+    name="confirm_button_icon"
+    value="{{ old('confirm_button_icon', $settings['confirm_button_icon'] ?? 'tabler-check') }}"
+    class="form-control"
+    placeholder="เช่น tabler-check"
+  >
+
+  <div class="form-text">
+    ใช้เมื่อเลือกรูปแบบเป็น “ใช้ Icon จากระบบ”
+  </div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">อัปโหลดรูป Icon ปุ่มตกลง</label>
 
   @if (!empty($settings['confirm_button_icon_image']))
     <div class="mb-2">
       <img
         src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
         alt="Confirm Icon"
-        style="width: 48px; height: 48px; object-fit: contain;"
         class="border rounded p-1 bg-white"
+        style="width: 48px; height: 48px; object-fit: contain;"
       >
     </div>
   @endif
@@ -237,7 +309,7 @@
   @enderror
 
   <div class="form-text">
-    รองรับ JPG, PNG, WEBP, SVG
+    ใช้เมื่อเลือกรูปแบบเป็น “อัปโหลดรูปเอง”
   </div>
 </div>
 
@@ -434,15 +506,15 @@
               <div class="row g-2 mt-2">
                 <div class="col-6">
                   <button type="button" class="btn btn-outline-primary w-100">
-                    @if (!empty($settings['back_button_icon_image']))
+                   @if (($settings['back_button_icon_type'] ?? 'icon') === 'image' && !empty($settings['back_button_icon_image']))
   <img
     src="{{ asset('assets/img/frontend/pages/icons/' . $settings['back_button_icon_image']) }}"
     alt="Back"
-    style="width: 18px; height: 18px; object-fit: contain;"
     class="me-1"
+    style="width: 18px; height: 18px; object-fit: contain;"
   >
 @else
-  <i class="icon-base ti tabler-arrow-left me-1"></i>
+  <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-arrow-left' }} me-1"></i>
 @endif
                     phone_verify_page.back_button
                   </button>
@@ -450,16 +522,16 @@
 
                 <div class="col-6">
                   <button type="button" class="btn btn-primary w-100">
-@if (!empty($settings['confirm_button_icon_image']))
+@if (($settings['confirm_button_icon_type'] ?? 'icon') === 'image' && !empty($settings['confirm_button_icon_image']))
   <img
     src="{{ asset('assets/img/frontend/pages/icons/' . $settings['confirm_button_icon_image']) }}"
     alt="Confirm"
-    style="width: 18px; height: 18px; object-fit: contain;"
     class="me-1"
+    style="width: 18px; height: 18px; object-fit: contain;"
   >
 @else
-  <i class="icon-base ti tabler-check me-1"></i>
-@endif                    phone_verify_page.confirm_button
+  <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-check' }} me-1"></i>
+@endif                   phone_verify_page.confirm_button
                   </button>
                 </div>
               </div>
