@@ -521,58 +521,58 @@
               "
             >
               <div class="row g-3 align-items-start">
-                <div class="col-5">
-                  @if ($settings['show_member_points'] ?? true)
-                    <div class="fw-bold fs-4 mb-2">แต้มสะสม</div>
-                    <div style="font-size: 58px; font-weight: 800; line-height: 1; color: #ffd64d;">
-                      1,240
-                    </div>
-                    <div class="fs-4 mt-2">คะแนน</div>
-                  @endif
-                </div>
+  <div class="col-5">
+    @if ($settings['show_member_points'] ?? true)
+      <div class="fw-bold fs-4 mb-2">แต้มสะสม</div>
+      <div style="font-size: 58px; font-weight: 800; line-height: 1; color: #ffd64d;">
+        1,240
+      </div>
+      <div class="fs-4 mt-2">คะแนน</div>
+    @endif
+  </div>
 
-                <div class="col-7">
-                  @if (($settings['show_member_name'] ?? true) && ($settings['member_name_card_enabled'] ?? true))
-                    <div
-                      class="rounded-4 p-3 mb-3"
-                      style="
-                        background: {{ $memberNameCardBg }};
-                        color: {{ $memberNameCardText }};
-                      "
-                    >
-                      <div class="small fw-medium">IP HAPPY FAMILY MEMBER</div>
-                      <div class="fw-bold fs-2">SUCHART</div>
-                    </div>
-                  @endif
+  <div class="col-7">
+    @if (($settings['show_member_name'] ?? true) && ($settings['member_name_card_enabled'] ?? true))
+      <div
+        class="rounded-4 p-3 mb-3"
+        style="
+          background: {{ $memberNameCardBg }};
+          color: {{ $memberNameCardText }};
+        "
+      >
+        <div class="small fw-medium">IP HAPPY FAMILY MEMBER</div>
+        <div class="fw-bold fs-2">SUCHART</div>
+      </div>
+    @endif
 
-                  <div class="text-center">
-                    <div
-                      class="rounded-4 p-3 d-flex align-items-center justify-content-center"
-                      style="min-height: 110px; background: rgba(255,255,255,.12);"
-                    >
-                      <span class="text-white-50">
-                        พื้นที่ภาพประกอบสมาชิก
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div class="text-center">
+      <div
+        class="rounded-4 p-3 d-flex align-items-center justify-content-center"
+        style="min-height: 110px; background: rgba(255,255,255,.12);"
+      >
+        <span class="text-white-50">
+          พื้นที่ภาพประกอบสมาชิก
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
 
               @if ($settings['show_member_history'] ?? true)
-                <div class="bg-white rounded-4 p-3 mt-3 text-dark">
-                  <div class="fw-bold fs-4 mb-3 text-primary">
-                    ประวัติการรับบริการล่าสุด
-                  </div>
+  <div class="bg-white rounded-4 p-3 mt-4 text-dark">
+    <div class="fw-bold fs-4 mb-3 text-primary">
+      ประวัติการรับบริการล่าสุด
+    </div>
 
-                  @for ($i = 1; $i <= (int) ($settings['history_limit'] ?? 3); $i++)
-                    <div class="d-flex justify-content-between align-items-center border-bottom py-2 small">
-                      <span>{{ $i === 1 ? '28 พฤษภาคม 2569' : ($i === 2 ? '01 พฤษภาคม 2569' : '30 เมษายน 2569') }}</span>
-                      <span>เติมน้ำยาปรับผ้านุ่ม 500 มล.</span>
-                      <strong>115 บาท</strong>
-                    </div>
-                  @endfor
-                </div>
-              @endif
+    @for ($i = 1; $i <= (int) ($settings['history_limit'] ?? 3); $i++)
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2 small">
+        <span>{{ $i === 1 ? '28 พฤษภาคม 2569' : ($i === 2 ? '01 พฤษภาคม 2569' : '30 เมษายน 2569') }}</span>
+        <span>เติมน้ำยาปรับผ้านุ่ม 500 มล.</span>
+        <strong>115 บาท</strong>
+      </div>
+    @endfor
+  </div>
+@endif
             </div>
           </div>
 
