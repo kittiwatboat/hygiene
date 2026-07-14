@@ -79,13 +79,15 @@
     line-height: 1.2;
   }
 
-  .member-points-value {
-    font-size: 50px;
-    font-weight: 800;
-    line-height: 1;
-    color: #ffd64d;
-    margin-top: 8px;
-  }
+.member-points-value {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffd64d;
+  margin-top: 6px;
+  white-space: nowrap;
+  letter-spacing: -1px;
+}
 
   .member-points-unit {
     font-weight: 700;
