@@ -37,6 +37,217 @@
   $memberNameCardText = $settings['member_name_card_text_color'] ?? '#ffffff';
 @endphp
 
+<style>
+  .member-kiosk-preview {
+    width: 100%;
+    background: #dff8ff;
+    border-radius: 14px;
+    padding: 22px 26px 20px;
+    overflow: hidden;
+  }
+
+  .member-kiosk-content {
+    display: grid;
+    grid-template-columns: 48% 52%;
+    gap: 10px;
+    align-items: stretch;
+    min-height: 310px;
+  }
+
+  .member-panel {
+    border-radius: 10px;
+    padding: 22px 18px 18px;
+    color: #fff;
+    min-height: 310px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    background-repeat: no-repeat;
+  }
+
+  .member-top-row {
+    display: grid;
+    grid-template-columns: 38% 62%;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .member-points-label {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .member-points-value {
+    font-size: 50px;
+    font-weight: 800;
+    line-height: 1;
+    color: #ffd64d;
+    margin-top: 8px;
+  }
+
+  .member-points-unit {
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 8px;
+  }
+
+  .member-name-card {
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-height: 82px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .member-name-subtitle {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    opacity: .95;
+  }
+
+  .member-name-title {
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+
+  .member-history-card {
+    background: #fff;
+    color: #1f2d3d;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-top: 18px;
+  }
+
+  .member-history-title {
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #075db8;
+    margin-bottom: 10px;
+  }
+
+  .member-history-row {
+    display: grid;
+    grid-template-columns: 34% 46% 20%;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #d9dee3;
+    font-size: 12px;
+  }
+
+  .member-history-row:last-child {
+    border-bottom: 0;
+  }
+
+  .member-history-row strong {
+    text-align: right;
+    font-weight: 800;
+  }
+
+  .member-ad-panel {
+    min-height: 310px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .member-ad-media {
+    width: 100%;
+    height: 100%;
+    min-height: 310px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .member-ad-empty {
+    height: 100%;
+    min-height: 310px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8c97a4;
+    background: #fff;
+  }
+
+  .member-kiosk-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .member-home-button {
+    border: 0;
+    background: #fff;
+    color: #0877c9;
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+  }
+
+  .member-select-button {
+    border: 0;
+    background: #0877c9;
+    color: #fff;
+    border-radius: 999px;
+    padding: 14px 36px;
+    min-width: 260px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 800;
+    box-shadow: 0 6px 14px rgba(0, 90, 160, .28);
+  }
+
+  .member-current-ad-preview {
+    width: 260px;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 991.98px) {
+    .member-kiosk-content {
+      grid-template-columns: 1fr;
+    }
+
+    .member-top-row {
+      grid-template-columns: 1fr;
+    }
+
+    .member-history-row {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+
+    .member-history-row strong {
+      text-align: left;
+    }
+
+    .member-kiosk-footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .member-home-button,
+    .member-select-button {
+      width: 100%;
+    }
+  }
+</style>
+
 <div class="col-lg-4">
   <div class="card">
     <div class="card-header">
@@ -505,13 +716,11 @@
           </span>
         </div>
 
-        <div class="row g-3">
-          <div class="col-md-7">
+        <div class="member-kiosk-preview">
+          <div class="member-kiosk-content">
             <div
-              class="rounded-4 p-3 position-relative overflow-hidden"
+              class="member-panel"
               style="
-                min-height: 360px;
-                color: #ffffff;
                 background-color: {{ $memberPanelBgColor }};
                 @if ($memberPanelBgType === 'image' && $memberPanelBgImage)
                   background-image: url('{{ $memberPanelBgImage }}');
@@ -520,59 +729,59 @@
                 @endif
               "
             >
-              <div class="row g-3 align-items-start">
-  <div class="col-5">
-    @if ($settings['show_member_points'] ?? true)
-      <div class="fw-bold fs-4 mb-2">แต้มสะสม</div>
-      <div style="font-size: 58px; font-weight: 800; line-height: 1; color: #ffd64d;">
-        1,240
-      </div>
-      <div class="fs-4 mt-2">คะแนน</div>
-    @endif
-  </div>
+              <div class="member-top-row">
+                <div class="member-points-box">
+                  @if ($settings['show_member_points'] ?? true)
+                    <div class="member-points-label">แต้มสะสม</div>
+                    <div class="member-points-value">1,240</div>
+                    <div class="member-points-unit">คะแนน</div>
+                  @endif
+                </div>
 
-  <div class="col-7">
-    @if (($settings['show_member_name'] ?? true) && ($settings['member_name_card_enabled'] ?? true))
-      <div
-        class="rounded-4 p-3 mb-3"
-        style="
-          background: {{ $memberNameCardBg }};
-          color: {{ $memberNameCardText }};
-        "
-      >
-        <div class="small fw-medium">IP HAPPY FAMILY MEMBER</div>
-        <div class="fw-bold fs-2">SUCHART</div>
-      </div>
-    @endif
-
-    
-  </div>
-</div>
+                <div class="member-name-area">
+                  @if (($settings['show_member_name'] ?? true) && ($settings['member_name_card_enabled'] ?? true))
+                    <div
+                      class="member-name-card"
+                      style="
+                        background: {{ $memberNameCardBg }};
+                        color: {{ $memberNameCardText }};
+                      "
+                    >
+                      <div class="member-name-subtitle">IP HAPPY FAMILY MEMBER</div>
+                      <div class="member-name-title">SUCHART</div>
+                    </div>
+                  @endif
+                </div>
+              </div>
 
               @if ($settings['show_member_history'] ?? true)
-  <div class="bg-white rounded-4 p-3 mt-4 text-dark">
-    <div class="fw-bold fs-4 mb-3 text-primary">
-      ประวัติการรับบริการล่าสุด
-    </div>
+                <div class="member-history-card">
+                  <div class="member-history-title">
+                    ประวัติการรับบริการล่าสุด
+                  </div>
 
-    @for ($i = 1; $i <= (int) ($settings['history_limit'] ?? 3); $i++)
-      <div class="d-flex justify-content-between align-items-center border-bottom py-2 small">
-        <span>{{ $i === 1 ? '28 พฤษภาคม 2569' : ($i === 2 ? '01 พฤษภาคม 2569' : '30 เมษายน 2569') }}</span>
-        <span>เติมน้ำยาปรับผ้านุ่ม 500 มล.</span>
-        <strong>115 บาท</strong>
-      </div>
-    @endfor
-  </div>
-@endif
+                  @for ($i = 1; $i <= (int) ($settings['history_limit'] ?? 3); $i++)
+                    <div class="member-history-row">
+                      <span>
+                        {{ $i === 1 ? '28 พฤษภาคม 2569' : ($i === 2 ? '01 พฤษภาคม 2569' : '30 เมษายน 2569') }}
+                      </span>
+
+                      <span>
+                        เติมน้ำยาปรับผ้านุ่ม&nbsp;&nbsp;500 มล.
+                      </span>
+
+                      <strong>115 บาท</strong>
+                    </div>
+                  @endfor
+                </div>
+              @endif
             </div>
-          </div>
 
-          <div class="col-md-5">
-            <div class="border rounded bg-white overflow-hidden h-100" style="min-height: 360px;">
+            <div class="member-ad-panel">
               @if ($firstMedia && $firstMedia->media_type === 'video')
                 <video
                   src="{{ $firstMedia->file_url }}"
-                  style="width: 100%; height: 100%; min-height: 360px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
+                  class="member-ad-media"
                   muted
                   controls
                 ></video>
@@ -580,32 +789,32 @@
                 <img
                   src="{{ $firstMedia->file_url }}"
                   alt="AD"
-                  style="width: 100%; height: 100%; min-height: 360px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
+                  class="member-ad-media"
                 >
               @else
-                <div class="h-100 d-flex align-items-center justify-content-center text-muted" style="min-height: 360px;">
+                <div class="member-ad-empty">
                   AD รูปภาพ / วิดีโอ
                 </div>
               @endif
             </div>
           </div>
-        </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4">
-          @if ($settings['show_home_button'] ?? true)
-            <button type="button" class="btn btn-light">
-              <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }} me-1"></i>
-              member_page.home_button
-            </button>
-          @endif
+          <div class="member-kiosk-footer">
+            @if ($settings['show_home_button'] ?? true)
+              <button type="button" class="member-home-button">
+                <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }}"></i>
+                <span>member_page.home_button</span>
+              </button>
+            @endif
 
-          @if ($settings['show_select_button'] ?? true)
-            <button type="button" class="btn btn-primary px-5">
-              <i class="icon-base ti {{ $settings['select_button_icon'] ?? 'tabler-bottle' }} me-1"></i>
-              member_page.select_button
-              <i class="icon-base ti tabler-chevron-right ms-1"></i>
-            </button>
-          @endif
+            @if ($settings['show_select_button'] ?? true)
+              <button type="button" class="member-select-button">
+                <i class="icon-base ti {{ $settings['select_button_icon'] ?? 'tabler-bottle' }}"></i>
+                <span>member_page.select_button</span>
+                <i class="icon-base ti tabler-chevron-right"></i>
+              </button>
+            @endif
+          </div>
         </div>
       </div>
     </div>
@@ -626,7 +835,7 @@
             @if ($firstMedia->media_type === 'video')
               <video
                 src="{{ $firstMedia->file_url }}"
-                style="width: 100%; height: 100%; object-fit: cover;"
+                class="member-current-ad-preview"
                 muted
                 controls
               ></video>
@@ -634,7 +843,7 @@
               <img
                 src="{{ $firstMedia->file_url }}"
                 alt="AD"
-                style="width: 100%; height: 100%; object-fit: cover;"
+                class="member-current-ad-preview"
               >
             @endif
           </div>
