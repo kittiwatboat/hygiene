@@ -154,55 +154,42 @@
 
         <hr class="my-4">
 
-        <h6 class="mb-3">Icon Step ด้านบน</h6>
+        <hr class="my-4">
 
-        <div class="mb-3">
-          <label class="form-label">Icon Step ที่เสร็จแล้ว</label>
+<h6 class="mb-3">Icon Step ของหน้านี้</h6>
 
-          <select name="completed_step_icon" class="form-select">
-            @php
-              $completedStepIcon = old('completed_step_icon', $settings['completed_step_icon'] ?? 'tabler-check');
-            @endphp
+<div class="mb-3">
+  <label class="form-label">Icon Step หน้าสมาชิก</label>
 
-            @foreach ($stepIcons as $iconClass => $iconLabel)
-              <option value="{{ $iconClass }}" {{ $completedStepIcon === $iconClass ? 'selected' : '' }}>
-                {{ $iconLabel }}
-              </option>
-            @endforeach
-          </select>
-        </div>
+  <select name="step_icon" class="form-select">
+    @php
+      $stepIcon = old('step_icon', $settings['step_icon'] ?? 'tabler-user');
 
-        <div class="mb-3">
-          <label class="form-label">Icon Step ปัจจุบัน</label>
+      $stepIcons = [
+        'tabler-user' => 'User',
+        'tabler-users' => 'Users',
+        'tabler-id' => 'ID',
+        'tabler-address-book' => 'Address Book',
+        'tabler-star' => 'Star',
+        'tabler-award' => 'Award',
+        'tabler-gift' => 'Gift',
+        'tabler-heart' => 'Heart',
+        'tabler-check' => 'Check',
+        'tabler-circle-check' => 'Circle Check',
+      ];
+    @endphp
 
-          <select name="current_step_icon" class="form-select">
-            @php
-              $currentStepIcon = old('current_step_icon', $settings['current_step_icon'] ?? 'tabler-user');
-            @endphp
+    @foreach ($stepIcons as $iconClass => $iconLabel)
+      <option value="{{ $iconClass }}" {{ $stepIcon === $iconClass ? 'selected' : '' }}>
+        {{ $iconLabel }}
+      </option>
+    @endforeach
+  </select>
 
-            @foreach ($stepIcons as $iconClass => $iconLabel)
-              <option value="{{ $iconClass }}" {{ $currentStepIcon === $iconClass ? 'selected' : '' }}>
-                {{ $iconLabel }}
-              </option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Icon Step ที่ยังไม่ถึง</label>
-
-          <select name="pending_step_icon" class="form-select">
-            @php
-              $pendingStepIcon = old('pending_step_icon', $settings['pending_step_icon'] ?? 'tabler-minus');
-            @endphp
-
-            @foreach ($stepIcons as $iconClass => $iconLabel)
-              <option value="{{ $iconClass }}" {{ $pendingStepIcon === $iconClass ? 'selected' : '' }}>
-                {{ $iconLabel }}
-              </option>
-            @endforeach
-          </select>
-        </div>
+  <div class="form-text">
+    ใช้เป็น icon ของ step หน้าสมาชิกเท่านั้น
+  </div>
+</div>
 
         <hr class="my-4">
 
@@ -383,22 +370,22 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
-          <span class="badge rounded-pill bg-success p-2">
-            <i class="icon-base ti {{ $settings['completed_step_icon'] ?? 'tabler-check' }}"></i>
-          </span>
+  <span class="badge rounded-pill bg-success p-2">
+    <i class="icon-base ti tabler-check"></i>
+  </span>
 
-          <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
+  <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
 
-          <span class="badge rounded-pill bg-primary p-2">
-            <i class="icon-base ti {{ $settings['current_step_icon'] ?? 'tabler-user' }}"></i>
-          </span>
+  <span class="badge rounded-pill bg-primary p-2">
+    <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-user' }}"></i>
+  </span>
 
-          <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
+  <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
 
-          <span class="badge rounded-pill bg-label-secondary p-2">
-            <i class="icon-base ti {{ $settings['pending_step_icon'] ?? 'tabler-minus' }}"></i>
-          </span>
-        </div>
+  <span class="badge rounded-pill bg-label-secondary p-2">
+    <i class="icon-base ti tabler-minus"></i>
+  </span>
+</div>
 
         <div class="row g-3">
           <div class="col-md-6">

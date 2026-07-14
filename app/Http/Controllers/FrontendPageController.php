@@ -92,9 +92,7 @@ class FrontendPageController extends Controller
 'show_member_history' => ['nullable', 'boolean'],
 'history_limit' => ['nullable', 'integer', 'min:1', 'max:10'],
 
-'completed_step_icon' => ['nullable', 'string', 'max:100'],
-'current_step_icon' => ['nullable', 'string', 'max:100'],
-'pending_step_icon' => ['nullable', 'string', 'max:100'],
+'step_icon' => ['nullable', 'string', 'max:100'],
 
 'show_home_button' => ['nullable', 'boolean'],
 'home_button_icon' => ['nullable', 'string', 'max:100'],
@@ -160,9 +158,7 @@ switch ($screenKey) {
         'show_member_history' => $request->boolean('show_member_history'),
         'history_limit' => (int) $request->input('history_limit', 3),
 
-        'completed_step_icon' => $request->input('completed_step_icon', 'tabler-check'),
-        'current_step_icon' => $request->input('current_step_icon', 'tabler-user'),
-        'pending_step_icon' => $request->input('pending_step_icon', 'tabler-minus'),
+        'step_icon' => $request->input('step_icon', 'tabler-user'),
 
         'show_home_button' => $request->boolean('show_home_button'),
         'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
