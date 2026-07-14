@@ -545,16 +545,7 @@
       </div>
     @endif
 
-    <div class="text-center">
-      <div
-        class="rounded-4 p-3 d-flex align-items-center justify-content-center"
-        style="min-height: 110px; background: rgba(255,255,255,.12);"
-      >
-        <span class="text-white-50">
-          พื้นที่ภาพประกอบสมาชิก
-        </span>
-      </div>
-    </div>
+    
   </div>
 </div>
 
