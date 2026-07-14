@@ -89,6 +89,10 @@
     @include('content.pages.frontend.pages.forms.phone-verify-page')
     @break
 
+  @case('member_page')
+    @include('content.pages.frontend.pages.forms.member-page')
+    @break
+
   @default
     @include('content.pages.frontend.pages.forms.default-page')
 @endswitch

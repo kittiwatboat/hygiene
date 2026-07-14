@@ -87,6 +87,22 @@ class FrontendPageController extends Controller
 'back_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 'confirm_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 
+'show_member_name' => ['nullable', 'boolean'],
+'show_member_points' => ['nullable', 'boolean'],
+'show_member_history' => ['nullable', 'boolean'],
+'history_limit' => ['nullable', 'integer', 'min:1', 'max:10'],
+
+'completed_step_icon' => ['nullable', 'string', 'max:100'],
+'current_step_icon' => ['nullable', 'string', 'max:100'],
+'pending_step_icon' => ['nullable', 'string', 'max:100'],
+
+'show_home_button' => ['nullable', 'boolean'],
+'home_button_icon' => ['nullable', 'string', 'max:100'],
+'home_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_select_button' => ['nullable', 'boolean'],
+'select_button_icon' => ['nullable', 'string', 'max:100'],
+'select_button_action' => ['nullable', 'string', 'max:100'],
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -137,6 +153,28 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input('confirm_button_action', 'select_product_page'),
     ]);
     break;
+    case 'member_page':
+    $settings = array_merge($settings, [
+        'show_member_name' => $request->boolean('show_member_name'),
+        'show_member_points' => $request->boolean('show_member_points'),
+        'show_member_history' => $request->boolean('show_member_history'),
+        'history_limit' => (int) $request->input('history_limit', 3),
+
+        'completed_step_icon' => $request->input('completed_step_icon', 'tabler-check'),
+        'current_step_icon' => $request->input('current_step_icon', 'tabler-user'),
+        'pending_step_icon' => $request->input('pending_step_icon', 'tabler-minus'),
+
+        'show_home_button' => $request->boolean('show_home_button'),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_select_button' => $request->boolean('show_select_button'),
+        'select_button_icon' => $request->input('select_button_icon', 'tabler-bottle'),
+        'select_button_action' => $request->input('select_button_action', 'select_product_page'),
+
+        'right_ad_enabled' => true,
+    ]);
+    break;
 }
 
     $page->update([
@@ -174,6 +212,19 @@ switch ($screenKey) {
 );
 
        $screenKey = $page->screen_key ?? $page->page_key ?? null;
+
+if (in_array($screenKey, ['phone_verify_page', 'member_page'], true)) {
+    $oldMediaItems = $page->media()->get();
+
+    foreach ($oldMediaItems as $oldMedia) {
+        $this->deleteMediaFile(
+            $oldMedia->file_path,
+            $oldMedia->media_type
+        );
+
+        $oldMedia->delete();
+    }
+}
 
 if ($validated['media_type'] === 'image') {
     $request->validate([
