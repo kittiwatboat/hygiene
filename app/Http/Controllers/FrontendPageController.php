@@ -87,6 +87,15 @@ class FrontendPageController extends Controller
 'back_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 'confirm_button_icon_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
 
+'member_panel_background_type' => ['nullable', 'in:color,image'],
+'member_panel_background_color' => ['nullable', 'string', 'max:50'],
+'member_panel_background_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+'remove_member_panel_background_image' => ['nullable', 'boolean'],
+
+'member_name_card_enabled' => ['nullable', 'boolean'],
+'member_name_card_background_color' => ['nullable', 'string', 'max:50'],
+'member_name_card_text_color' => ['nullable', 'string', 'max:50'],
+
 'show_member_name' => ['nullable', 'boolean'],
 'show_member_points' => ['nullable', 'boolean'],
 'show_member_history' => ['nullable', 'boolean'],
@@ -101,6 +110,8 @@ class FrontendPageController extends Controller
 'show_select_button' => ['nullable', 'boolean'],
 'select_button_icon' => ['nullable', 'string', 'max:100'],
 'select_button_action' => ['nullable', 'string', 'max:100'],
+
+
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -152,11 +163,34 @@ switch ($screenKey) {
     ]);
     break;
     case 'member_page':
+    $memberPanelBackgroundImage = $settings['member_panel_background_image'] ?? null;
+
+    if ($request->boolean('remove_member_panel_background_image')) {
+        $this->deleteMemberPanelBackground($memberPanelBackgroundImage);
+        $memberPanelBackgroundImage = null;
+    }
+
+    if ($request->hasFile('member_panel_background_image')) {
+        $this->deleteMemberPanelBackground($memberPanelBackgroundImage);
+
+        $memberPanelBackgroundImage = $this->uploadMemberPanelBackground(
+            $request->file('member_panel_background_image')
+        );
+    }
+
     $settings = array_merge($settings, [
         'show_member_name' => $request->boolean('show_member_name'),
         'show_member_points' => $request->boolean('show_member_points'),
         'show_member_history' => $request->boolean('show_member_history'),
         'history_limit' => (int) $request->input('history_limit', 3),
+
+        'member_panel_background_type' => $request->input('member_panel_background_type', 'color'),
+        'member_panel_background_color' => $request->input('member_panel_background_color', '#075db8'),
+        'member_panel_background_image' => $memberPanelBackgroundImage,
+
+        'member_name_card_enabled' => $request->boolean('member_name_card_enabled'),
+        'member_name_card_background_color' => $request->input('member_name_card_background_color', '#238bff'),
+        'member_name_card_text_color' => $request->input('member_name_card_text_color', '#ffffff'),
 
         'step_icon' => $request->input('step_icon', 'tabler-user'),
 
@@ -263,7 +297,6 @@ FrontendPageMedia::create([
     'sort_order' => 0,
     'remark' => null,
 ]);
-
         return redirect()
             ->route('frontend.pages.edit', $page)
 ->with('success', $screenKey === 'phone_verify_page'
@@ -357,4 +390,33 @@ FrontendPageMedia::create([
             unlink($filePath);
         }
     }
+    private function uploadMemberPanelBackground($file): string
+{
+    $uploadPath = base_path('../public_html/assets/img/frontend/pages/member-backgrounds');
+
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0755, true);
+    }
+
+    $fileName = uniqid('member_bg_', true)
+        . '.'
+        . strtolower($file->getClientOriginalExtension());
+
+    $file->move($uploadPath, $fileName);
+
+    return $fileName;
+}
+
+private function deleteMemberPanelBackground(?string $fileName): void
+{
+    if (!$fileName) {
+        return;
+    }
+
+    $filePath = base_path('../public_html/assets/img/frontend/pages/member-backgrounds/' . $fileName);
+
+    if (file_exists($filePath)) {
+        unlink($filePath);
+    }
+}
 }

@@ -3,17 +3,16 @@
   $firstMedia = $page->media->first();
 
   $stepIcons = [
-    'tabler-check' => 'Check',
-    'tabler-circle-check' => 'Circle Check',
     'tabler-user' => 'User',
     'tabler-users' => 'Users',
-    'tabler-bottle' => 'Bottle',
-    'tabler-droplet' => 'Droplet',
-    'tabler-credit-card' => 'Credit Card',
-    'tabler-receipt' => 'Receipt',
-    'tabler-home' => 'Home',
-    'tabler-minus' => 'Minus',
-    'tabler-point' => 'Point',
+    'tabler-id' => 'ID',
+    'tabler-address-book' => 'Address Book',
+    'tabler-star' => 'Star',
+    'tabler-award' => 'Award',
+    'tabler-gift' => 'Gift',
+    'tabler-heart' => 'Heart',
+    'tabler-check' => 'Check',
+    'tabler-circle-check' => 'Circle Check',
   ];
 
   $buttonIcons = [
@@ -27,6 +26,15 @@
     'tabler-arrow-right' => 'Arrow Right',
     'tabler-check' => 'Check',
   ];
+
+  $memberPanelBgType = $settings['member_panel_background_type'] ?? 'color';
+  $memberPanelBgColor = $settings['member_panel_background_color'] ?? '#075db8';
+  $memberPanelBgImage = !empty($settings['member_panel_background_image'])
+      ? asset('assets/img/frontend/pages/member-backgrounds/' . $settings['member_panel_background_image'])
+      : null;
+
+  $memberNameCardBg = $settings['member_name_card_background_color'] ?? '#238bff';
+  $memberNameCardText = $settings['member_name_card_text_color'] ?? '#ffffff';
 @endphp
 
 <div class="col-lg-4">
@@ -34,12 +42,16 @@
     <div class="card-header">
       <h5 class="mb-1">ตั้งค่าหน้าสมาชิก</h5>
       <p class="text-muted mb-0">
-        ตั้งค่าการแสดงคะแนน ประวัติสมาชิก Step และปุ่มของหน้าสมาชิก
+        ตั้งค่ากล่องสมาชิก คะแนน ประวัติ Step และปุ่มของหน้าสมาชิก
       </p>
     </div>
 
     <div class="card-body">
-      <form action="{{ route('frontend.pages.update', $page) }}" method="POST">
+      <form
+        action="{{ route('frontend.pages.update', $page) }}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         @csrf
         @method('PUT')
 
@@ -92,7 +104,7 @@
 
         <hr class="my-4">
 
-        <h6 class="mb-3">ข้อมูลสมาชิกฝั่งซ้าย</h6>
+        <h6 class="mb-3">การแสดงข้อมูลสมาชิก</h6>
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_member_name" value="0">
@@ -154,42 +166,148 @@
 
         <hr class="my-4">
 
+        <h6 class="mb-3">พื้นหลังกล่องสมาชิก</h6>
+
+        <div class="mb-3">
+          <label class="form-label">รูปแบบพื้นหลัง</label>
+
+          <select name="member_panel_background_type" class="form-select">
+            <option
+              value="color"
+              {{ old('member_panel_background_type', $memberPanelBgType) === 'color' ? 'selected' : '' }}
+            >
+              สีพื้น
+            </option>
+
+            <option
+              value="image"
+              {{ old('member_panel_background_type', $memberPanelBgType) === 'image' ? 'selected' : '' }}
+            >
+              รูปภาพ
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">สีพื้นหลังกล่องสมาชิก</label>
+
+          <input
+            type="text"
+            name="member_panel_background_color"
+            value="{{ old('member_panel_background_color', $memberPanelBgColor) }}"
+            class="form-control"
+            placeholder="#075db8"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">อัปโหลดรูปพื้นหลังกล่องสมาชิก</label>
+
+          @if ($memberPanelBgImage)
+            <div class="mb-2">
+              <img
+                src="{{ $memberPanelBgImage }}"
+                alt="Member Background"
+                class="border rounded"
+                style="width: 180px; height: 90px; object-fit: cover;"
+              >
+            </div>
+          @endif
+
+          <input
+            type="file"
+            name="member_panel_background_image"
+            class="form-control @error('member_panel_background_image') is-invalid @enderror"
+            accept=".jpg,.jpeg,.png,.webp"
+          >
+
+          @error('member_panel_background_image')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+
+          <div class="form-text">
+            ใช้เมื่อเลือกพื้นหลังเป็นรูปภาพ รองรับ JPG, PNG, WEBP
+          </div>
+        </div>
+
+        @if ($memberPanelBgImage)
+          <div class="form-check form-switch mb-3">
+            <input type="hidden" name="remove_member_panel_background_image" value="0">
+            <input
+              type="checkbox"
+              name="remove_member_panel_background_image"
+              value="1"
+              id="remove_member_panel_background_image"
+              class="form-check-input"
+            >
+            <label class="form-check-label" for="remove_member_panel_background_image">
+              ลบรูปพื้นหลังเดิม
+            </label>
+          </div>
+        @endif
+
         <hr class="my-4">
 
-<h6 class="mb-3">Icon Step ของหน้านี้</h6>
+        <h6 class="mb-3">กล่องชื่อสมาชิก</h6>
 
-<div class="mb-3">
-  <label class="form-label">Icon Step หน้าสมาชิก</label>
+        <div class="form-check form-switch mb-3">
+          <input type="hidden" name="member_name_card_enabled" value="0">
+          <input
+            type="checkbox"
+            name="member_name_card_enabled"
+            value="1"
+            id="member_name_card_enabled"
+            class="form-check-input"
+            {{ old('member_name_card_enabled', $settings['member_name_card_enabled'] ?? true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="member_name_card_enabled">
+            แสดงกล่องชื่อสมาชิก
+          </label>
+        </div>
 
-  <select name="step_icon" class="form-select">
-    @php
-      $stepIcon = old('step_icon', $settings['step_icon'] ?? 'tabler-user');
+        <div class="mb-3">
+          <label class="form-label">สีพื้นกล่องชื่อสมาชิก</label>
 
-      $stepIcons = [
-        'tabler-user' => 'User',
-        'tabler-users' => 'Users',
-        'tabler-id' => 'ID',
-        'tabler-address-book' => 'Address Book',
-        'tabler-star' => 'Star',
-        'tabler-award' => 'Award',
-        'tabler-gift' => 'Gift',
-        'tabler-heart' => 'Heart',
-        'tabler-check' => 'Check',
-        'tabler-circle-check' => 'Circle Check',
-      ];
-    @endphp
+          <input
+            type="text"
+            name="member_name_card_background_color"
+            value="{{ old('member_name_card_background_color', $memberNameCardBg) }}"
+            class="form-control"
+            placeholder="#238bff"
+          >
+        </div>
 
-    @foreach ($stepIcons as $iconClass => $iconLabel)
-      <option value="{{ $iconClass }}" {{ $stepIcon === $iconClass ? 'selected' : '' }}>
-        {{ $iconLabel }}
-      </option>
-    @endforeach
-  </select>
+        <div class="mb-3">
+          <label class="form-label">สีตัวอักษรกล่องชื่อสมาชิก</label>
 
-  <div class="form-text">
-    ใช้เป็น icon ของ step หน้าสมาชิกเท่านั้น
-  </div>
-</div>
+          <input
+            type="text"
+            name="member_name_card_text_color"
+            value="{{ old('member_name_card_text_color', $memberNameCardText) }}"
+            class="form-control"
+            placeholder="#ffffff"
+          >
+        </div>
+
+        <hr class="my-4">
+
+        <h6 class="mb-3">Icon Step ของหน้านี้</h6>
+
+        <div class="mb-3">
+          <label class="form-label">Icon Step หน้าสมาชิก</label>
+
+          <select name="step_icon" class="form-select">
+            @php
+              $stepIcon = old('step_icon', $settings['step_icon'] ?? 'tabler-user');
+            @endphp
+
+            @foreach ($stepIcons as $iconClass => $iconLabel)
+              <option value="{{ $iconClass }}" {{ $stepIcon === $iconClass ? 'selected' : '' }}>
+                {{ $iconLabel }}
+              </option>
+            @endforeach
+          </select>
+        </div>
 
         <hr class="my-4">
 
@@ -370,49 +488,87 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
-  <span class="badge rounded-pill bg-success p-2">
-    <i class="icon-base ti tabler-check"></i>
-  </span>
+          <span class="badge rounded-pill bg-success p-2">
+            <i class="icon-base ti tabler-check"></i>
+          </span>
 
-  <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
+          <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
 
-  <span class="badge rounded-pill bg-primary p-2">
-    <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-user' }}"></i>
-  </span>
+          <span class="badge rounded-pill bg-primary p-2">
+            <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-user' }}"></i>
+          </span>
 
-  <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
+          <span style="width: 60px; height: 2px; background: #7dbce8;"></span>
 
-  <span class="badge rounded-pill bg-label-secondary p-2">
-    <i class="icon-base ti tabler-minus"></i>
-  </span>
-</div>
+          <span class="badge rounded-pill bg-label-secondary p-2">
+            <i class="icon-base ti tabler-minus"></i>
+          </span>
+        </div>
 
         <div class="row g-3">
-          <div class="col-md-6">
-            <div class="bg-primary text-white rounded p-4 h-100">
-              @if ($settings['show_member_points'] ?? true)
-                <div class="mb-3">
-                  <div class="small">แต้มสะสม</div>
-                  <div class="display-6 fw-bold">1,240</div>
-                  <div class="small">คะแนน</div>
+          <div class="col-md-7">
+            <div
+              class="rounded-4 p-3 position-relative overflow-hidden"
+              style="
+                min-height: 360px;
+                color: #ffffff;
+                background-color: {{ $memberPanelBgColor }};
+                @if ($memberPanelBgType === 'image' && $memberPanelBgImage)
+                  background-image: url('{{ $memberPanelBgImage }}');
+                  background-size: cover;
+                  background-position: center;
+                @endif
+              "
+            >
+              <div class="row g-3 align-items-start">
+                <div class="col-5">
+                  @if ($settings['show_member_points'] ?? true)
+                    <div class="fw-bold fs-4 mb-2">แต้มสะสม</div>
+                    <div style="font-size: 58px; font-weight: 800; line-height: 1; color: #ffd64d;">
+                      1,240
+                    </div>
+                    <div class="fs-4 mt-2">คะแนน</div>
+                  @endif
                 </div>
-              @endif
 
-              @if ($settings['show_member_name'] ?? true)
-                <div class="bg-info rounded p-3 mb-3">
-                  <div class="small">IP HAPPY FAMILY MEMBER</div>
-                  <div class="fw-bold">SUCHART</div>
+                <div class="col-7">
+                  @if (($settings['show_member_name'] ?? true) && ($settings['member_name_card_enabled'] ?? true))
+                    <div
+                      class="rounded-4 p-3 mb-3"
+                      style="
+                        background: {{ $memberNameCardBg }};
+                        color: {{ $memberNameCardText }};
+                      "
+                    >
+                      <div class="small fw-medium">IP HAPPY FAMILY MEMBER</div>
+                      <div class="fw-bold fs-2">SUCHART</div>
+                    </div>
+                  @endif
+
+                  <div class="text-center">
+                    <div
+                      class="rounded-4 p-3 d-flex align-items-center justify-content-center"
+                      style="min-height: 110px; background: rgba(255,255,255,.12);"
+                    >
+                      <span class="text-white-50">
+                        พื้นที่ภาพประกอบสมาชิก
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              @endif
+              </div>
 
               @if ($settings['show_member_history'] ?? true)
-                <div class="bg-white text-dark rounded p-3">
-                  <div class="fw-bold mb-2">ประวัติการรับบริการล่าสุด</div>
+                <div class="bg-white rounded-4 p-3 mt-3 text-dark">
+                  <div class="fw-bold fs-4 mb-3 text-primary">
+                    ประวัติการรับบริการล่าสุด
+                  </div>
 
                   @for ($i = 1; $i <= (int) ($settings['history_limit'] ?? 3); $i++)
-                    <div class="d-flex justify-content-between small border-bottom py-1">
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2 small">
+                      <span>{{ $i === 1 ? '28 พฤษภาคม 2569' : ($i === 2 ? '01 พฤษภาคม 2569' : '30 เมษายน 2569') }}</span>
                       <span>เติมน้ำยาปรับผ้านุ่ม 500 มล.</span>
-                      <span>115 บาท</span>
+                      <strong>115 บาท</strong>
                     </div>
                   @endfor
                 </div>
@@ -420,12 +576,12 @@
             </div>
           </div>
 
-          <div class="col-md-6">
-            <div class="border rounded bg-white overflow-hidden h-100" style="min-height: 260px;">
+          <div class="col-md-5">
+            <div class="border rounded bg-white overflow-hidden h-100" style="min-height: 360px;">
               @if ($firstMedia && $firstMedia->media_type === 'video')
                 <video
                   src="{{ $firstMedia->file_url }}"
-                  style="width: 100%; height: 100%; min-height: 260px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
+                  style="width: 100%; height: 100%; min-height: 360px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
                   muted
                   controls
                 ></video>
@@ -433,10 +589,10 @@
                 <img
                   src="{{ $firstMedia->file_url }}"
                   alt="AD"
-                  style="width: 100%; height: 100%; min-height: 260px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
+                  style="width: 100%; height: 100%; min-height: 360px; object-fit: {{ $firstMedia->object_fit ?? 'cover' }};"
                 >
               @else
-                <div class="h-100 d-flex align-items-center justify-content-center text-muted" style="min-height: 260px;">
+                <div class="h-100 d-flex align-items-center justify-content-center text-muted" style="min-height: 360px;">
                   AD รูปภาพ / วิดีโอ
                 </div>
               @endif
