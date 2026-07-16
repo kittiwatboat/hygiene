@@ -117,6 +117,10 @@
     @include('content.pages.frontend.pages.forms.payment-page')
     @break
 
+  @case('payment_page')
+  @include('content.pages.frontend.pages.forms.payment-page')
+  @break
+
   @default
     @include('content.pages.frontend.pages.forms.default-page')
 @endswitch

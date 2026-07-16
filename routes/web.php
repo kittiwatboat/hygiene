@@ -24,6 +24,8 @@ use App\Http\Controllers\customers\CustomerController;
 use App\Http\Controllers\frontend_theme\FrontendLanguageController;
 use App\Http\Controllers\frontend_theme\FrontendThemeController;
 use App\Http\Controllers\FrontendPageController;
+use App\Http\Controllers\FrontendPaymentMethodController;
+
 
 Route::get('/cookie-test', function () {
     session(['test_value' => 'OK']);
@@ -389,6 +391,14 @@ Route::prefix('promotions')
 
         Route::delete('/{theme}', [FrontendThemeController::class, 'destroy'])
             ->name('destroy');
+    });
+
+    Route::prefix('frontend/payment-methods')
+    ->name('frontend.payment-methods.')
+    ->group(function () {
+        Route::post('/', [FrontendPaymentMethodController::class, 'store'])->name('store');
+        Route::put('/{paymentMethod}', [FrontendPaymentMethodController::class, 'update'])->name('update');
+        Route::delete('/{paymentMethod}', [FrontendPaymentMethodController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('frontend/pages')->name('frontend.pages.')->group(function () {

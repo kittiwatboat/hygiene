@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\FrontendLanguage;
+use App\Models\FrontendPaymentMethod;
 
 class FrontendPageController extends Controller
 {
@@ -27,6 +28,21 @@ class FrontendPageController extends Controller
             $query->orderBy('sort_order')->orderBy('id');
         },
     ]);
+
+    $paymentMethods = collect();
+
+    $screenKey = $page->screen_key ?? $page->page_key ?? null;
+
+    if ($screenKey === 'payment_page') {
+        $paymentMethods = FrontendPaymentMethod::orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+    }
+
+    return view('content.pages.frontend.pages.edit', compact(
+        'page',
+        'paymentMethods'
+    ));
         return view('content.pages.frontend.pages.edit', compact('page'));
     }
 
@@ -147,6 +163,12 @@ class FrontendPageController extends Controller
 'payment_methods.*.icon' => ['nullable', 'string', 'max:100'],
 'payment_methods.*.sort_order' => ['nullable', 'integer', 'min:0'],
 'payment_methods.*.is_active' => ['nullable', 'boolean'],
+
+'order_summary_icon' => ['nullable', 'string', 'max:100'],
+'net_total_icon' => ['nullable', 'string', 'max:100'],
+'payment_section_icon' => ['nullable', 'string', 'max:100'],
+'back_button_icon' => ['nullable', 'string', 'max:100'],
+'back_button_action' => ['nullable', 'string', 'max:100'],
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -322,6 +344,28 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input('confirm_button_action', 'waiting_payment_page'),
 
         'payment_methods' => $paymentMethods,
+    ]);
+    break;
+
+    case 'payment_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input('step_icon', 'tabler-credit-card'),
+
+        'order_summary_icon' => $request->input('order_summary_icon', 'tabler-shopping-cart'),
+        'net_total_icon' => $request->input('net_total_icon', 'tabler-wallet'),
+        'payment_section_icon' => $request->input('payment_section_icon', 'tabler-credit-card'),
+
+        'show_home_button' => $request->boolean('show_home_button', true),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_back_button' => $request->boolean('show_back_button', true),
+        'back_button_icon' => $request->input('back_button_icon', 'tabler-chevron-left'),
+        'back_button_action' => $request->input('back_button_action', 'promotion_page'),
+
+        'show_confirm_button' => $request->boolean('show_confirm_button', true),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
+        'confirm_button_action' => $request->input('confirm_button_action', 'processing_payment_page'),
     ]);
     break;
 }
