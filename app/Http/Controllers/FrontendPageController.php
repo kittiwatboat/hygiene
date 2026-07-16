@@ -169,7 +169,14 @@ class FrontendPageController extends Controller
 'payment_section_icon' => ['nullable', 'string', 'max:100'],
 'back_button_icon' => ['nullable', 'string', 'max:100'],
 'back_button_action' => ['nullable', 'string', 'max:100'],
+
+'order_summary_icon' => ['nullable', 'string', 'max:100'],
+'net_total_icon' => ['nullable', 'string', 'max:100'],
+'back_button_icon' => ['nullable', 'string', 'max:100'],
+'back_button_action' => ['nullable', 'string', 'max:100'],
     ]);
+
+
 
     $settings = $page->settings_json ?? [];
 
@@ -366,6 +373,27 @@ switch ($screenKey) {
         'show_confirm_button' => $request->boolean('show_confirm_button', true),
         'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
         'confirm_button_action' => $request->input('confirm_button_action', 'processing_payment_page'),
+    ]);
+    break;
+
+    case 'processing_payment_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input('step_icon', 'tabler-qrcode'),
+
+        'order_summary_icon' => $request->input('order_summary_icon', 'tabler-shopping-cart'),
+        'net_total_icon' => $request->input('net_total_icon', 'tabler-wallet'),
+
+        'show_home_button' => $request->boolean('show_home_button', true),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_back_button' => $request->boolean('show_back_button', true),
+        'back_button_icon' => $request->input('back_button_icon', 'tabler-chevron-left'),
+        'back_button_action' => $request->input('back_button_action', 'payment_page'),
+
+        'show_confirm_button' => $request->boolean('show_confirm_button', true),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
+        'confirm_button_action' => $request->input('confirm_button_action', 'thank_you_page'),
     ]);
     break;
 }

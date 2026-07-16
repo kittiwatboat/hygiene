@@ -118,8 +118,13 @@
     @break
 
   @case('payment_page')
-  @include('content.pages.frontend.pages.forms.payment-page')
+    @include('content.pages.frontend.pages.forms.payment-page')
+    @break
+
+  @case('processing_payment_page')
+  @include('content.pages.frontend.pages.forms.processing-payment-page')
   @break
+
 
   @default
     @include('content.pages.frontend.pages.forms.default-page')
