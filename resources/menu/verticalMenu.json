@@ -114,28 +114,7 @@
   "icon": "menu-icon icon-base ti tabler-bell",
   "slug": "alerts"
 },
-    {
-      "menuHeader": "ตั้งค่าระบบ"
-    },
-    {
-  "name": "การตลาดและเนื้อหา",
-  "icon": "menu-icon icon-base ti tabler-speakerphone",
-  "slug": "marketing-content",
-  "submenu": [
-    {
-      "url": "/banners",
-      "name": "แบนเนอร์",
-      "icon": "menu-icon icon-base ti tabler-photo",
-      "slug": "banners"
-    },
-    {
-      "url": "/promotions",
-      "name": "โปรโมชัน",
-      "icon": "menu-icon icon-base ti tabler-discount",
-      "slug": "promotions"
-    }
-  ]
-},
+
 {
   "name": "สมาชิกและแต้ม",
   "icon": "menu-icon icon-base ti tabler-users",
