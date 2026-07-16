@@ -80,6 +80,10 @@
   $screenKey = $page->screen_key ?? $page->page_key ?? null;
 @endphp
 
+@php
+  $screenKey = $page->screen_key ?? $page->page_key ?? null;
+@endphp
+
 @switch($screenKey)
   @case('first_page')
     @include('content.pages.frontend.pages.forms.first-page')
@@ -99,6 +103,10 @@
 
   @case('select_product_page')
     @include('content.pages.frontend.pages.forms.select-product-page')
+    @break
+
+  @case('promotion_page')
+    @include('content.pages.frontend.pages.forms.promotion-page')
     @break
 
   @default

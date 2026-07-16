@@ -121,7 +121,14 @@ class FrontendPageController extends Controller
 'confirm_button_icon' => ['nullable', 'string', 'max:100'],
 'confirm_button_action' => ['nullable', 'string', 'max:100'],
 
+'point_section_icon' => ['nullable', 'string', 'max:100'],
+'point_option_icon' => ['nullable', 'string', 'max:100'],
+'selected_option_icon' => ['nullable', 'string', 'max:100'],
+'next_option_icon' => ['nullable', 'string', 'max:100'],
 
+'show_skip_button' => ['nullable', 'boolean'],
+'skip_button_icon' => ['nullable', 'string', 'max:100'],
+'skip_button_action' => ['nullable', 'string', 'max:100'],
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -235,6 +242,28 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input('confirm_button_action', 'payment_page'),
     ]);
     break;
+    case 'promotion_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input('step_icon', 'tabler-discount'),
+
+        'point_section_icon' => $request->input('point_section_icon', 'tabler-wallet'),
+        'point_option_icon' => $request->input('point_option_icon', 'tabler-coins'),
+        'selected_option_icon' => $request->input('selected_option_icon', 'tabler-check'),
+        'next_option_icon' => $request->input('next_option_icon', 'tabler-chevron-right'),
+
+        'show_home_button' => $request->boolean('show_home_button'),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_skip_button' => $request->boolean('show_skip_button'),
+        'skip_button_icon' => $request->input('skip_button_icon', 'tabler-chevrons-right'),
+        'skip_button_action' => $request->input('skip_button_action', 'payment_page'),
+
+        'show_confirm_button' => $request->boolean('show_confirm_button'),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
+        'confirm_button_action' => $request->input('confirm_button_action', 'payment_page'),
+    ]);
+    break;
 }
 
     $page->update([
@@ -274,6 +303,19 @@ switch ($screenKey) {
        $screenKey = $page->screen_key ?? $page->page_key ?? null;
 
 if (in_array($screenKey, ['phone_verify_page', 'member_page'], true)) {
+    $oldMediaItems = $page->media()->get();
+
+    foreach ($oldMediaItems as $oldMedia) {
+        $this->deleteMediaFile(
+            $oldMedia->file_path,
+            $oldMedia->media_type
+        );
+
+        $oldMedia->delete();
+    }
+}
+
+if (in_array($screenKey, ['phone_verify_page', 'member_page', 'promotion_page'], true)) {
     $oldMediaItems = $page->media()->get();
 
     foreach ($oldMediaItems as $oldMedia) {
