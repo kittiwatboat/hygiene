@@ -441,7 +441,6 @@
           <div class="payment-summary-panel">
             <div class="payment-section-title">
               <i class="icon-base ti {{ $settings['order_summary_icon'] ?? 'tabler-shopping-cart' }}"></i>
-              <span>processing_payment_page.order_summary</span>
             </div>
 
             <div class="payment-product-card">
@@ -469,7 +468,6 @@
             <div class="payment-net-card">
               <div>
                 <i class="icon-base ti {{ $settings['net_total_icon'] ?? 'tabler-wallet' }} me-1"></i>
-                processing_payment_page.net_total
               </div>
 
               <div style="font-size: 30px;">
