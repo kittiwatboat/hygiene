@@ -129,6 +129,24 @@ class FrontendPageController extends Controller
 'show_skip_button' => ['nullable', 'boolean'],
 'skip_button_icon' => ['nullable', 'string', 'max:100'],
 'skip_button_action' => ['nullable', 'string', 'max:100'],
+
+'order_summary_icon' => ['nullable', 'string', 'max:100'],
+'discount_summary_icon' => ['nullable', 'string', 'max:100'],
+'payment_section_icon' => ['nullable', 'string', 'max:100'],
+'selected_payment_icon' => ['nullable', 'string', 'max:100'],
+'next_payment_icon' => ['nullable', 'string', 'max:100'],
+
+'show_back_button' => ['nullable', 'boolean'],
+'back_button_icon' => ['nullable', 'string', 'max:100'],
+'back_button_action' => ['nullable', 'string', 'max:100'],
+
+'payment_methods' => ['nullable', 'array'],
+'payment_methods.*.code' => ['nullable', 'string', 'max:100'],
+'payment_methods.*.name' => ['nullable', 'string', 'max:255'],
+'payment_methods.*.subtitle' => ['nullable', 'string', 'max:255'],
+'payment_methods.*.icon' => ['nullable', 'string', 'max:100'],
+'payment_methods.*.sort_order' => ['nullable', 'integer', 'min:0'],
+'payment_methods.*.is_active' => ['nullable', 'boolean'],
     ]);
 
     $settings = $page->settings_json ?? [];
@@ -262,6 +280,48 @@ switch ($screenKey) {
         'show_confirm_button' => $request->boolean('show_confirm_button'),
         'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
         'confirm_button_action' => $request->input('confirm_button_action', 'payment_page'),
+    ]);
+    break;
+    case 'payment_page':
+    $paymentMethods = collect($request->input('payment_methods', []))
+        ->map(function ($method) {
+            return [
+                'code' => $method['code'] ?? null,
+                'name' => $method['name'] ?? null,
+                'subtitle' => $method['subtitle'] ?? null,
+                'icon' => $method['icon'] ?? 'tabler-wallet',
+                'sort_order' => (int) ($method['sort_order'] ?? 0),
+                'is_active' => !empty($method['is_active']),
+            ];
+        })
+        ->filter(fn ($method) => !empty($method['code']) && !empty($method['name']))
+        ->sortBy('sort_order')
+        ->values()
+        ->toArray();
+
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input('step_icon', 'tabler-wallet'),
+
+        'order_summary_icon' => $request->input('order_summary_icon', 'tabler-shopping-bag'),
+        'discount_summary_icon' => $request->input('discount_summary_icon', 'tabler-wallet'),
+
+        'payment_section_icon' => $request->input('payment_section_icon', 'tabler-credit-card'),
+        'selected_payment_icon' => $request->input('selected_payment_icon', 'tabler-check'),
+        'next_payment_icon' => $request->input('next_payment_icon', 'tabler-chevron-right'),
+
+        'show_home_button' => $request->boolean('show_home_button'),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_back_button' => $request->boolean('show_back_button'),
+        'back_button_icon' => $request->input('back_button_icon', 'tabler-chevron-left'),
+        'back_button_action' => $request->input('back_button_action', 'promotion_page'),
+
+        'show_confirm_button' => $request->boolean('show_confirm_button'),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
+        'confirm_button_action' => $request->input('confirm_button_action', 'waiting_payment_page'),
+
+        'payment_methods' => $paymentMethods,
     ]);
     break;
 }
