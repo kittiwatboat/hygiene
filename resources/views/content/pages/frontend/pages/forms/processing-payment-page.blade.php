@@ -501,16 +501,13 @@
         <div class="processing-payment-footer">
           <button type="button" class="processing-home-button">
             <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }}"></i>
-            <span>processing_payment_page.home_button</span>
           </button>
 
           <button type="button" class="processing-back-button">
             <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-chevron-left' }}"></i>
-            <span>processing_payment_page.back_button</span>
           </button>
 
           <button type="button" class="processing-confirm-button">
-            <span>processing_payment_page.confirm_button</span>
             <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-chevron-right' }}"></i>
           </button>
         </div>
