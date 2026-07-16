@@ -111,6 +111,16 @@ class FrontendPageController extends Controller
 'select_button_icon' => ['nullable', 'string', 'max:100'],
 'select_button_action' => ['nullable', 'string', 'max:100'],
 
+'category_primary_icon' => ['nullable', 'string', 'max:100'],
+'category_secondary_icon' => ['nullable', 'string', 'max:100'],
+'selected_product_icon' => ['nullable', 'string', 'max:100'],
+'amount_section_icon' => ['nullable', 'string', 'max:100'],
+'total_price_icon' => ['nullable', 'string', 'max:100'],
+
+'show_confirm_button' => ['nullable', 'boolean'],
+'confirm_button_icon' => ['nullable', 'string', 'max:100'],
+'confirm_button_action' => ['nullable', 'string', 'max:100'],
+
 
     ]);
 
@@ -203,6 +213,26 @@ switch ($screenKey) {
         'select_button_action' => $request->input('select_button_action', 'select_product_page'),
 
         'right_ad_enabled' => true,
+    ]);
+    break;
+    case 'select_product_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input('step_icon', 'tabler-bottle'),
+
+        'category_primary_icon' => $request->input('category_primary_icon', 'tabler-basket'),
+        'category_secondary_icon' => $request->input('category_secondary_icon', 'tabler-droplet'),
+
+        'selected_product_icon' => $request->input('selected_product_icon', 'tabler-check'),
+        'amount_section_icon' => $request->input('amount_section_icon', 'tabler-basket'),
+        'total_price_icon' => $request->input('total_price_icon', 'tabler-wallet'),
+
+        'show_home_button' => $request->boolean('show_home_button'),
+        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
+        'home_button_action' => $request->input('home_button_action', 'first_page'),
+
+        'show_confirm_button' => $request->boolean('show_confirm_button'),
+        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
+        'confirm_button_action' => $request->input('confirm_button_action', 'payment_page'),
     ]);
     break;
 }
