@@ -114,6 +114,9 @@
   "icon": "menu-icon icon-base ti tabler-bell",
   "slug": "alerts"
 },
+    {
+      "menuHeader": "ตั้งค่าระบบ"
+    },
 
 {
   "name": "สมาชิกและแต้ม",
