@@ -236,6 +236,56 @@
     font-size: 17px;
   }
 
+  .phone-actions-initial {
+    grid-template-columns: .85fr 1.3fr;
+  }
+
+  .phone-actions-waiting {
+    grid-template-columns: 1.15fr 1fr;
+  }
+
+  .phone-otp-waiting-label {
+    margin-top: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .phone-otp-code-preview {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  .phone-otp-code-preview span {
+    min-height: 40px;
+    border: 2px solid #0c8bd7;
+    border-radius: 8px;
+    background: #fff;
+    color: #0877c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .phone-otp-countdown {
+    margin-top: 10px;
+    text-align: center;
+    color: #667085;
+    font-size: 11px;
+  }
+
+  .phone-otp-countdown strong {
+    color: #0877c9;
+  }
+
   @media (max-width: 991.98px) {
     .phone-preview-content {
       grid-template-columns: 1fr;
@@ -672,31 +722,72 @@
               </div>
             @endif
 
-            <div class="phone-actions">
-              @if ($settings['show_back_button'] ?? true)
-                <button type="button" class="phone-back-button">
-                  <i class="icon-base ti {{ $backIcon }}"></i>
-                  <span>ย้อนกลับ</span>
-                </button>
-              @endif
+            <div id="phoneOtpInitialState">
+              <div class="phone-actions phone-actions-initial">
+                @if ($settings['show_back_button'] ?? true)
+                  <button type="button" class="phone-back-button">
+                    <i class="icon-base ti {{ $backIcon }}"></i>
+                    <span>ย้อนกลับ</span>
+                  </button>
+                @endif
 
-              @if ($settings['show_send_otp_button'] ?? true)
-                <button type="button" class="phone-send-otp-button">
-                  <i class="icon-base ti {{ $sendOtpIcon }}"></i>
-                  <span>ส่ง OTP</span>
-                </button>
-              @endif
+                @if ($settings['show_send_otp_button'] ?? true)
+                  <button
+                    type="button"
+                    class="phone-confirm-button"
+                    id="previewRequestOtpButton"
+                  >
+                    <span>ยืนยัน OTP</span>
+                    <i class="icon-base ti {{ $sendOtpIcon }}"></i>
+                  </button>
+                @endif
+              </div>
 
-              @if ($settings['show_confirm_button'] ?? true)
-                <button type="button" class="phone-confirm-button">
-                  <span>ยืนยัน OTP</span>
-                  <i class="icon-base ti {{ $confirmIcon }}"></i>
-                </button>
-              @endif
+              <div class="mt-2 text-center small text-muted">
+                กรอกเบอร์โทรแล้วกด “ยืนยัน OTP” เพื่อขอรหัส
+              </div>
             </div>
 
-            <div class="mt-2 text-center small text-muted">
-              ขั้นตอนการใช้งาน: กรอกเบอร์โทร → ส่ง OTP → กรอกรหัส OTP → ยืนยัน
+            <div id="phoneOtpWaitingState" class="d-none">
+              <div class="phone-otp-waiting-label">
+                <i class="icon-base ti tabler-message-code"></i>
+                <span>กรุณากรอกรหัส OTP 6 หลัก</span>
+              </div>
+
+              <div class="phone-otp-code-preview">
+                <span>1</span>
+                <span>1</span>
+                <span>1</span>
+                <span>9</span>
+                <span>9</span>
+                <span>9</span>
+              </div>
+
+              <div class="phone-otp-countdown">
+                ระบบส่ง OTP แล้ว หากไม่ได้รับภายใน
+                <strong id="previewOtpCountdown">59</strong>
+                วินาที
+              </div>
+
+              <div class="phone-actions phone-actions-waiting">
+                @if ($settings['show_send_otp_button'] ?? true)
+                  <button
+                    type="button"
+                    class="phone-send-otp-button"
+                    id="previewResendOtpButton"
+                  >
+                    <i class="icon-base ti {{ $sendOtpIcon }}"></i>
+                    <span>ขอรหัส OTP ใหม่</span>
+                  </button>
+                @endif
+
+                @if ($settings['show_confirm_button'] ?? true)
+                  <button type="button" class="phone-confirm-button">
+                    <span>ยืนยันรหัส</span>
+                    <i class="icon-base ti {{ $confirmIcon }}"></i>
+                  </button>
+                @endif
+              </div>
             </div>
           </div>
         </div>
@@ -704,3 +795,50 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const requestButton = document.getElementById('previewRequestOtpButton');
+  const resendButton = document.getElementById('previewResendOtpButton');
+  const initialState = document.getElementById('phoneOtpInitialState');
+  const waitingState = document.getElementById('phoneOtpWaitingState');
+  const countdownText = document.getElementById('previewOtpCountdown');
+
+  let countdownTimer = null;
+
+  const startCountdown = () => {
+    let seconds = 59;
+
+    if (countdownText) {
+      countdownText.textContent = seconds;
+    }
+
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+    }
+
+    countdownTimer = setInterval(() => {
+      seconds -= 1;
+
+      if (countdownText) {
+        countdownText.textContent = Math.max(seconds, 0);
+      }
+
+      if (seconds <= 0) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+    }, 1000);
+  };
+
+  requestButton?.addEventListener('click', function () {
+    initialState?.classList.add('d-none');
+    waitingState?.classList.remove('d-none');
+    startCountdown();
+  });
+
+  resendButton?.addEventListener('click', function () {
+    startCountdown();
+  });
+});
+</script>
