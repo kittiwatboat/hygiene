@@ -73,62 +73,50 @@
   @endif
 
 @php
-  $screenKey = $page->screen_key ?? $page->page_key ?? null;
+    $screenKey = $page->screen_key
+        ?? $page->page_key
+        ?? null;
 @endphp
 
-@php
-  $screenKey = $page->screen_key ?? $page->page_key ?? null;
-@endphp
+<div class="row g-4">
+    @switch($screenKey)
 
-@php
-  $screenKey = $page->screen_key ?? $page->page_key ?? null;
-@endphp
+        @case('first_page')
+            @include('content.pages.frontend.pages.partials.first-page')
+            @break
 
-@php
-  $screenKey = $page->screen_key ?? $page->page_key ?? null;
-@endphp
+        @case('language_page')
+            @include('content.pages.frontend.pages.partials.language-page')
+            @break
 
-@switch($screenKey)
-  @case('first_page')
-    @include('content.pages.frontend.pages.forms.first-page')
-    @break
+        @case('phone_verify_page')
+            @include('content.pages.frontend.pages.partials.phone-verify-page')
+            @break
 
-  @case('language_page')
-    @include('content.pages.frontend.pages.forms.language-page')
-    @break
+        @case('member_page')
+            @include('content.pages.frontend.pages.partials.member-page')
+            @break
 
-  @case('phone_verify_page')
-    @include('content.pages.frontend.pages.forms.phone-verify-page')
-    @break
+        @case('select_product_page')
+            @include('content.pages.frontend.pages.partials.select-product-page')
+            @break
 
-  @case('member_page')
-    @include('content.pages.frontend.pages.forms.member-page')
-    @break
+        @case('order_summary_page')
+            @include('content.pages.frontend.pages.partials.order-summary-page')
+            @break
 
-  @case('select_product_page')
-    @include('content.pages.frontend.pages.forms.select-product-page')
-    @break
+        @case('promotion_page')
+            @include('content.pages.frontend.pages.partials.promotion-page')
+            @break
 
-  @case('promotion_page')
-    @include('content.pages.frontend.pages.forms.promotion-page')
-    @break
+        @case('payment_page')
+            @include('content.pages.frontend.pages.partials.payment-page')
+            @break
 
-  @case('payment_page')
-    @include('content.pages.frontend.pages.forms.payment-page')
-    @break
+        @default
+            @include('content.pages.frontend.pages.partials.default-page')
 
-  @case('payment_page')
-    @include('content.pages.frontend.pages.forms.payment-page')
-    @break
-
-  @case('processing_payment_page')
-  @include('content.pages.frontend.pages.forms.processing-payment-page')
-  @break
-
-
-  @default
-    @include('content.pages.frontend.pages.forms.default-page')
-@endswitch
+    @endswitch
 </div>
 @endsection
 
