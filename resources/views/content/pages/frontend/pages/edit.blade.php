@@ -111,10 +111,7 @@
         @include('content.pages.frontend.pages.forms.payment-page')
         @break
 
-    @case('processing_payment_page')
-        @include('content.pages.frontend.pages.forms.processing-payment-page')
-        @break
-
+ 
     @default
         <div class="col-12">
             <div class="alert alert-warning">
