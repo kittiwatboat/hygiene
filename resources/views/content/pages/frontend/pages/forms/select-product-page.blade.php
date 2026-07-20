@@ -38,226 +38,283 @@
 
 <style>
   .select-product-preview {
-    background: #dff8ff;
-    border-radius: 14px;
-    padding: 22px 26px 20px;
+    position: relative;
+    min-height: 520px;
+    border-radius: 0;
     overflow: hidden;
+    padding: 118px 34px 22px;
+    background:
+      radial-gradient(circle at 8% 74%, rgba(255,255,255,.9) 0 12px, rgba(255,255,255,.35) 13px 16px, transparent 17px),
+      radial-gradient(circle at 92% 72%, rgba(255,255,255,.85) 0 18px, rgba(255,255,255,.35) 19px 23px, transparent 24px),
+      linear-gradient(180deg, #f7fdff 0%, #d8f3ff 55%, #aee6fb 100%);
+  }
+
+  .select-product-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 112px;
+    background:
+      linear-gradient(175deg, transparent 0 58%, rgba(255,255,255,.96) 59% 68%, transparent 69%),
+      linear-gradient(180deg, #78d5fa 0%, #c9efff 100%);
+    pointer-events: none;
+  }
+
+  .preview-topbar {
+    position: absolute;
+    top: 16px;
+    left: 22px;
+    right: 22px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .preview-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #28218f;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .preview-brand-logo,
+  .preview-ip-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.95);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0877c9;
+    font-weight: 900;
+    box-shadow: 0 3px 10px rgba(0, 108, 175, .18);
+  }
+
+  .preview-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-mini-button,
+  .preview-language {
+    height: 34px;
+    border: 0;
+    border-radius: 7px;
+    background: rgba(255,255,255,.95);
+    color: #0877c9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .preview-language {
+    width: 28px;
+    padding: 0;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  .preview-language.th { background: #ef3340; }
+  .preview-language.en { background: #1a47b8; }
+  .preview-language.cn { background: #ef3340; }
+
+  .preview-stepbar {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    z-index: 3;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+  .preview-step {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #70bfe9;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 7px rgba(0, 107, 180, .22);
+  }
+
+  .preview-step.active { background: #0877c9; }
+  .preview-step-line { width: 42px; height: 3px; background: rgba(255,255,255,.88); }
+
+  .preview-screen-title {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #111;
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 16px;
   }
 
   .select-product-content {
+    position: relative;
+    z-index: 2;
     display: grid;
-    grid-template-columns: 56% 44%;
-    gap: 18px;
-    align-items: stretch;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-width: 640px;
+    margin: 0 auto;
   }
 
   .product-category-panel {
-    display: grid;
-    grid-template-columns: 38% 62%;
-    min-height: 122px;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 12px;
-    border: 2px solid transparent;
-  }
-
-  .product-category-panel.is-active {
-    border-color: #0084d8;
-  }
-
-  .category-info {
+    border-radius: 10px;
+    padding: 14px 14px 12px;
     color: #fff;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    box-shadow: 0 6px 12px rgba(0, 78, 140, .13);
   }
 
-  .category-info i {
-    font-size: 46px;
-    margin-top: 8px;
-  }
+  .product-category-panel.primary { background: #0089df; }
+  .product-category-panel.secondary { background: #dc3d82; }
 
   .category-name {
-    font-size: 18px;
-    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 10px;
   }
 
   .product-list-preview {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    background: #fff;
-    padding: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
   }
 
   .product-card-preview {
     position: relative;
-    background: #f7fbff;
+    min-height: 112px;
+    border: 3px solid transparent;
     border-radius: 8px;
-    border: 2px solid #d6e7f5;
-    min-height: 104px;
+    background: #fff;
+    color: #171717;
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
-    font-size: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 5px 7px;
     overflow: hidden;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
   }
 
-  .product-card-preview.is-selected {
-    border-color: #0084d8;
+  .product-card-preview.is-selected { border-color: #00a4ef; }
+
+  .product-placeholder-icon {
+    font-size: 54px;
+    color: #5ab5e5;
+    margin-bottom: 5px;
   }
 
-  .product-card-preview i.product-placeholder-icon {
-    font-size: 38px;
-    color: #7dbce8;
-  }
+  .product-category-panel.secondary .product-placeholder-icon { color: #ee66a0; }
 
   .selected-icon-badge {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    background: #0084d8;
-    color: #fff;
-    width: 22px;
-    height: 22px;
+    top: 5px;
+    right: 5px;
+    width: 21px;
+    height: 21px;
     border-radius: 50%;
+    background: #0784cc;
+    color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-  }
-
-  .amount-panel {
-    background: rgba(255,255,255,.85);
-    border-radius: 12px;
-    padding: 16px;
-    min-height: 100%;
-  }
-
-  .amount-title {
-    color: #0075c9;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 12px;
+    font-size: 12px;
   }
 
   .amount-options {
+    position: relative;
+    z-index: 2;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-width: 640px;
+    margin: 10px auto 0;
   }
 
   .amount-option {
-    background: #fff;
-    border: 2px solid #d6e7f5;
-    border-radius: 10px;
-    padding: 14px;
     position: relative;
-    min-height: 100px;
-  }
-
-  .amount-option.is-selected {
-    border-color: #0084d8;
-  }
-
-  .amount-value {
-    font-size: 26px;
-    color: #006dcc;
-    font-weight: 800;
-    line-height: 1;
-  }
-
-  .amount-price {
-    font-size: 24px;
-    font-weight: 800;
-    color: #1f2d3d;
-    margin-top: 8px;
-  }
-
-  .total-card {
-    margin-top: 14px;
-    background: #fff;
-    border-radius: 10px;
-    padding: 14px 18px;
+    min-height: 54px;
+    border: 3px solid transparent;
+    border-radius: 9px;
+    background: rgba(255,255,255,.96);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-weight: 800;
+    padding: 8px 18px;
+    box-shadow: 0 4px 10px rgba(0, 82, 140, .09);
   }
 
-  .total-card-label {
-    color: #006dcc;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .total-card-price {
-    font-size: 28px;
-    color: #0084d8;
-  }
+  .amount-option.is-selected { border-color: #078bd5; }
+  .amount-value { color: #0068c9; font-size: 20px; font-weight: 900; }
+  .amount-price { color: #111; font-size: 18px; font-weight: 900; }
+  .amount-option small { font-size: 13px; font-weight: 800; }
 
   .select-product-footer {
+    position: relative;
+    z-index: 2;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-top: 16px;
-    gap: 14px;
+    gap: 12px;
+    margin-top: 14px;
   }
 
-  .select-product-home-button {
-    border: 0;
-    background: #fff;
-    color: #0877c9;
-    border-radius: 8px;
-    padding: 10px 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
-  }
-
+  .select-product-home-button,
   .select-product-confirm-button {
+    height: 40px;
     border: 0;
-    background: #0877c9;
-    color: #fff;
-    border-radius: 10px;
-    padding: 12px 34px;
-    min-width: 160px;
+    border-radius: 7px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    font-size: 18px;
+    gap: 8px;
     font-weight: 800;
-    box-shadow: 0 6px 14px rgba(0, 90, 160, .28);
+    box-shadow: 0 4px 10px rgba(0, 70, 130, .15);
+  }
+
+  .select-product-home-button {
+    min-width: 126px;
+    background: #fff;
+    color: #0784cc;
+  }
+
+  .select-product-confirm-button {
+    min-width: 126px;
+    background: #0784cc;
+    color: #fff;
+    font-size: 16px;
   }
 
   @media (max-width: 991.98px) {
-    .select-product-content {
-      grid-template-columns: 1fr;
-    }
-
-    .product-category-panel {
-      grid-template-columns: 1fr;
-    }
-
-    .select-product-footer {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .select-product-home-button,
-    .select-product-confirm-button {
-      width: 100%;
-    }
+    .select-product-preview { padding-left: 16px; padding-right: 16px; }
+    .select-product-content,
+    .amount-options { grid-template-columns: 1fr; }
+    .preview-brand { font-size: 14px; }
+    .preview-topbar { left: 12px; right: 12px; }
+    .preview-toolbar .preview-language { display: none; }
   }
 </style>
+
 
 <div class="col-lg-4">
   <div class="card">
@@ -514,135 +571,114 @@
     <div class="card-header">
       <h5 class="mb-1">Preview หน้าเลือกสินค้า</h5>
       <p class="text-muted mb-0">
-        ตัวอย่าง layout เท่านั้น ข้อมูลสินค้าและปริมาณจะดึงจากระบบจริง
+        ปรับ Layout ให้ใกล้เคียงหน้าจอเครื่องจริง โดยข้อมูลสินค้าและราคายังดึงจากระบบ
       </p>
     </div>
 
     <div class="card-body">
       <div class="select-product-preview">
-        <div class="text-center mb-3">
-          <div class="fw-bold text-primary fs-5">
-            select_product_page.title
+        <div class="preview-topbar">
+          <div class="preview-toolbar">
+            <button type="button" class="preview-mini-button">
+              <i class="icon-base ti tabler-home"></i>
+              <span>หน้าหลัก</span>
+            </button>
+            <span class="preview-language th">TH</span>
+            <span class="preview-language en">EN</span>
+            <span class="preview-language cn">中</span>
           </div>
-          <small class="text-muted">
-            select_product_page.subtitle
-          </small>
+
+          <div class="preview-brand">
+            <span class="preview-brand-logo">H</span>
+            <span>ผู้เชี่ยวชาญการดูแลผ้าครบวงจร</span>
+          </div>
+
+          <span class="preview-ip-logo">IP</span>
         </div>
 
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
-          <span class="badge rounded-pill bg-success p-2">
-            <i class="icon-base ti tabler-check"></i>
-          </span>
-
-          <span style="width: 50px; height: 2px; background: #7dbce8;"></span>
-
-          <span class="badge rounded-pill bg-success p-2">
-            <i class="icon-base ti tabler-check"></i>
-          </span>
-
-          <span style="width: 50px; height: 2px; background: #7dbce8;"></span>
-
-          <span class="badge rounded-pill bg-primary p-2">
+        <div class="preview-stepbar">
+          <span class="preview-step active">
             <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-bottle' }}"></i>
           </span>
-
-          <span style="width: 50px; height: 2px; background: #7dbce8;"></span>
-
-          <span class="badge rounded-pill bg-label-secondary p-2">
-            <i class="icon-base ti tabler-minus"></i>
-          </span>
+          <span class="preview-step-line"></span>
+          <span class="preview-step"></span>
+          <span class="preview-step-line"></span>
+          <span class="preview-step"></span>
+          <span class="preview-step-line"></span>
+          <span class="preview-step"></span>
         </div>
 
+        <div class="preview-screen-title">เลือกสินค้า</div>
+
         <div class="select-product-content">
-          <div>
-            <div class="product-category-panel is-active">
-              <div class="category-info" style="background: #43b8e8;">
-                <div class="category-name">น้ำยาซักผ้า</div>
-                <i class="icon-base ti {{ $settings['category_primary_icon'] ?? 'tabler-basket' }}"></i>
-              </div>
-
-              <div class="product-list-preview">
-                <div class="product-card-preview">
-                  <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                  <div>กลิ่นไฮจีน สีฟ้า</div>
-                </div>
-
-                <div class="product-card-preview">
-                  <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                  <div>กลิ่นฟลอร่า บลูม</div>
-                </div>
-              </div>
+          <div class="product-category-panel primary">
+            <div class="category-name">
+              <i class="icon-base ti {{ $settings['category_primary_icon'] ?? 'tabler-basket' }}"></i>
+              <span>น้ำยาซักผ้า</span>
             </div>
 
-            <div class="product-category-panel" style="border-color: #f84cc6;">
-              <div class="category-info" style="background: #f49bdb;">
-                <div class="category-name">น้ำยาปรับผ้านุ่ม</div>
-                <i class="icon-base ti {{ $settings['category_secondary_icon'] ?? 'tabler-droplet' }}"></i>
+            <div class="product-list-preview">
+              <div class="product-card-preview">
+                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
+                <div>กลิ่น เดลี่ ซัน</div>
               </div>
 
-              <div class="product-list-preview">
-                <div class="product-card-preview is-selected">
-                  <span class="selected-icon-badge">
-                    <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
-                  </span>
-                  <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                  <div>กลิ่นมิลค์กี้ แคร์</div>
-                </div>
-
-                <div class="product-card-preview">
-                  <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                  <div>กลิ่นพิ้งค์ บลูม</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="amount-panel">
-            <div class="amount-title">
-              <i class="icon-base ti {{ $settings['amount_section_icon'] ?? 'tabler-basket' }}"></i>
-              <span>select_product_page.amount_title</span>
-            </div>
-
-            <div class="amount-options">
-              <div class="amount-option is-selected">
+              <div class="product-card-preview is-selected">
                 <span class="selected-icon-badge">
                   <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
                 </span>
-
-                <div class="amount-value">1,250 <small>มล.</small></div>
-                <div class="amount-price">115 <small>บาท</small></div>
-              </div>
-
-              <div class="amount-option">
-                <div class="amount-value">2,500 <small>มล.</small></div>
-                <div class="amount-price">220 <small>บาท</small></div>
+                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
+                <div>กลิ่น ฟลอร่า บลูม</div>
               </div>
             </div>
+          </div>
 
-            <div class="total-card">
-              <div class="total-card-label">
-                <i class="icon-base ti {{ $settings['total_price_icon'] ?? 'tabler-wallet' }}"></i>
-                <span>select_product_page.total_price</span>
+          <div class="product-category-panel secondary">
+            <div class="category-name">
+              <i class="icon-base ti {{ $settings['category_secondary_icon'] ?? 'tabler-droplet' }}"></i>
+              <span>น้ำยาปรับผ้านุ่ม</span>
+            </div>
+
+            <div class="product-list-preview">
+              <div class="product-card-preview">
+                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
+                <div>กลิ่น มิลค์กี้ แคร์</div>
               </div>
 
-              <div class="total-card-price">
-                115 <small>บาท</small>
+              <div class="product-card-preview">
+                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
+                <div>กลิ่น พิงค์ บลูม</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="amount-options">
+          <div class="amount-option is-selected">
+            <span class="selected-icon-badge">
+              <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
+            </span>
+            <div class="amount-value">1,250 <small>มล.</small></div>
+            <div class="amount-price">115 <small>บาท</small></div>
+          </div>
+
+          <div class="amount-option">
+            <div class="amount-value">2,500 <small>มล.</small></div>
+            <div class="amount-price">220 <small>บาท</small></div>
           </div>
         </div>
 
         <div class="select-product-footer">
           @if ($settings['show_home_button'] ?? true)
             <button type="button" class="select-product-home-button">
-              <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }}"></i>
-              <span>select_product_page.home_button</span>
+              <i class="icon-base ti tabler-chevron-left"></i>
+              <span>ย้อนกลับ</span>
             </button>
           @endif
 
           @if ($settings['show_confirm_button'] ?? true)
             <button type="button" class="select-product-confirm-button">
-              <span>select_product_page.confirm_button</span>
+              <span>ตกลง</span>
               <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-chevron-right' }}"></i>
             </button>
           @endif
