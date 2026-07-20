@@ -22,7 +22,9 @@
     'tabler-package' => 'Package',
   ];
 
-  $buttonIcons = [
+$buttonIcons = [
+    'tabler-arrow-left' => 'Arrow Left',
+    'tabler-chevron-left' => 'Chevron Left',
     'tabler-home' => 'Home',
     'tabler-check' => 'Check',
     'tabler-circle-check' => 'Circle Check',
@@ -33,7 +35,7 @@
     'tabler-droplet' => 'Droplet',
     'tabler-wallet' => 'Wallet',
     'tabler-cash' => 'Cash',
-  ];
+];
 @endphp
 
 <style>
@@ -484,41 +486,61 @@
         <h6 class="mb-3">Icon ปุ่มด้านล่าง</h6>
 
         <div class="form-check form-switch mb-3">
-          <input type="hidden" name="show_home_button" value="0">
-          <input
-            type="checkbox"
-            name="show_home_button"
-            value="1"
-            id="show_home_button"
-            class="form-check-input"
-            {{ old('show_home_button', $settings['show_home_button'] ?? true) ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="show_home_button">
-            แสดงปุ่มหน้าหลัก
-          </label>
+          <input type="hidden" name="show_back_button" value="0">
+
+<input
+    type="checkbox"
+    name="show_back_button"
+    value="1"
+    id="show_back_button"
+    class="form-check-input"
+    {{ old(
+        'show_back_button',
+        $settings['show_back_button'] ?? true
+    ) ? 'checked' : '' }}
+>
+
+<label
+    class="form-check-label"
+    for="show_back_button"
+>
+    แสดงปุ่มย้อนกลับ
+</label>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Icon ปุ่มหน้าหลัก</label>
 
-          <select name="home_button_icon" class="form-select">
-            @php
-              $homeButtonIcon = old('home_button_icon', $settings['home_button_icon'] ?? 'tabler-home');
-            @endphp
+          <select name="back_button_icon" class="form-select">
+    @php
+        $backButtonIcon = old(
+            'back_button_icon',
+            $settings['back_button_icon']
+                ?? 'tabler-chevron-left'
+        );
+    @endphp
 
-            @foreach ($buttonIcons as $iconClass => $iconLabel)
-              <option value="{{ $iconClass }}" {{ $homeButtonIcon === $iconClass ? 'selected' : '' }}>
-                {{ $iconLabel }}
-              </option>
-            @endforeach
-          </select>
+    @foreach ($buttonIcons as $iconClass => $iconLabel)
+        <option
+            value="{{ $iconClass }}"
+            {{ $backButtonIcon === $iconClass
+                ? 'selected'
+                : '' }}
+        >
+            {{ $iconLabel }}
+        </option>
+    @endforeach
+</select>
         </div>
 
         <input
-          type="hidden"
-          name="home_button_action"
-          value="{{ old('home_button_action', $settings['home_button_action'] ?? 'first_page') }}"
-        >
+    type="hidden"
+    name="back_button_action"
+    value="{{ old(
+        'back_button_action',
+        $settings['back_button_action'] ?? 'member_page'
+    ) }}"
+>
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_confirm_button" value="0">
@@ -669,12 +691,19 @@
         </div>
 
         <div class="select-product-footer">
-          @if ($settings['show_home_button'] ?? true)
-            <button type="button" class="select-product-home-button">
-              <i class="icon-base ti tabler-chevron-left"></i>
-              <span>ย้อนกลับ</span>
-            </button>
-          @endif
+          @if ($settings['show_back_button'] ?? true)
+    <button
+        type="button"
+        class="select-product-home-button"
+    >
+        <i class="icon-base ti {{
+            $settings['back_button_icon']
+                ?? 'tabler-chevron-left'
+        }}"></i>
+
+        <span>ย้อนกลับ</span>
+    </button>
+@endif
 
           @if ($settings['show_confirm_button'] ?? true)
             <button type="button" class="select-product-confirm-button">
