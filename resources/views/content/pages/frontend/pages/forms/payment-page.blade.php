@@ -35,18 +35,67 @@
     overflow: hidden;
   }
 
+  .payment-preview-title {
+    text-align: center;
+    color: #222;
+    font-weight: 800;
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  .payment-preview-subtitle {
+    text-align: center;
+    color: #6c757d;
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  .payment-step {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .payment-step-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #0d8bd7;
+    font-size: 16px;
+  }
+
+  .payment-step-circle.done {
+    background: #32c66b;
+  }
+
+  .payment-step-circle.pending {
+    background: #e6e8ed;
+    color: #9aa0aa;
+  }
+
+  .payment-step-line {
+    width: 46px;
+    height: 2px;
+    background: #67bcec;
+  }
+
   .payment-content {
     display: grid;
-    grid-template-columns: 38% 62%;
-    gap: 18px;
-    align-items: stretch;
+    grid-template-columns: 42% 58%;
+    gap: 14px;
+    align-items: start;
   }
 
   .payment-summary-panel,
   .payment-method-panel {
-    background: rgba(255,255,255,.78);
-    border-radius: 12px;
-    padding: 16px;
+    background: rgba(255,255,255,.76);
+    border-radius: 10px;
+    padding: 12px;
   }
 
   .payment-section-title {
@@ -54,50 +103,56 @@
     font-weight: 800;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 7px;
+    margin-bottom: 10px;
+    font-size: 13px;
   }
 
   .payment-product-card {
     background: #fff;
-    border-radius: 10px;
-    padding: 12px;
+    border-radius: 8px;
+    padding: 10px;
     display: grid;
-    grid-template-columns: 64px 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    grid-template-columns: 54px 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   .payment-product-img {
-    width: 64px;
-    height: 84px;
-    border-radius: 8px;
+    width: 54px;
+    height: 76px;
+    border-radius: 6px;
     background: #f2f8ff;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #7dbce8;
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .payment-product-title {
     font-weight: 700;
     color: #0075c9;
-    font-size: 13px;
+    font-size: 10px;
+    line-height: 1.35;
   }
 
   .payment-product-row {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
-    margin-top: 6px;
+    font-size: 11px;
+    margin-top: 5px;
+  }
+
+  .payment-product-row strong {
+    white-space: nowrap;
   }
 
   .payment-discount-card {
     background: #fff;
-    border-radius: 10px;
-    border: 2px solid #b9e2ff;
-    padding: 12px 14px;
+    border-radius: 8px;
+    border: 2px solid #8fd3f7;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -105,16 +160,27 @@
     font-weight: 800;
   }
 
+  .payment-net-total {
+    font-size: 28px;
+    font-weight: 900;
+    color: #0084d8;
+    white-space: nowrap;
+  }
+
+  .payment-net-total small {
+    font-size: 12px;
+  }
+
   .payment-method-item {
     background: #fff;
     border: 2px solid #d6e7f5;
-    border-radius: 10px;
-    min-height: 58px;
-    padding: 10px 14px;
-    margin-bottom: 10px;
+    border-radius: 9px;
+    min-height: 50px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
     display: grid;
-    grid-template-columns: 130px 1fr 32px;
-    gap: 12px;
+    grid-template-columns: 120px 1fr 26px;
+    gap: 10px;
     align-items: center;
   }
 
@@ -123,61 +189,59 @@
   }
 
   .payment-method-logo {
-    max-width: 124px;
-    max-height: 34px;
+    max-width: 112px;
+    max-height: 28px;
     object-fit: contain;
   }
 
   .payment-method-logo-empty {
-    width: 124px;
-    height: 34px;
-    border-radius: 6px;
+    width: 112px;
+    height: 28px;
+    border-radius: 5px;
     background: #eef6ff;
-    color: #7dbce8;
+    color: #4f84b7;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 800;
   }
 
   .payment-method-name {
     font-weight: 800;
     color: #006dcc;
     text-align: right;
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .payment-method-subtitle {
-    font-size: 11px;
+    font-size: 9px;
     color: #0075c9;
     text-align: right;
   }
 
   .payment-footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.2fr;
-    gap: 18px;
-    margin-top: 18px;
-    align-items: center;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 16px;
   }
 
-  .payment-home-button,
   .payment-back-button,
   .payment-confirm-button {
     border: 0;
-    border-radius: 10px;
-    padding: 12px 18px;
-    min-height: 54px;
+    border-radius: 8px;
+    padding: 10px 20px;
+    min-width: 140px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 9px;
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(0,0,0,.08);
   }
 
-  .payment-home-button,
   .payment-back-button {
     background: #fff;
     color: #0877c9;
@@ -186,7 +250,7 @@
   .payment-confirm-button {
     background: #0877c9;
     color: #fff;
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .payment-logo-preview {
@@ -202,10 +266,9 @@
     }
 
     .payment-footer {
-      grid-template-columns: 1fr;
+      flex-direction: column;
     }
 
-    .payment-home-button,
     .payment-back-button,
     .payment-confirm-button {
       width: 100%;
@@ -434,36 +497,55 @@
     <div class="card-header">
       <h5 class="mb-1">Preview หน้าชำระเงิน</h5>
       <p class="text-muted mb-0">
-        ตัวอย่าง layout เท่านั้น รายการสินค้าและยอดเงินจริงจะดึงจาก order/cart
+        ตัวอย่าง Layout ตามหน้าจอชำระเงินจริง รายการสินค้าและยอดเงินจะดึงจาก order/cart
       </p>
     </div>
 
     <div class="card-body">
       <div class="payment-preview">
-        <div class="text-center mb-3">
-          <div class="fw-bold text-primary fs-5">payment_page.title</div>
-          <small class="text-muted">payment_page.subtitle</small>
+        <div class="payment-preview-title">
+          payment_page.title
         </div>
 
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
-          <span class="badge rounded-pill bg-success p-2"><i class="icon-base ti tabler-check"></i></span>
-          <span style="width: 42px; height: 2px; background: #7dbce8;"></span>
-          <span class="badge rounded-pill bg-success p-2"><i class="icon-base ti tabler-check"></i></span>
-          <span style="width: 42px; height: 2px; background: #7dbce8;"></span>
-          <span class="badge rounded-pill bg-success p-2"><i class="icon-base ti tabler-check"></i></span>
-          <span style="width: 42px; height: 2px; background: #7dbce8;"></span>
-          <span class="badge rounded-pill bg-primary p-2">
+        <div class="payment-preview-subtitle">
+          payment_page.subtitle
+        </div>
+
+        <div class="payment-step">
+          <span class="payment-step-circle done">
+            <i class="icon-base ti tabler-check"></i>
+          </span>
+
+          <span class="payment-step-line"></span>
+
+          <span class="payment-step-circle done">
+            <i class="icon-base ti tabler-check"></i>
+          </span>
+
+          <span class="payment-step-line"></span>
+
+          <span class="payment-step-circle done">
+            <i class="icon-base ti tabler-check"></i>
+          </span>
+
+          <span class="payment-step-line"></span>
+
+          <span class="payment-step-circle">
             <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-credit-card' }}"></i>
           </span>
-          <span style="width: 42px; height: 2px; background: #7dbce8;"></span>
-          <span class="badge rounded-pill bg-label-secondary p-2"><i class="icon-base ti tabler-minus"></i></span>
+
+          <span class="payment-step-line"></span>
+
+          <span class="payment-step-circle pending">
+            <i class="icon-base ti tabler-minus"></i>
+          </span>
         </div>
 
         <div class="payment-content">
           <div class="payment-summary-panel">
             <div class="payment-section-title">
               <i class="icon-base ti {{ $settings['order_summary_icon'] ?? 'tabler-shopping-cart' }}"></i>
-              <span>payment_page.order_summary</span>
+              <span>รายการสินค้า</span>
             </div>
 
             <div class="payment-product-card">
@@ -473,7 +555,8 @@
 
               <div>
                 <div class="payment-product-title">
-                  ไฮยีน น้ำยาซักผ้า ปรับผ้านุ่ม กลิ่นมิลค์กี้ แคร์
+                  ไฮยีน เอ็กซ์เพิร์ทแคร์ น้ำยาปรับผ้านุ่ม
+                  กลิ่นมิลค์กี้ แคร์ ขนาด 1,250 มล.
                 </div>
 
                 <div class="payment-product-row">
@@ -491,10 +574,10 @@
             <div class="payment-discount-card">
               <div>
                 <i class="icon-base ti {{ $settings['net_total_icon'] ?? 'tabler-wallet' }} me-1"></i>
-                payment_page.net_total
+                ยอดรวมสุทธิ
               </div>
 
-              <div style="font-size: 30px;">
+              <div class="payment-net-total">
                 100 <small>บาท</small>
               </div>
             </div>
@@ -503,16 +586,22 @@
           <div class="payment-method-panel">
             <div class="payment-section-title">
               <i class="icon-base ti {{ $settings['payment_section_icon'] ?? 'tabler-credit-card' }}"></i>
-              <span>payment_page.payment_method_title</span>
+              <span>เลือกช่องทางการชำระเงิน</span>
             </div>
 
             @forelse ($paymentMethods as $index => $method)
               <div class="payment-method-item {{ $index === 0 ? 'is-selected' : '' }}">
                 <div>
                   @if ($method->logo_url)
-                    <img src="{{ $method->logo_url }}" class="payment-method-logo" alt="{{ $method->name }}">
+                    <img
+                      src="{{ $method->logo_url }}"
+                      class="payment-method-logo"
+                      alt="{{ $method->name }}"
+                    >
                   @else
-                    <div class="payment-method-logo-empty">{{ $method->code }}</div>
+                    <div class="payment-method-logo-empty">
+                      {{ $method->code }}
+                    </div>
                   @endif
                 </div>
 
@@ -520,6 +609,7 @@
                   <div class="payment-method-name">
                     {{ $method->name }}
                   </div>
+
                   @if ($method->subtitle)
                     <div class="payment-method-subtitle">
                       {{ $method->subtitle }}
@@ -537,13 +627,86 @@
               </div>
             @empty
               <div class="payment-method-item is-selected">
-                <div><div class="payment-method-logo-empty">PromptPay</div></div>
                 <div>
-                  <div class="payment-method-name">พร้อมเพย์</div>
-                  <div class="payment-method-subtitle">PromptPay</div>
+                  <div class="payment-method-logo-empty">
+                    Thai QR Payment
+                  </div>
                 </div>
+
+                <div>
+                  <div class="payment-method-name">
+                    พร้อมเพย์
+                  </div>
+                  <div class="payment-method-subtitle">
+                    PromptPay
+                  </div>
+                </div>
+
                 <div class="text-primary text-center">
                   <i class="icon-base ti tabler-circle-check"></i>
+                </div>
+              </div>
+
+              <div class="payment-method-item">
+                <div>
+                  <div class="payment-method-logo-empty">
+                    VISA / Mastercard
+                  </div>
+                </div>
+
+                <div>
+                  <div class="payment-method-name">
+                    บัตรเครดิต / เดบิต
+                  </div>
+                  <div class="payment-method-subtitle">
+                    VISA / Mastercard
+                  </div>
+                </div>
+
+                <div class="text-primary text-center">
+                  <i class="icon-base ti tabler-chevron-right"></i>
+                </div>
+              </div>
+
+              <div class="payment-method-item">
+                <div>
+                  <div class="payment-method-logo-empty">
+                    true money
+                  </div>
+                </div>
+
+                <div>
+                  <div class="payment-method-name">
+                    ทรูมันนี่ วอลเล็ท
+                  </div>
+                  <div class="payment-method-subtitle">
+                    TrueMoney Wallet
+                  </div>
+                </div>
+
+                <div class="text-primary text-center">
+                  <i class="icon-base ti tabler-chevron-right"></i>
+                </div>
+              </div>
+
+              <div class="payment-method-item">
+                <div>
+                  <div class="payment-method-logo-empty">
+                    ShopeePay
+                  </div>
+                </div>
+
+                <div>
+                  <div class="payment-method-name">
+                    ShopeePay
+                  </div>
+                  <div class="payment-method-subtitle">
+                    ชำระผ่าน ShopeePay
+                  </div>
+                </div>
+
+                <div class="text-primary text-center">
+                  <i class="icon-base ti tabler-chevron-right"></i>
                 </div>
               </div>
             @endforelse
@@ -551,18 +714,13 @@
         </div>
 
         <div class="payment-footer">
-          <button type="button" class="payment-home-button">
-            <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-home' }}"></i>
-            <span>payment_page.home_button</span>
-          </button>
-
           <button type="button" class="payment-back-button">
             <i class="icon-base ti {{ $settings['back_button_icon'] ?? 'tabler-chevron-left' }}"></i>
-            <span>payment_page.back_button</span>
+            <span>ย้อนกลับ</span>
           </button>
 
           <button type="button" class="payment-confirm-button">
-            <span>payment_page.confirm_button</span>
+            <span>ตกลง</span>
             <i class="icon-base ti {{ $settings['confirm_button_icon'] ?? 'tabler-chevron-right' }}"></i>
           </button>
         </div>
