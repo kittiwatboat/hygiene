@@ -178,6 +178,14 @@ class FrontendPageController extends Controller
 'show_send_otp_button' => ['nullable', 'boolean'],
 'send_otp_button_icon' => ['nullable', 'string', 'max:100'],
 'send_otp_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_pause_button' => ['nullable', 'boolean'],
+'pause_button_icon' => ['nullable', 'string', 'max:100'],
+'pause_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_continue_button' => ['nullable', 'boolean'],
+'continue_button_icon' => ['nullable', 'string', 'max:100'],
+'continue_button_action' => ['nullable', 'string', 'max:100'],
     ]);
 
 
@@ -510,6 +518,42 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input(
             'confirm_button_action',
             'promotion_page'
+        ),
+    ]);
+    break;
+    case 'refill_status_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-bottle'
+        ),
+
+        'show_pause_button' => $request->boolean(
+            'show_pause_button'
+        ),
+
+        'pause_button_icon' => $request->input(
+            'pause_button_icon',
+            'tabler-player-pause'
+        ),
+
+        'pause_button_action' => $request->input(
+            'pause_button_action',
+            'pause_refill'
+        ),
+
+        'show_continue_button' => $request->boolean(
+            'show_continue_button'
+        ),
+
+        'continue_button_icon' => $request->input(
+            'continue_button_icon',
+            'tabler-chevron-right'
+        ),
+
+        'continue_button_action' => $request->input(
+            'continue_button_action',
+            'complete_refill'
         ),
     ]);
     break;

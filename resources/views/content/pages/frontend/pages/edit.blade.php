@@ -110,8 +110,10 @@
     @case('payment_page')
         @include('content.pages.frontend.pages.forms.payment-page')
         @break
+    @case('refill_status_page')
+        @include('content.pages.frontend.pages.forms.refill-status-page')
+        @break
 
- 
     @default
         <div class="col-12">
             <div class="alert alert-warning">
