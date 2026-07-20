@@ -174,6 +174,10 @@ class FrontendPageController extends Controller
 'net_total_icon' => ['nullable', 'string', 'max:100'],
 'back_button_icon' => ['nullable', 'string', 'max:100'],
 'back_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_send_otp_button' => ['nullable', 'boolean'],
+'send_otp_button_icon' => ['nullable', 'string', 'max:100'],
+'send_otp_button_action' => ['nullable', 'string', 'max:100'],
     ]);
 
 
@@ -224,6 +228,17 @@ switch ($screenKey) {
         'show_confirm_button' => $request->boolean('show_confirm_button'),
         'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-check'),
         'confirm_button_action' => $request->input('confirm_button_action', 'select_product_page'),
+        'show_send_otp_button' => $request->boolean('show_send_otp_button'),
+
+'send_otp_button_icon' => $request->input(
+    'send_otp_button_icon',
+    'tabler-message-code'
+),
+
+'send_otp_button_action' => $request->input(
+    'send_otp_button_action',
+    'send_otp'
+),
     ]);
     break;
     case 'member_page':
