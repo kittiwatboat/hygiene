@@ -7,6 +7,11 @@
     $settings['back_button_icon'] ?? 'tabler-arrow-left'
   );
 
+  $sendOtpIcon = old(
+    'send_otp_button_icon',
+    $settings['send_otp_button_icon'] ?? 'tabler-message-code'
+  );
+
   $confirmIcon = old(
     'confirm_button_icon',
     $settings['confirm_button_icon'] ?? 'tabler-chevron-right'
@@ -18,6 +23,15 @@
     'tabler-home' => 'Home',
     'tabler-circle-arrow-left' => 'Circle Arrow Left',
     'tabler-caret-left' => 'Caret Left',
+  ];
+
+  $sendOtpIcons = [
+    'tabler-message-code' => 'Message Code',
+    'tabler-message' => 'Message',
+    'tabler-send' => 'Send',
+    'tabler-device-mobile-message' => 'Mobile Message',
+    'tabler-phone-call' => 'Phone Call',
+    'tabler-arrow-right' => 'Arrow Right',
   ];
 
   $confirmIcons = [
@@ -186,16 +200,17 @@
     margin-top: auto;
     padding-top: 14px;
     display: grid;
-    grid-template-columns: 1fr 1.15fr;
-    gap: 10px;
+    grid-template-columns: .85fr 1fr 1.1fr;
+    gap: 8px;
   }
 
   .phone-back-button,
+  .phone-send-otp-button,
   .phone-confirm-button {
     border: 0;
     border-radius: 9px;
-    min-height: 48px;
-    padding: 10px 14px;
+    min-height: 44px;
+    padding: 8px 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -209,6 +224,12 @@
     color: #0877c9;
   }
 
+  .phone-send-otp-button {
+    background: #fff;
+    color: #0877c9;
+    border: 1px solid #87cdf3;
+  }
+
   .phone-confirm-button {
     background: #0877c9;
     color: #fff;
@@ -217,6 +238,10 @@
 
   @media (max-width: 991.98px) {
     .phone-preview-content {
+      grid-template-columns: 1fr;
+    }
+
+    .phone-actions {
       grid-template-columns: 1fr;
     }
 
@@ -390,6 +415,44 @@
           value="{{ old(
             'back_button_action',
             $settings['back_button_action'] ?? 'language_page'
+          ) }}"
+        >
+
+        <div class="form-check form-switch mb-3">
+          <input type="hidden" name="show_send_otp_button" value="0">
+          <input
+            type="checkbox"
+            name="show_send_otp_button"
+            value="1"
+            id="show_send_otp_button"
+            class="form-check-input"
+            {{ old('show_send_otp_button', $settings['show_send_otp_button'] ?? true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="show_send_otp_button">
+            แสดงปุ่มส่ง OTP
+          </label>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Icon ปุ่มส่ง OTP</label>
+          <select name="send_otp_button_icon" class="form-select">
+            @foreach ($sendOtpIcons as $iconClass => $iconLabel)
+              <option
+                value="{{ $iconClass }}"
+                {{ $sendOtpIcon === $iconClass ? 'selected' : '' }}
+              >
+                {{ $iconLabel }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <input
+          type="hidden"
+          name="send_otp_button_action"
+          value="{{ old(
+            'send_otp_button_action',
+            $settings['send_otp_button_action'] ?? 'send_otp'
           ) }}"
         >
 
@@ -613,16 +676,27 @@
               @if ($settings['show_back_button'] ?? true)
                 <button type="button" class="phone-back-button">
                   <i class="icon-base ti {{ $backIcon }}"></i>
-                  <span>phone_verify_page.back_button</span>
+                  <span>ย้อนกลับ</span>
+                </button>
+              @endif
+
+              @if ($settings['show_send_otp_button'] ?? true)
+                <button type="button" class="phone-send-otp-button">
+                  <i class="icon-base ti {{ $sendOtpIcon }}"></i>
+                  <span>ส่ง OTP</span>
                 </button>
               @endif
 
               @if ($settings['show_confirm_button'] ?? true)
                 <button type="button" class="phone-confirm-button">
-                  <span>phone_verify_page.confirm_button</span>
+                  <span>ยืนยัน OTP</span>
                   <i class="icon-base ti {{ $confirmIcon }}"></i>
                 </button>
               @endif
+            </div>
+
+            <div class="mt-2 text-center small text-muted">
+              ขั้นตอนการใช้งาน: กรอกเบอร์โทร → ส่ง OTP → กรอกรหัส OTP → ยืนยัน
             </div>
           </div>
         </div>
