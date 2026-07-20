@@ -448,6 +448,225 @@
   <input type="file" name="header_logo_right_2" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg">
 </div>
 
+<div class="col-12">
+  <hr class="my-2">
+  <h6 class="mb-1">เมนูด้านบนของหน้าตู้</h6>
+  <p class="text-muted mb-0">
+    แสดงปุ่มกลับหน้าแรกและปุ่มเลือกภาษาใน Header โดยไม่ต้องใช้หน้าเลือกภาษาแยก
+  </p>
+</div>
+
+@php
+  $enabledLanguages = old(
+      'enabled_languages',
+      isset($theme) && $theme->enabled_languages
+          ? (is_array($theme->enabled_languages)
+              ? $theme->enabled_languages
+              : json_decode($theme->enabled_languages, true))
+          : ['th', 'en', 'zh']
+  );
+
+  $enabledLanguages = is_array($enabledLanguages)
+      ? $enabledLanguages
+      : ['th', 'en', 'zh'];
+@endphp
+
+<div class="col-md-4">
+  <div class="card border shadow-none h-100 mb-0">
+    <div class="card-body">
+      <div class="form-check form-switch mb-3">
+        <input type="hidden" name="show_home_button" value="0">
+
+        <input
+          type="checkbox"
+          name="show_home_button"
+          value="1"
+          id="show_home_button"
+          class="form-check-input"
+          {{ old('show_home_button', isset($theme) ? (int) $theme->show_home_button : 1) ? 'checked' : '' }}
+        >
+
+        <label class="form-check-label fw-semibold" for="show_home_button">
+          แสดงปุ่มกลับหน้าแรก
+        </label>
+      </div>
+
+      <label class="form-label">ข้อความปุ่มหน้าแรก</label>
+      <input
+        type="text"
+        name="home_button_text"
+        id="home_button_text"
+        value="{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}"
+        class="form-control @error('home_button_text') is-invalid @enderror"
+        placeholder="หน้าหลัก"
+      >
+
+      @error('home_button_text')
+        <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+  </div>
+</div>
+
+<div class="col-md-4">
+  <div class="card border shadow-none h-100 mb-0">
+    <div class="card-body">
+      <div class="form-check form-switch mb-3">
+        <input type="hidden" name="show_language_selector" value="0">
+
+        <input
+          type="checkbox"
+          name="show_language_selector"
+          value="1"
+          id="show_language_selector"
+          class="form-check-input"
+          {{ old('show_language_selector', isset($theme) ? (int) $theme->show_language_selector : 1) ? 'checked' : '' }}
+        >
+
+        <label class="form-check-label fw-semibold" for="show_language_selector">
+          แสดงปุ่มเลือกภาษา
+        </label>
+      </div>
+
+      <label class="form-label">ภาษาเริ่มต้น</label>
+      <select
+        name="default_language"
+        id="default_language"
+        class="form-select @error('default_language') is-invalid @enderror"
+      >
+        <option value="th" {{ old('default_language', $theme->default_language ?? 'th') === 'th' ? 'selected' : '' }}>
+          ไทย
+        </option>
+        <option value="en" {{ old('default_language', $theme->default_language ?? 'th') === 'en' ? 'selected' : '' }}>
+          English
+        </option>
+        <option value="zh" {{ old('default_language', $theme->default_language ?? 'th') === 'zh' ? 'selected' : '' }}>
+          中文
+        </option>
+      </select>
+
+      @error('default_language')
+        <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+  </div>
+</div>
+
+<div class="col-md-4">
+  <div class="card border shadow-none h-100 mb-0">
+    <div class="card-body">
+      <label class="form-label fw-semibold d-block">
+        ภาษาที่เปิดให้เลือก
+      </label>
+
+      <div class="d-flex flex-column gap-2">
+        <div class="form-check">
+          <input type="hidden" name="enabled_languages[]" value="">
+
+          <input
+            type="checkbox"
+            name="enabled_languages[]"
+            value="th"
+            id="language_th"
+            class="form-check-input language-option"
+            {{ in_array('th', $enabledLanguages, true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="language_th">
+            🇹🇭 ไทย
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input
+            type="checkbox"
+            name="enabled_languages[]"
+            value="en"
+            id="language_en"
+            class="form-check-input language-option"
+            {{ in_array('en', $enabledLanguages, true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="language_en">
+            🇬🇧 English
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input
+            type="checkbox"
+            name="enabled_languages[]"
+            value="zh"
+            id="language_zh"
+            class="form-check-input language-option"
+            {{ in_array('zh', $enabledLanguages, true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="language_zh">
+            🇨🇳 中文
+          </label>
+        </div>
+      </div>
+
+      @error('enabled_languages')
+        <div class="text-danger small mt-2">{{ $message }}</div>
+      @enderror
+    </div>
+  </div>
+</div>
+
+<div class="col-12">
+  <div class="card border shadow-none mb-0">
+    <div class="card-body">
+      <label class="form-label d-block mb-3">
+        ตัวอย่าง Header หน้าตู้
+      </label>
+
+      <div
+        id="headerMenuPreview"
+        class="rounded overflow-hidden position-relative"
+        style="
+          min-height: 82px;
+          background: {{ old('header_background_color', $theme->header_background_color ?? '#1EB5F0') }};
+        "
+      >
+        <div
+          class="d-flex align-items-center justify-content-between gap-3 px-3 py-2"
+          style="min-height: 82px;"
+        >
+          <div class="d-flex align-items-center gap-2">
+            <button
+              type="button"
+              id="previewHomeButton"
+              class="btn btn-light btn-sm rounded-pill d-flex align-items-center gap-1"
+            >
+              <i class="icon-base ti tabler-home"></i>
+              <span id="previewHomeText">
+                {{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}
+              </span>
+            </button>
+
+            <div id="previewLanguageButtons" class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-light btn-sm rounded-circle preview-language" data-language="th">
+                🇹🇭
+              </button>
+              <button type="button" class="btn btn-light btn-sm rounded-circle preview-language" data-language="en">
+                🇬🇧
+              </button>
+              <button type="button" class="btn btn-light btn-sm rounded-circle preview-language" data-language="zh">
+                🇨🇳
+              </button>
+            </div>
+          </div>
+
+          <div class="fw-bold text-white text-center flex-grow-1">
+            ผู้เชี่ยวชาญการดูแลผ้าครบวงจร
+          </div>
+
+          <div style="width: 120px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div class="col-12">
     <label class="form-label">หมายเหตุ</label>
 
@@ -624,4 +843,58 @@ function toggleHeaderFields() {
 
 headerType?.addEventListener('change', toggleHeaderFields);
 toggleHeaderFields();
+
+const showHomeButton = document.getElementById('show_home_button');
+const homeButtonText = document.getElementById('home_button_text');
+const showLanguageSelector = document.getElementById('show_language_selector');
+const languageOptions = document.querySelectorAll('.language-option');
+const previewHomeButton = document.getElementById('previewHomeButton');
+const previewHomeText = document.getElementById('previewHomeText');
+const previewLanguageButtons = document.getElementById('previewLanguageButtons');
+const headerMenuPreview = document.getElementById('headerMenuPreview');
+const headerBackgroundColor = document.getElementById('header_background_color');
+
+function updateHeaderMenuPreview() {
+  if (previewHomeButton) {
+    previewHomeButton.classList.toggle(
+      'd-none',
+      !showHomeButton?.checked
+    );
+  }
+
+  if (previewHomeText) {
+    previewHomeText.textContent =
+      homeButtonText?.value?.trim() || 'หน้าหลัก';
+  }
+
+  if (previewLanguageButtons) {
+    previewLanguageButtons.classList.toggle(
+      'd-none',
+      !showLanguageSelector?.checked
+    );
+  }
+
+  languageOptions.forEach(option => {
+    const previewButton = document.querySelector(
+      `.preview-language[data-language="${option.value}"]`
+    );
+
+    previewButton?.classList.toggle('d-none', !option.checked);
+  });
+
+  if (headerMenuPreview && headerBackgroundColor?.value) {
+    headerMenuPreview.style.background = headerBackgroundColor.value;
+  }
+}
+
+showHomeButton?.addEventListener('change', updateHeaderMenuPreview);
+homeButtonText?.addEventListener('input', updateHeaderMenuPreview);
+showLanguageSelector?.addEventListener('change', updateHeaderMenuPreview);
+headerBackgroundColor?.addEventListener('input', updateHeaderMenuPreview);
+
+languageOptions.forEach(option => {
+  option.addEventListener('change', updateHeaderMenuPreview);
+});
+
+updateHeaderMenuPreview();
 </script>
