@@ -447,6 +447,57 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input('confirm_button_action', 'thank_you_page'),
     ]);
     break;
+    case 'order_summary_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-list-details'
+        ),
+
+        'order_summary_icon' => $request->input(
+            'order_summary_icon',
+            'tabler-shopping-cart'
+        ),
+
+        'discount_summary_icon' => $request->input(
+            'discount_summary_icon',
+            'tabler-discount'
+        ),
+
+        'net_total_icon' => $request->input(
+            'net_total_icon',
+            'tabler-wallet'
+        ),
+
+        'show_back_button' => $request->boolean(
+            'show_back_button'
+        ),
+
+        'back_button_icon' => $request->input(
+            'back_button_icon',
+            'tabler-chevron-left'
+        ),
+
+        'back_button_action' => $request->input(
+            'back_button_action',
+            'select_product_page'
+        ),
+
+        'show_confirm_button' => $request->boolean(
+            'show_confirm_button'
+        ),
+
+        'confirm_button_icon' => $request->input(
+            'confirm_button_icon',
+            'tabler-chevron-right'
+        ),
+
+        'confirm_button_action' => $request->input(
+            'confirm_button_action',
+            'promotion_page'
+        ),
+    ]);
+    break;
 }
 
     $page->update([
