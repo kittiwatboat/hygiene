@@ -15,7 +15,7 @@ class FrontendPageController extends Controller
     public function index()
     {
         $pages = FrontendPage::withCount('media')
-            ->orderBy('id')
+            ->orderBy('sort_order')
             ->get();
 
         return view('content.pages.frontend.pages.index', compact('pages'));
