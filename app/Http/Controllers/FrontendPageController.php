@@ -271,22 +271,73 @@ switch ($screenKey) {
     break;
     case 'select_product_page':
     $settings = array_merge($settings, [
-        'step_icon' => $request->input('step_icon', 'tabler-bottle'),
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-bottle'
+        ),
 
-        'category_primary_icon' => $request->input('category_primary_icon', 'tabler-basket'),
-        'category_secondary_icon' => $request->input('category_secondary_icon', 'tabler-droplet'),
+        'category_primary_icon' => $request->input(
+            'category_primary_icon',
+            'tabler-basket'
+        ),
 
-        'selected_product_icon' => $request->input('selected_product_icon', 'tabler-check'),
-        'amount_section_icon' => $request->input('amount_section_icon', 'tabler-basket'),
-        'total_price_icon' => $request->input('total_price_icon', 'tabler-wallet'),
+        'category_secondary_icon' => $request->input(
+            'category_secondary_icon',
+            'tabler-droplet'
+        ),
 
-        'show_home_button' => $request->boolean('show_home_button'),
-        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
-        'home_button_action' => $request->input('home_button_action', 'first_page'),
+        'selected_product_icon' => $request->input(
+            'selected_product_icon',
+            'tabler-check'
+        ),
 
-        'show_confirm_button' => $request->boolean('show_confirm_button'),
-        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
-        'confirm_button_action' => $request->input('confirm_button_action', 'payment_page'),
+        'amount_section_icon' => $request->input(
+            'amount_section_icon',
+            'tabler-basket'
+        ),
+
+        'total_price_icon' => $request->input(
+            'total_price_icon',
+            'tabler-wallet'
+        ),
+
+        /*
+        |--------------------------------------------------------------------------
+        | ปุ่มย้อนกลับ
+        |--------------------------------------------------------------------------
+        */
+        'show_back_button' => $request->boolean(
+            'show_back_button'
+        ),
+
+        'back_button_icon' => $request->input(
+            'back_button_icon',
+            'tabler-chevron-left'
+        ),
+
+        'back_button_action' => $request->input(
+            'back_button_action',
+            'member_page'
+        ),
+
+        /*
+        |--------------------------------------------------------------------------
+        | ปุ่มตกลง
+        |--------------------------------------------------------------------------
+        */
+        'show_confirm_button' => $request->boolean(
+            'show_confirm_button'
+        ),
+
+        'confirm_button_icon' => $request->input(
+            'confirm_button_icon',
+            'tabler-chevron-right'
+        ),
+
+        'confirm_button_action' => $request->input(
+            'confirm_button_action',
+            'promotion_page'
+        ),
     ]);
     break;
     case 'promotion_page':
