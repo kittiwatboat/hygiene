@@ -12,25 +12,71 @@
       </div>
 
       <div class="card-body pt-2">
+        @php
+          $themeExampleImage = public_path('assets/img/frontend/theme-kiosk-example.png');
+          $hasThemeExampleImage = file_exists($themeExampleImage);
+
+          $previewBackgroundType = old(
+              'background_type',
+              $theme->background_type ?? 'color'
+          );
+
+          $previewBackgroundColor = old(
+              'background_color',
+              $theme->background_color ?? '#FFFFFF'
+          );
+
+          $previewBackgroundImage = isset($theme) && $theme->background_image
+              ? asset('assets/img/frontend/themes/' . $theme->background_image)
+              : null;
+        @endphp
+
         <div
-          class="rounded border bg-light overflow-hidden"
-          style="min-height: 180px;"
+          class="rounded border overflow-hidden position-relative"
+          style="
+            min-height: 220px;
+            background-color: {{ $previewBackgroundColor }};
+            @if (!$hasThemeExampleImage && $previewBackgroundType === 'image' && $previewBackgroundImage)
+              background-image: url('{{ $previewBackgroundImage }}');
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+            @endif
+          "
         >
-          <img
-            src="{{ asset('assets/img/frontend/theme-kiosk-example.png') }}"
-            alt="ตัวอย่างหน้าตู้พร้อมปุ่มหน้าแรกและเลือกภาษา"
-            class="w-100 d-block"
-            style="
-              max-height: 360px;
-              object-fit: contain;
-              object-position: center;
-            "
-          >
+          @if ($hasThemeExampleImage)
+            <img
+              src="{{ asset('assets/img/frontend/theme-kiosk-example.png') }}"
+              alt="ตัวอย่างหน้าตู้พร้อมปุ่มหน้าแรกและเลือกภาษา"
+              class="w-100 d-block"
+              style="
+                max-height: 360px;
+                object-fit: contain;
+                object-position: center;
+              "
+            >
+          @else
+            <div
+              class="d-flex align-items-center justify-content-center text-center p-4"
+              style="min-height: 220px; color: {{ old('text_color', $theme->text_color ?? '#111827') }};"
+            >
+              <div>
+                <i class="icon-base ti tabler-photo-off mb-2" style="font-size: 42px;"></i>
+                <div class="fw-semibold">
+                  ยังไม่มีรูปตัวอย่าง PNG
+                </div>
+                <div class="small mt-1">
+                  ระบบกำลังใช้พื้นหลังของธีมเป็นตัวอย่างแทน
+                </div>
+              </div>
+            </div>
+          @endif
         </div>
 
         <div class="form-text mt-2">
-          ให้นำไฟล์รูปตัวอย่างไปไว้ที่
+          หากมีไฟล์
           <code>public/assets/img/frontend/theme-kiosk-example.png</code>
+          ระบบจะแสดงรูป PNG ก่อน หากไม่มีจะใช้พื้นหลังของธีมแทน
         </div>
       </div>
     </div>
