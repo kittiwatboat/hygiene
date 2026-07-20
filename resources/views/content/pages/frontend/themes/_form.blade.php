@@ -2,6 +2,41 @@
 
 <div class="row g-4">
 
+  <div class="col-12">
+    <div class="card border shadow-none mb-0">
+      <div class="card-header pb-2">
+        <h5 class="mb-1">ตัวอย่างตำแหน่งเมนูบนหน้าตู้</h5>
+        <p class="text-muted mb-0">
+          ปุ่มกลับหน้าแรกและปุ่มเลือกภาษาจะแสดงบริเวณด้านซ้ายของ Header ตามตัวอย่าง
+        </p>
+      </div>
+
+      <div class="card-body pt-2">
+        <div
+          class="rounded border bg-light overflow-hidden"
+          style="min-height: 180px;"
+        >
+          <img
+            src="{{ asset('assets/img/frontend/theme-kiosk-example.png') }}"
+            alt="ตัวอย่างหน้าตู้พร้อมปุ่มหน้าแรกและเลือกภาษา"
+            class="w-100 d-block"
+            style="
+              max-height: 360px;
+              object-fit: contain;
+              object-position: center;
+            "
+          >
+        </div>
+
+        <div class="form-text mt-2">
+          ให้นำไฟล์รูปตัวอย่างไปไว้ที่
+          <code>public/assets/img/frontend/theme-kiosk-example.png</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <div class="col-md-6">
     <label class="form-label">
       ชื่อธีม <span class="text-danger">*</span>
