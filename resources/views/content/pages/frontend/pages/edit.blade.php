@@ -78,45 +78,66 @@
 
 
 @switch($screenKey)
-  @case('first_page')
-    @include('content.pages.frontend.pages.forms.first-page')
-    @break
 
-  @case('language_page')
-    @include('content.pages.frontend.pages.forms.language-page')
-    @break
+    @case('first_page')
+        @include('content.pages.frontend.pages.forms.first-page')
+        @break
 
-  @case('phone_verify_page')
-    @include('content.pages.frontend.pages.forms.phone-verify-page')
-    @break
+    @case('language_page')
+        @include('content.pages.frontend.pages.forms.language-page')
+        @break
 
-  @case('member_page')
-    @include('content.pages.frontend.pages.forms.member-page')
-    @break
+    @case('phone_verify_page')
+        @include('content.pages.frontend.pages.forms.phone-verify-page')
+        @break
 
-  @case('select_product_page')
-    @include('content.pages.frontend.pages.forms.select-product-page')
-    @break
+    @case('member_page')
+        @include('content.pages.frontend.pages.forms.member-page')
+        @break
 
-  @case('promotion_page')
-    @include('content.pages.frontend.pages.forms.promotion-page')
-    @break
+    @case('select_product_page')
+        @include('content.pages.frontend.pages.forms.select-product-page')
+        @break
 
-  @case('payment_page')
-    @include('content.pages.frontend.pages.forms.payment-page')
-    @break
+    @case('order_summary_page')
+        @include('content.pages.frontend.pages.forms.order-summary-page')
+        @break
 
-  @case('order_summary_page.blade')
-    @include('content.pages.frontend.pages.forms.order-summary-page')
-    @break
+    @case('promotion_page')
+        @include('content.pages.frontend.pages.forms.promotion-page')
+        @break
 
-  @case('processing_payment_page')
-  @include('content.pages.frontend.pages.forms.processing-payment-page')
-  @break
+    @case('payment_page')
+        @include('content.pages.frontend.pages.forms.payment-page')
+        @break
 
+    @case('processing_payment_page')
+        @include('content.pages.frontend.pages.forms.processing-payment-page')
+        @break
 
-  @default
-    @include('content.pages.frontend.pages.forms.default-page')
+    @default
+        <div class="col-12">
+            <div class="alert alert-warning">
+                ไม่พบฟอร์มเฉพาะสำหรับหน้านี้
+
+                <div class="mt-2">
+                    <strong>Screen Key:</strong>
+                    {{ $page->screen_key ?: '-' }}
+                </div>
+
+                <div>
+                    <strong>Page Key:</strong>
+                    {{ $page->page_key ?: '-' }}
+                </div>
+
+                <div>
+                    <strong>Key ที่นำมาใช้:</strong>
+                    {{ $screenKey ?: '-' }}
+                </div>
+            </div>
+        </div>
+
+        @include('content.pages.frontend.pages.forms.default-page')
 @endswitch
 </div>
 @endsection
