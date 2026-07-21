@@ -337,4 +337,137 @@ class CustomerController extends Controller
             substr(bin2hex(random_bytes(4)), 0, 6)
         );
     }
+    public function export(Request $request)
+{
+    $query = Customer::query();
+
+    if ($request->filled('keyword')) {
+        $keyword = trim($request->keyword);
+
+        $query->where(function ($q) use ($keyword) {
+            $q->where('member_code', 'like', "%{$keyword}%")
+                ->orWhere('name', 'like', "%{$keyword}%")
+                ->orWhere('phone', 'like', "%{$keyword}%")
+                ->orWhere('email', 'like', "%{$keyword}%");
+        });
+    }
+
+    if ($request->filled('member_type')) {
+        $query->where('member_type', $request->member_type);
+    }
+
+    if ($request->filled('is_active')) {
+        $query->where(
+            'is_active',
+            $request->boolean('is_active')
+        );
+    }
+
+    $customers = $query
+        ->with('branch')
+        ->orderByDesc('registered_at')
+        ->orderByDesc('id')
+        ->get();
+
+    $fileName = 'customers_'
+        . now()->format('Ymd_His')
+        . '.csv';
+
+    return response()->streamDownload(
+        function () use ($customers) {
+            $handle = fopen('php://output', 'w');
+
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'ลำดับ',
+                'วันที่สมัคร',
+                'เวลา',
+                'รหัสสมาชิก',
+                'ชื่อสมาชิก',
+                'อีเมล',
+                'เบอร์โทร',
+                'LINE ID',
+                'แต้มคงเหลือ',
+                'ประเภทสมาชิก',
+                'สาขาตู้',
+                'ใช้งานล่าสุด',
+                'ยอดเติมสะสม',
+                'สถานะ',
+                'เปิดใช้งาน',
+            ]);
+
+            foreach ($customers as $index => $customer) {
+                $registeredAt = $customer->registered_at
+                    ?? $customer->created_at;
+
+                $memberTypeText = match (
+                    $customer->member_type
+                        ?? $customer->customer_type
+                        ?? 'member'
+                ) {
+                    'new_member' => 'New member',
+                    'non_member' => 'Non-member',
+                    default => 'Member',
+                };
+
+                fputcsv($handle, [
+                    $index + 1,
+
+                    $registeredAt
+                        ? $registeredAt->format('d/m/Y')
+                        : '-',
+
+                    $registeredAt
+                        ? $registeredAt->format('H:i')
+                        : '-',
+
+                    $customer->member_code ?? '-',
+                    $customer->name ?? '-',
+                    $customer->email ?? '-',
+                    $customer->phone ?? '-',
+                    $customer->line_id ?? '-',
+
+                    (int) ($customer->points_balance ?? 0),
+
+                    $memberTypeText,
+
+                    optional($customer->branch)->name
+                        ?? $customer->branch_name
+                        ?? '-',
+
+                    $customer->last_used_at
+                        ? $customer->last_used_at->format('d/m/Y H:i')
+                        : '-',
+
+                    number_format(
+                        (float) (
+                            $customer->total_topup
+                            ?? $customer->total_amount
+                            ?? $customer->total_spent
+                            ?? 0
+                        ),
+                        2,
+                        '.',
+                        ''
+                    ),
+
+                    $customer->status_text
+                        ?? $customer->status
+                        ?? '-',
+
+                    $customer->is_active
+                        ? 'เปิด'
+                        : 'ปิด',
+                ]);
+            }
+
+            fclose($handle);
+        },
+        $fileName,
+        [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]
+    );
+}
 }
