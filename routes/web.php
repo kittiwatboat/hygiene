@@ -315,6 +315,9 @@ Route::prefix('promotions')
     Route::prefix('customers')
     ->name('customers.')
     ->group(function () {
+        Route::get('/export', [CustomerController::class, 'export'])
+            ->name('export');
+
         Route::get('/', [CustomerController::class, 'index'])
             ->name('index');
 
@@ -333,17 +336,8 @@ Route::prefix('promotions')
         Route::put('/{customer}', [CustomerController::class, 'update'])
             ->name('update');
 
-        Route::post('/{customer}/adjust-points', [
-            CustomerController::class,
-            'adjustPoints',
-        ])->name('adjust-points');
-
-        Route::get('/export', [CustomerController::class, 'export'])->name('customers.export');
-
-        Route::delete('/{customer}', [
-            CustomerController::class,
-            'destroy',
-        ])->name('destroy');
+        Route::delete('/{customer}', [CustomerController::class, 'destroy'])
+            ->name('destroy');
     });
 
     Route::prefix('frontend/languages')
