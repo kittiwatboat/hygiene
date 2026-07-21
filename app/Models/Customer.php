@@ -11,23 +11,36 @@ class Customer extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'member_code',
-        'name',
-        'phone',
-        'email',
-        'points_balance',
-        'status',
-        'is_active',
-        'last_used_at',
-        'remark',
-    ];
+    'member_code',
+    'name',
+    'email',
+    'phone',
+    'line_id',
+
+    'member_type',
+    'registered_at',
+    'branch_id',
+
+    'points_balance',
+    'total_topup',
+    'last_used_at',
+
+    'status',
+    'is_active',
+
+    'is_new_member_discount_used',
+];
 
     protected $casts = [
-        'points_balance' => 'integer',
-        'is_active' => 'boolean',
-        'last_used_at' => 'datetime',
-    ];
+    'registered_at' => 'datetime',
+    'last_used_at' => 'datetime',
 
+    'points_balance' => 'integer',
+    'total_topup' => 'decimal:2',
+
+    'is_active' => 'boolean',
+    'is_new_member_discount_used' => 'boolean',
+];
     public function pointTransactions(): HasMany
     {
         return $this->hasMany(PointTransaction::class);
@@ -60,4 +73,9 @@ class Customer extends Model
             default => 'bg-label-secondary',
         };
     }
+    public const MEMBER_TYPE_OPTIONS = [
+    'member' => 'Member',
+    'non_member' => 'Non-member',
+    'new_member' => 'New member',
+];
 }

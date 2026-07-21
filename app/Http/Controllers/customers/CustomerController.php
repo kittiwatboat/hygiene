@@ -238,6 +238,86 @@ class CustomerController extends Controller
                     'nullable',
                     'string',
                 ],
+                'member_code' => [
+    'required',
+    'string',
+    'max:50',
+],
+
+'name' => [
+    'required',
+    'string',
+    'max:255',
+],
+
+'email' => [
+    'nullable',
+    'email',
+    'max:255',
+],
+
+'phone' => [
+    'required',
+    'string',
+    'max:20',
+],
+
+'line_id' => [
+    'nullable',
+    'string',
+    'max:100',
+],
+
+'member_type' => [
+    'required',
+    Rule::in([
+        'member',
+        'non_member',
+        'new_member',
+    ]),
+],
+
+'registered_at' => [
+    'nullable',
+    'date',
+],
+
+'branch_id' => [
+    'nullable',
+    'integer',
+    'exists:branches,id',
+],
+
+'points_balance' => [
+    'nullable',
+    'integer',
+    'min:0',
+],
+
+'total_topup' => [
+    'nullable',
+    'numeric',
+    'min:0',
+],
+
+'status' => [
+    'required',
+    Rule::in([
+        'active',
+        'suspended',
+        'blocked',
+    ]),
+],
+
+'is_active' => [
+    'nullable',
+    'boolean',
+],
+
+'is_new_member_discount_used' => [
+    'nullable',
+    'boolean',
+],
             ],
             [
                 'member_code.required' => 'กรุณากรอกรหัสสมาชิก',

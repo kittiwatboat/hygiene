@@ -5,18 +5,28 @@
 @section('content')
 <div class="card">
 
-  <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
+  <div class="card-header d-flex flex-column flex-xl-row justify-content-between gap-3">
     <div>
       <h5 class="mb-1">สมาชิกและแต้มสะสม</h5>
       <p class="text-muted mb-0">
-        จัดการข้อมูลสมาชิกและตรวจสอบแต้มคงเหลือ
+        จัดการข้อมูลสมาชิก ตรวจสอบแต้มคงเหลือ และประวัติการใช้งาน
       </p>
     </div>
 
-    <a href="{{ route('customers.create') }}" class="btn btn-primary">
-      <i class="icon-base ti tabler-plus me-1"></i>
-      เพิ่มสมาชิก
-    </a>
+    <div class="d-flex flex-column flex-sm-row gap-2">
+      <a
+        href="{{ route('customers.export', request()->query()) }}"
+        class="btn btn-label-success"
+      >
+        <i class="icon-base ti tabler-file-spreadsheet me-1"></i>
+        Export Excel
+      </a>
+
+      <a href="{{ route('customers.create') }}" class="btn btn-primary">
+        <i class="icon-base ti tabler-plus me-1"></i>
+        เพิ่มสมาชิก
+      </a>
+    </div>
   </div>
 
   @if (session('success'))
@@ -32,15 +42,11 @@
   @endif
 
   <div class="card-body border-top border-bottom">
-    <form
-      method="GET"
-      action="{{ route('customers.index') }}"
-    >
+    <form method="GET" action="{{ route('customers.index') }}">
       <div class="row g-3 align-items-end">
 
-        <div class="col-md-5">
+        <div class="col-xl-5 col-md-6">
           <label class="form-label">ค้นหา</label>
-
           <input
             type="text"
             name="keyword"
@@ -50,58 +56,36 @@
           >
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">สถานะสมาชิก</label>
-
-          <select name="status" class="form-select">
+        <div class="col-xl-3 col-md-6">
+          <label class="form-label">ประเภทสมาชิก</label>
+          <select name="member_type" class="form-select">
             <option value="">ทั้งหมด</option>
-
-            <option
-              value="active"
-              {{ request('status') === 'active' ? 'selected' : '' }}
-            >
-              ใช้งานปกติ
+            <option value="member" {{ request('member_type') === 'member' ? 'selected' : '' }}>
+              Member
             </option>
-
-            <option
-              value="suspended"
-              {{ request('status') === 'suspended' ? 'selected' : '' }}
-            >
-              ระงับการใช้งาน
+            <option value="non_member" {{ request('member_type') === 'non_member' ? 'selected' : '' }}>
+              Non-member
             </option>
-
-            <option
-              value="blocked"
-              {{ request('status') === 'blocked' ? 'selected' : '' }}
-            >
-              บล็อก
+            <option value="new_member" {{ request('member_type') === 'new_member' ? 'selected' : '' }}>
+              New member
             </option>
           </select>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-xl-2 col-md-6">
           <label class="form-label">เปิดใช้งาน</label>
-
           <select name="is_active" class="form-select">
             <option value="">ทั้งหมด</option>
-
-            <option
-              value="1"
-              {{ request('is_active') === '1' ? 'selected' : '' }}
-            >
+            <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>
               เปิด
             </option>
-
-            <option
-              value="0"
-              {{ request('is_active') === '0' ? 'selected' : '' }}
-            >
+            <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>
               ปิด
             </option>
           </select>
         </div>
 
-        <div class="col-md-2 d-grid">
+        <div class="col-xl-2 col-md-6 d-grid">
           <button type="submit" class="btn btn-primary">
             <i class="icon-base ti tabler-search me-1"></i>
             ค้นหา
@@ -113,25 +97,74 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table table-hover align-middle">
       <thead class="table-light">
         <tr>
-          <th>#</th>
-          <th>รหัสสมาชิก</th>
-          <th>สมาชิก</th>
-          <th>ข้อมูลติดต่อ</th>
-          <th class="text-end">แต้มคงเหลือ</th>
-          <th>สถานะ</th>
-          <th>ใช้งานล่าสุด</th>
-          <th class="text-center">จัดการ</th>
+          <th style="width: 60px;">#</th>
+          <th style="min-width: 150px;">วันที่สมัคร</th>
+          <th style="min-width: 90px;">เวลา</th>
+          <th style="min-width: 145px;">รหัสสมาชิก</th>
+          <th style="min-width: 190px;">สมาชิก</th>
+          <th style="min-width: 180px;">ข้อมูลติดต่อ</th>
+          <th class="text-end" style="min-width: 130px;">แต้มคงเหลือ</th>
+          <th style="min-width: 135px;">ประเภทสมาชิก</th>
+          <th style="min-width: 130px;">สาขาตู้</th>
+          <th style="min-width: 150px;">ใช้งานล่าสุด</th>
+          <th class="text-end" style="min-width: 120px;">ยอดเติม</th>
+          <th class="text-center" style="width: 90px;">จัดการ</th>
         </tr>
       </thead>
 
       <tbody>
         @forelse ($customers as $customer)
+          @php
+            $registeredAt = $customer->registered_at
+              ?? $customer->created_at
+              ?? null;
+
+            $memberType = $customer->member_type
+              ?? $customer->customer_type
+              ?? 'member';
+
+            $memberTypeText = match ($memberType) {
+              'new_member' => 'New member',
+              'non_member' => 'Non-member',
+              default => 'Member',
+            };
+
+            $memberTypeClass = match ($memberType) {
+              'new_member' => 'bg-label-warning',
+              'non_member' => 'bg-label-secondary',
+              default => 'bg-label-success',
+            };
+
+            $branchName = data_get($customer, 'branch.name')
+              ?? data_get($customer, 'kiosk.branch.name')
+              ?? data_get($customer, 'machine.branch.name')
+              ?? $customer->branch_name
+              ?? '-';
+
+            $totalTopup = $customer->total_topup
+              ?? $customer->total_amount
+              ?? $customer->total_spent
+              ?? 0;
+          @endphp
+
           <tr>
             <td>
               {{ $customers->firstItem() + $loop->index }}
+            </td>
+
+            <td>
+              {{ $registeredAt
+                  ? \Carbon\Carbon::parse($registeredAt)->format('d/m/Y')
+                  : '-' }}
+            </td>
+
+            <td>
+              {{ $registeredAt
+                  ? \Carbon\Carbon::parse($registeredAt)->format('H:i')
+                  : '-' }}
             </td>
 
             <td>
@@ -139,41 +172,63 @@
                 href="{{ route('customers.show', $customer) }}"
                 class="fw-medium"
               >
-                {{ $customer->member_code }}
+                {{ $customer->member_code ?: '-' }}
               </a>
             </td>
 
             <td>
-              <div class="fw-medium">{{ $customer->name }}</div>
+              <div class="fw-medium">
+                {{ $customer->name ?: '-' }}
+              </div>
 
               @if ($customer->email)
-                <small class="text-muted">
+                <small class="text-muted d-block">
                   {{ $customer->email }}
                 </small>
               @endif
             </td>
 
             <td>
-              {{ $customer->phone ?: '-' }}
+              <div>{{ $customer->phone ?: '-' }}</div>
+
+              @if (!empty($customer->line_id))
+                <small class="text-muted d-block">
+                  LINE: {{ $customer->line_id }}
+                </small>
+              @endif
             </td>
 
             <td class="text-end">
               <span class="fw-bold text-primary">
-                {{ number_format((int) $customer->points_balance) }}
+                {{ number_format((int) ($customer->points_balance ?? 0)) }}
               </span>
               <small class="text-muted">แต้ม</small>
             </td>
 
             <td>
-              <span class="badge {{ $customer->status_class }}">
-                {{ $customer->status_text }}
+              <span class="badge {{ $memberTypeClass }}">
+                {{ $memberTypeText }}
               </span>
+
+              @if (!empty($customer->is_new_member_discount_used))
+                <small class="text-muted d-block mt-1">
+                  ใช้สิทธิ์สมาชิกใหม่แล้ว
+                </small>
+              @endif
+            </td>
+
+            <td>
+              {{ $branchName }}
             </td>
 
             <td>
               {{ $customer->last_used_at
-                  ? $customer->last_used_at->format('d/m/Y H:i')
+                  ? \Carbon\Carbon::parse($customer->last_used_at)->format('d/m/Y H:i')
                   : '-' }}
+            </td>
+
+            <td class="text-end fw-medium">
+              {{ number_format((float) $totalTopup, 2) }}
             </td>
 
             <td class="text-center">
@@ -182,6 +237,7 @@
                   type="button"
                   class="btn btn-sm btn-icon dropdown-toggle hide-arrow"
                   data-bs-toggle="dropdown"
+                  aria-expanded="false"
                 >
                   <i class="icon-base ti tabler-dots-vertical"></i>
                 </button>
@@ -227,22 +283,19 @@
           </tr>
         @empty
           <tr>
-            <td colspan="8" class="text-center py-5">
+            <td colspan="12" class="text-center py-5">
               <i
                 class="icon-base ti tabler-users-off text-muted mb-2"
                 style="font-size: 48px;"
               ></i>
 
-              <h6 class="mt-2 mb-1">ยังไม่มีสมาชิก</h6>
+              <h6 class="mt-2 mb-1">ยังไม่มีข้อมูลลูกค้า</h6>
 
               <p class="text-muted mb-3">
-                เพิ่มสมาชิกเพื่อเริ่มใช้งานระบบสะสมแต้ม
+                เพิ่มสมาชิก หรือรอข้อมูลลูกค้าจากหน้าตู้
               </p>
 
-              <a
-                href="{{ route('customers.create') }}"
-                class="btn btn-primary"
-              >
+              <a href="{{ route('customers.create') }}" class="btn btn-primary">
                 เพิ่มสมาชิก
               </a>
             </td>
@@ -254,7 +307,7 @@
 
   @if ($customers->hasPages())
     <div class="card-footer">
-      {{ $customers->links() }}
+      {{ $customers->withQueryString()->links() }}
     </div>
   @endif
 
