@@ -57,7 +57,7 @@ class CustomerController extends Controller
 
         DB::transaction(function () use ($request, $validated) {
             $customer = Customer::create([
-                'member_code' => $validated['member_code'],
+                'member_code' => $this->generateMemberCode(),
                 'name' => $validated['name'],
                 'phone' => $validated['phone'] ?? null,
                 'email' => $validated['email'] ?? null,
@@ -115,7 +115,7 @@ class CustomerController extends Controller
         $validated = $this->validateCustomer($request, $customer);
 
         $customer->update([
-            'member_code' => $validated['member_code'],
+            'member_code' => $customer->member_code,
             'name' => $validated['name'],
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'] ?? null,
@@ -241,7 +241,7 @@ class CustomerController extends Controller
         return $request->validate(
             [
                 'member_code' => [
-                    'required',
+                    'nullable',
                     'string',
                     'max:50',
                     Rule::unique('customers', 'member_code')
@@ -315,7 +315,6 @@ class CustomerController extends Controller
                 ],
             ],
             [
-                'member_code.required' => 'กรุณากรอกรหัสสมาชิก',
                 'member_code.unique' => 'รหัสสมาชิกนี้ถูกใช้งานแล้ว',
                 'name.required' => 'กรุณากรอกชื่อสมาชิก',
                 'phone.required' => 'กรุณากรอกเบอร์โทรศัพท์',
