@@ -14,15 +14,13 @@
     </div>
 
     <div class="d-flex flex-column flex-sm-row gap-2">
-     @if (Route::has('customers.export'))
-  <a
-    href="{{ route('customers.export', request()->query()) }}"
-    class="btn btn-label-success"
-  >
-    <i class="icon-base ti tabler-file-spreadsheet me-1"></i>
-    Export Excel
-  </a>
-@endif
+      <a
+        href="{{ route('customers.export', request()->query()) }}"
+        class="btn btn-label-success"
+      >
+        <i class="icon-base ti tabler-file-spreadsheet me-1"></i>
+        Export Excel
+      </a>
 
       <a href="{{ route('customers.create') }}" class="btn btn-primary">
         <i class="icon-base ti tabler-plus me-1"></i>
