@@ -448,7 +448,7 @@
 
         <button type="submit" class="btn btn-primary w-100">
           <i class="icon-base ti tabler-device-floppy me-1"></i>
-          บันทึกหน้าขอบคุณแบบไม่ใช่สมาชิก
+          บันทึก
         </button>
       </form>
     </div>
