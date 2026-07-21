@@ -10,34 +10,29 @@ class Customer extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
+   protected $fillable = [
     'member_code',
     'name',
-    'email',
     'phone',
+    'email',
     'line_id',
-
     'member_type',
     'registered_at',
     'branch_id',
-
     'points_balance',
     'total_topup',
-    'last_used_at',
-
     'status',
     'is_active',
-
     'is_new_member_discount_used',
+    'last_used_at',
+    'remark',
 ];
 
     protected $casts = [
     'registered_at' => 'datetime',
     'last_used_at' => 'datetime',
-
     'points_balance' => 'integer',
     'total_topup' => 'decimal:2',
-
     'is_active' => 'boolean',
     'is_new_member_discount_used' => 'boolean',
 ];

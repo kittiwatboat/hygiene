@@ -28,6 +28,10 @@ class CustomerController extends Controller
             });
         }
 
+        if ($request->filled('member_type')) {
+            $query->where('member_type', $request->member_type);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -51,20 +55,42 @@ class CustomerController extends Controller
     {
         $validated = $this->validateCustomer($request);
 
-        Customer::create([
-            'member_code' => $validated['member_code'],
-            'name' => $validated['name'],
-            'phone' => $validated['phone'] ?? null,
-            'email' => $validated['email'] ?? null,
-            'points_balance' => 0,
-            'status' => $validated['status'],
-            'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+        DB::transaction(function () use ($request, $validated) {
+            $customer = Customer::create([
+                'member_code' => $validated['member_code'],
+                'name' => $validated['name'],
+                'phone' => $validated['phone'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'line_id' => $validated['line_id'] ?? null,
+                'member_type' => $validated['member_type'] ?? 'new_member',
+                'registered_at' => $validated['registered_at'] ?? now(),
+                'branch_id' => $validated['branch_id'] ?? null,
+                'points_balance' => 20,
+                'total_topup' => (float) ($validated['total_topup'] ?? 0),
+                'status' => $validated['status'],
+                'is_active' => $request->boolean('is_active'),
+                'is_new_member_discount_used' => false,
+                'remark' => $validated['remark'] ?? null,
+            ]);
+
+            PointTransaction::create([
+                'customer_id' => $customer->id,
+                'type' => 'earn',
+                'points' => 20,
+                'balance_before' => 0,
+                'balance_after' => 20,
+                'reference_no' => $this->generatePointReference(),
+                'description' => 'แต้มต้อนรับสมาชิกใหม่',
+                'created_by' => Auth::id(),
+            ]);
+        });
 
         return redirect()
             ->route('customers.index')
-            ->with('success', 'เพิ่มสมาชิกสำเร็จ');
+            ->with(
+                'success',
+                'เพิ่มสมาชิกสำเร็จ และได้รับแต้มต้อนรับ 20 แต้ม'
+            );
     }
 
     public function show(Customer $customer)
@@ -93,8 +119,22 @@ class CustomerController extends Controller
             'name' => $validated['name'],
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'] ?? null,
+            'line_id' => $validated['line_id'] ?? null,
+            'member_type' => $validated['member_type'],
+            'registered_at' => $validated['registered_at']
+                ?? $customer->registered_at
+                ?? $customer->created_at,
+            'branch_id' => $validated['branch_id'] ?? null,
+            'total_topup' => (float) (
+                $validated['total_topup']
+                ?? $customer->total_topup
+                ?? 0
+            ),
             'status' => $validated['status'],
             'is_active' => $request->boolean('is_active'),
+            'is_new_member_discount_used' => $request->boolean(
+                'is_new_member_discount_used'
+            ),
             'remark' => $validated['remark'] ?? null,
         ]);
 
@@ -203,7 +243,7 @@ class CustomerController extends Controller
                 'member_code' => [
                     'required',
                     'string',
-                    'max:100',
+                    'max:50',
                     Rule::unique('customers', 'member_code')
                         ->ignore($customer?->id),
                 ],
@@ -213,9 +253,9 @@ class CustomerController extends Controller
                     'max:255',
                 ],
                 'phone' => [
-                    'nullable',
+                    'required',
                     'string',
-                    'max:30',
+                    'max:20',
                     Rule::unique('customers', 'phone')
                         ->ignore($customer?->id),
                 ],
@@ -226,11 +266,46 @@ class CustomerController extends Controller
                     Rule::unique('customers', 'email')
                         ->ignore($customer?->id),
                 ],
+                'line_id' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
+                'member_type' => [
+                    'required',
+                    Rule::in([
+                        'member',
+                        'non_member',
+                        'new_member',
+                    ]),
+                ],
+                'registered_at' => [
+                    'nullable',
+                    'date',
+                ],
+                'branch_id' => [
+                    'nullable',
+                    'integer',
+                    'exists:branches,id',
+                ],
+                'total_topup' => [
+                    'nullable',
+                    'numeric',
+                    'min:0',
+                ],
                 'status' => [
                     'required',
-                    Rule::in(['active', 'suspended', 'blocked']),
+                    Rule::in([
+                        'active',
+                        'suspended',
+                        'blocked',
+                    ]),
                 ],
                 'is_active' => [
+                    'nullable',
+                    'boolean',
+                ],
+                'is_new_member_discount_used' => [
                     'nullable',
                     'boolean',
                 ],
@@ -238,94 +313,17 @@ class CustomerController extends Controller
                     'nullable',
                     'string',
                 ],
-                'member_code' => [
-    'required',
-    'string',
-    'max:50',
-],
-
-'name' => [
-    'required',
-    'string',
-    'max:255',
-],
-
-'email' => [
-    'nullable',
-    'email',
-    'max:255',
-],
-
-'phone' => [
-    'required',
-    'string',
-    'max:20',
-],
-
-'line_id' => [
-    'nullable',
-    'string',
-    'max:100',
-],
-
-'member_type' => [
-    'required',
-    Rule::in([
-        'member',
-        'non_member',
-        'new_member',
-    ]),
-],
-
-'registered_at' => [
-    'nullable',
-    'date',
-],
-
-'branch_id' => [
-    'nullable',
-    'integer',
-    'exists:branches,id',
-],
-
-'points_balance' => [
-    'nullable',
-    'integer',
-    'min:0',
-],
-
-'total_topup' => [
-    'nullable',
-    'numeric',
-    'min:0',
-],
-
-'status' => [
-    'required',
-    Rule::in([
-        'active',
-        'suspended',
-        'blocked',
-    ]),
-],
-
-'is_active' => [
-    'nullable',
-    'boolean',
-],
-
-'is_new_member_discount_used' => [
-    'nullable',
-    'boolean',
-],
             ],
             [
                 'member_code.required' => 'กรุณากรอกรหัสสมาชิก',
                 'member_code.unique' => 'รหัสสมาชิกนี้ถูกใช้งานแล้ว',
                 'name.required' => 'กรุณากรอกชื่อสมาชิก',
+                'phone.required' => 'กรุณากรอกเบอร์โทรศัพท์',
                 'phone.unique' => 'เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว',
                 'email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
                 'email.unique' => 'อีเมลนี้ถูกใช้งานแล้ว',
+                'member_type.required' => 'กรุณาเลือกประเภทสมาชิก',
+                'branch_id.exists' => 'ไม่พบข้อมูลสาขาตู้ที่เลือก',
                 'status.required' => 'กรุณาเลือกสถานะสมาชิก',
             ]
         );
