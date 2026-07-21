@@ -121,6 +121,9 @@
       @case('guest_thank_you_page')
   @include('content.pages.frontend.pages.forms.guest-thank-you-page')
   @break
+  @case('thank_you_page')
+  @include('content.pages.frontend.pages.forms.thank-you-page')
+  @break
     @default
         <div class="col-12">
             <div class="alert alert-warning">

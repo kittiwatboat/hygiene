@@ -195,6 +195,22 @@ class FrontendPageController extends Controller
 'skip_button_icon' => ['nullable', 'string', 'max:100'],
 'skip_button_action' => ['nullable', 'string', 'max:100'],
 
+'show_print_receipt' => ['nullable', 'boolean'],
+'print_receipt_icon' => ['nullable', 'string', 'max:100'],
+
+'show_no_receipt' => ['nullable', 'boolean'],
+'no_receipt_icon' => ['nullable', 'string', 'max:100'],
+
+'show_finish_button' => ['nullable', 'boolean'],
+'finish_button_icon' => ['nullable', 'string', 'max:100'],
+'finish_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_order_more_button' => ['nullable', 'boolean'],
+'order_more_button_icon' => ['nullable', 'string', 'max:100'],
+'order_more_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_member_points' => ['nullable', 'boolean'],
+'show_total_points' => ['nullable', 'boolean'],
     ]);
 
 
@@ -667,6 +683,68 @@ switch ($screenKey) {
         'order_more_button_action' => $request->input(
             'order_more_button_action',
             'select_product_page'
+        ),
+    ]);
+    break;
+    case 'thank_you_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-circle-check'
+        ),
+
+        'show_print_receipt' => $request->boolean(
+            'show_print_receipt'
+        ),
+
+        'print_receipt_icon' => $request->input(
+            'print_receipt_icon',
+            'tabler-printer'
+        ),
+
+        'show_no_receipt' => $request->boolean(
+            'show_no_receipt'
+        ),
+
+        'no_receipt_icon' => $request->input(
+            'no_receipt_icon',
+            'tabler-printer-off'
+        ),
+
+        'show_finish_button' => $request->boolean(
+            'show_finish_button'
+        ),
+
+        'finish_button_icon' => $request->input(
+            'finish_button_icon',
+            'tabler-check'
+        ),
+
+        'finish_button_action' => $request->input(
+            'finish_button_action',
+            'first_page'
+        ),
+
+        'show_order_more_button' => $request->boolean(
+            'show_order_more_button'
+        ),
+
+        'order_more_button_icon' => $request->input(
+            'order_more_button_icon',
+            'tabler-shopping-cart-plus'
+        ),
+
+        'order_more_button_action' => $request->input(
+            'order_more_button_action',
+            'select_product_page'
+        ),
+
+        'show_member_points' => $request->boolean(
+            'show_member_points'
+        ),
+
+        'show_total_points' => $request->boolean(
+            'show_total_points'
         ),
     ]);
     break;
