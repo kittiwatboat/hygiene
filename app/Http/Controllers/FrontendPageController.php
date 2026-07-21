@@ -186,6 +186,15 @@ class FrontendPageController extends Controller
 'show_continue_button' => ['nullable', 'boolean'],
 'continue_button_icon' => ['nullable', 'string', 'max:100'],
 'continue_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_register_button' => ['nullable', 'boolean'],
+'register_button_icon' => ['nullable', 'string', 'max:100'],
+'register_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_skip_button' => ['nullable', 'boolean'],
+'skip_button_icon' => ['nullable', 'string', 'max:100'],
+'skip_button_action' => ['nullable', 'string', 'max:100'],
+
     ]);
 
 
@@ -557,6 +566,56 @@ switch ($screenKey) {
         ),
     ]);
     break;
+    case 'non_member_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-user-off'
+        ),
+
+        'show_back_button' => $request->boolean(
+            'show_back_button'
+        ),
+
+        'back_button_icon' => $request->input(
+            'back_button_icon',
+            'tabler-chevron-left'
+        ),
+
+        'back_button_action' => $request->input(
+            'back_button_action',
+            'phone_verify_page'
+        ),
+
+        'show_skip_button' => $request->boolean(
+            'show_skip_button'
+        ),
+
+        'skip_button_icon' => $request->input(
+            'skip_button_icon',
+            'tabler-player-track-next'
+        ),
+
+        'skip_button_action' => $request->input(
+            'skip_button_action',
+            'select_product_page'
+        ),
+
+        'show_register_button' => $request->boolean(
+            'show_register_button'
+        ),
+
+        'register_button_icon' => $request->input(
+            'register_button_icon',
+            'tabler-user-plus'
+        ),
+
+        'register_button_action' => $request->input(
+            'register_button_action',
+            'register_member'
+        ),
+    ]);
+    break;
 }
 
     $page->update([
@@ -608,7 +667,12 @@ if (in_array($screenKey, ['phone_verify_page', 'member_page'], true)) {
     }
 }
 
-if (in_array($screenKey, ['phone_verify_page', 'member_page', 'promotion_page'], true)) {
+if (in_array($screenKey, [
+    'phone_verify_page',
+    'member_page',
+    'non_member_page',
+    'promotion_page',
+], true)) {
     $oldMediaItems = $page->media()->get();
 
     foreach ($oldMediaItems as $oldMedia) {

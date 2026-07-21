@@ -114,6 +114,9 @@
         @include('content.pages.frontend.pages.forms.refill-status-page')
         @break
 
+@case('non_member_page')
+  @include('content.pages.frontend.pages.forms.non-member-page')
+  @break
     @default
         <div class="col-12">
             <div class="alert alert-warning">
