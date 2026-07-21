@@ -122,7 +122,7 @@
   @include('content.pages.frontend.pages.forms.guest-thank-you-page')
   @break
   @case('thank_you_page')
-  @include('content.pages.frontend.pages.forms.thank-you-page')
+  @include('content.pages.frontend.pages.forms.thank-you-page-member-points')
   @break
     @default
         <div class="col-12">
