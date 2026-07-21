@@ -338,6 +338,9 @@ Route::prefix('promotions')
             'adjustPoints',
         ])->name('adjust-points');
 
+        Route::get('/export', [CustomerController::class, 'export'])
+    ->name('customers.export');
+
         Route::delete('/{customer}', [
             CustomerController::class,
             'destroy',
