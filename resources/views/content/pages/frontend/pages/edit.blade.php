@@ -124,6 +124,9 @@
   @case('thank_you_page')
   @include('content.pages.frontend.pages.forms.thank-you-page-member-points')
   @break
+  @case('promotion_non_member_page')
+  @include('content.pages.frontend.pages.forms.promotion-non-member-page')
+  @break
     @default
         <div class="col-12">
             <div class="alert alert-warning">

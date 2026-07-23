@@ -13,17 +13,17 @@ class FrontendPageMedia extends Model
     protected $table = 'frontend_page_media';
 
     protected $fillable = [
-        'frontend_page_id',
-        'media_type',
-        'file_path',
-        'title',
-        'subtitle',
-        'duration_seconds',
-        'object_fit',
-        'sort_order',
-        'is_active',
-        'remark',
-    ];
+    'frontend_page_id',
+    'media_type',
+    'media_slot',
+    'file_path',
+    'title',
+    'subtitle',
+    'duration_seconds',
+    'object_fit',
+    'sort_order',
+    'remark',
+];
 
     protected $casts = [
         'duration_seconds' => 'integer',

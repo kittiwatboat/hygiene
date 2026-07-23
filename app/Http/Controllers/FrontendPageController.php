@@ -211,6 +211,25 @@ class FrontendPageController extends Controller
 
 'show_member_points' => ['nullable', 'boolean'],
 'show_total_points' => ['nullable', 'boolean'],
+
+'message_title' => ['nullable', 'string', 'max:255'],
+'message_subtitle' => ['nullable', 'string', 'max:255'],
+
+'show_skip_button' => ['nullable', 'boolean'],
+'skip_button_text' => ['nullable', 'string', 'max:100'],
+'skip_button_icon' => ['nullable', 'string', 'max:100'],
+'skip_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_register_button' => ['nullable', 'boolean'],
+'register_button_text' => ['nullable', 'string', 'max:100'],
+'register_button_icon' => ['nullable', 'string', 'max:100'],
+'register_button_action' => ['nullable', 'string', 'max:100'],
+
+'show_popup' => ['nullable', 'boolean'],
+'popup_title' => ['nullable', 'string', 'max:255'],
+'popup_subtitle' => ['nullable', 'string', 'max:255'],
+'popup_skip_button_text' => ['nullable', 'string', 'max:100'],
+'popup_register_button_text' => ['nullable', 'string', 'max:100'],
     ]);
 
 
@@ -748,6 +767,86 @@ switch ($screenKey) {
         ),
     ]);
     break;
+    case 'promotion_non_member_page':
+    $settings = array_merge($settings, [
+        'step_icon' => $request->input(
+            'step_icon',
+            'tabler-user-off'
+        ),
+
+        'message_title' => $request->input(
+            'message_title',
+            'ไม่พบข้อมูลสมาชิก'
+        ),
+
+        'message_subtitle' => $request->input(
+            'message_subtitle',
+            'กรุณาตรวจสอบเบอร์โทรอีกครั้ง'
+        ),
+
+        'show_skip_button' => $request->boolean(
+            'show_skip_button'
+        ),
+
+        'skip_button_text' => $request->input(
+            'skip_button_text',
+            'ข้าม'
+        ),
+
+        'skip_button_icon' => $request->input(
+            'skip_button_icon',
+            'tabler-chevron-right'
+        ),
+
+        'skip_button_action' => $request->input(
+            'skip_button_action',
+            'select_product_page'
+        ),
+
+        'show_register_button' => $request->boolean(
+            'show_register_button'
+        ),
+
+        'register_button_text' => $request->input(
+            'register_button_text',
+            'สมัครสมาชิก'
+        ),
+
+        'register_button_icon' => $request->input(
+            'register_button_icon',
+            'tabler-user-plus'
+        ),
+
+        'register_button_action' => $request->input(
+            'register_button_action',
+            'open_popup'
+        ),
+
+        'show_popup' => $request->boolean(
+            'show_popup'
+        ),
+
+        'popup_title' => $request->input(
+            'popup_title',
+            'สมัครสมาชิกวันนี้ รับส่วนลดทันที 20 บาท'
+        ),
+
+        'popup_subtitle' => $request->input(
+            'popup_subtitle',
+            'สแกน QR Code เพื่อสมัครสมาชิก'
+        ),
+
+        'popup_skip_button_text' => $request->input(
+            'popup_skip_button_text',
+            'ข้าม'
+        ),
+
+        'popup_register_button_text' => $request->input(
+            'popup_register_button_text',
+            'สมัครสมาชิก'
+        ),
+    ]);
+    break;
 }
 
     $page->update([
@@ -763,138 +862,357 @@ switch ($screenKey) {
         ->route('frontend.pages.edit', $page)
         ->with('success', 'บันทึกข้อมูลหน้าสำเร็จ');
 }
-    public function storeMedia(Request $request, FrontendPage $page)
-    {
-        $validated = $request->validate(
-    [
-        'media_type' => [
-            'required',
-            Rule::in(['image', 'video']),
+    public function storeMedia(
+    Request $request,
+    FrontendPage $page
+) {
+    $validated = $request->validate(
+        [
+            'media_type' => [
+                'required',
+                Rule::in([
+                    'image',
+                    'video',
+                ]),
+            ],
+
+            'media_slot' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'file' => [
+                'required',
+                'file',
+                'max:51200',
+            ],
+
+            'title' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'subtitle' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'duration_seconds' => [
+                'nullable',
+                'integer',
+                'min:1',
+            ],
+
+            'object_fit' => [
+                'nullable',
+                Rule::in([
+                    'cover',
+                    'contain',
+                ]),
+            ],
+
+            'sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+
+            'remark' => [
+                'nullable',
+                'string',
+            ],
         ],
+        [
+            'media_type.required' => 'กรุณาเลือกประเภทไฟล์',
+            'file.required' => 'กรุณาเลือกไฟล์',
+            'file.max' => 'ไฟล์ต้องมีขนาดไม่เกิน 50 MB',
+        ]
+    );
+
+    if ($validated['media_type'] === 'image') {
+        $request->validate([
+            'file' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp,svg',
+            ],
+        ]);
+    }
+
+    if ($validated['media_type'] === 'video') {
+        $request->validate([
+            'file' => [
+                'mimes:mp4,webm,mov',
+            ],
+        ]);
+    }
+
+    $screenKey = $page->screen_key
+        ?? $page->page_key
+        ?? null;
+
+    $mediaSlot = $validated['media_slot']
+        ?? 'default';
+
+    /*
+    |--------------------------------------------------------------------------
+    | หน้าที่ใช้ Media แยกตามตำแหน่ง
+    |--------------------------------------------------------------------------
+    */
+    $slotBasedScreens = [
+        'promotion_non_member_page',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | หน้าที่มี Media ได้เพียงรายการเดียว
+    |--------------------------------------------------------------------------
+    */
+    $singleMediaScreens = [
+        'phone_verify_page',
+        'member_page',
+        'non_member_page',
+    ];
+
+    DB::transaction(function () use (
+        $request,
+        $validated,
+        $page,
+        $screenKey,
+        $mediaSlot,
+        $slotBasedScreens,
+        $singleMediaScreens
+    ) {
+        if (in_array(
+            $screenKey,
+            $slotBasedScreens,
+            true
+        )) {
+            /*
+            |--------------------------------------------------------------------------
+            | ลบเฉพาะ Media slot เดียวกัน
+            |--------------------------------------------------------------------------
+            | เช่น เปลี่ยน popup_qr จะไม่ลบ popup_poster
+            */
+            $oldMediaItems = $page->media()
+                ->where('media_slot', $mediaSlot)
+                ->get();
+        } elseif (in_array(
+            $screenKey,
+            $singleMediaScreens,
+            true
+        )) {
+            /*
+            |--------------------------------------------------------------------------
+            | หน้าเหล่านี้มี Media ได้รายการเดียว
+            |--------------------------------------------------------------------------
+            */
+            $oldMediaItems = $page->media()->get();
+        } else {
+            /*
+            |--------------------------------------------------------------------------
+            | หน้าอื่นเพิ่มได้หลาย Media
+            |--------------------------------------------------------------------------
+            */
+            $oldMediaItems = collect();
+        }
+
+        foreach ($oldMediaItems as $oldMedia) {
+            $this->deleteMediaFile(
+                $oldMedia->file_path,
+                $oldMedia->media_type
+            );
+
+            $oldMedia->delete();
+        }
+
+        $fileName = $this->uploadMediaFile(
+            $request->file('file'),
+            $validated['media_type']
+        );
+
+        FrontendPageMedia::create([
+            'frontend_page_id' => $page->id,
+            'media_type' => $validated['media_type'],
+            'media_slot' => $mediaSlot,
+            'file_path' => $fileName,
+            'title' => $validated['title'] ?? null,
+            'subtitle' => $validated['subtitle'] ?? null,
+            'duration_seconds' => $validated[
+                'duration_seconds'
+            ] ?? 5,
+            'object_fit' => $validated[
+                'object_fit'
+            ] ?? 'cover',
+            'sort_order' => $validated[
+                'sort_order'
+            ] ?? 0,
+            'remark' => $validated['remark'] ?? null,
+        ]);
+    });
+
+    return redirect()
+        ->route('frontend.pages.edit', $page)
+        ->with(
+            'success',
+            'บันทึก Media สำเร็จ'
+        );
+}
+
+    public function updateMedia(
+    Request $request,
+    FrontendPageMedia $media
+) {
+    $validated = $request->validate([
+        'media_slot' => [
+            'nullable',
+            'string',
+            'max:50',
+        ],
+
+        'media_type' => [
+            'nullable',
+            Rule::in([
+                'image',
+                'video',
+            ]),
+        ],
+
         'file' => [
-            'required',
+            'nullable',
             'file',
             'max:51200',
         ],
-    ],
-    [
-        'media_type.required' => 'กรุณาเลือกประเภทไฟล์',
-        'file.required' => 'กรุณาเลือกไฟล์',
-        'file.max' => 'ไฟล์ต้องมีขนาดไม่เกิน 50 MB',
-    ]
-);
 
-       $screenKey = $page->screen_key ?? $page->page_key ?? null;
+        'title' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
 
-if (in_array($screenKey, ['phone_verify_page', 'member_page'], true)) {
-    $oldMediaItems = $page->media()->get();
+        'subtitle' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
 
-    foreach ($oldMediaItems as $oldMedia) {
-        $this->deleteMediaFile(
-            $oldMedia->file_path,
-            $oldMedia->media_type
-        );
+        'duration_seconds' => [
+            'nullable',
+            'integer',
+            'min:1',
+        ],
 
-        $oldMedia->delete();
-    }
-}
+        'object_fit' => [
+            'required',
+            Rule::in([
+                'cover',
+                'contain',
+            ]),
+        ],
 
-if (in_array($screenKey, [
-    'phone_verify_page',
-    'member_page',
-    'non_member_page',
-    'promotion_page',
-], true)) {
-    $oldMediaItems = $page->media()->get();
+        'sort_order' => [
+            'nullable',
+            'integer',
+            'min:0',
+        ],
 
-    foreach ($oldMediaItems as $oldMedia) {
-        $this->deleteMediaFile(
-            $oldMedia->file_path,
-            $oldMedia->media_type
-        );
-
-        $oldMedia->delete();
-    }
-}
-
-if ($validated['media_type'] === 'image') {
-    $request->validate([
-        'file' => ['image', 'mimes:jpg,jpeg,png,webp,svg'],
+        'remark' => [
+            'nullable',
+            'string',
+        ],
     ]);
-}
 
-if ($validated['media_type'] === 'video') {
-    $request->validate([
-        'file' => ['mimes:mp4,webm,mov'],
-    ]);
-}
+    $mediaType = $validated['media_type']
+        ?? $media->media_type;
 
-if ($screenKey === 'phone_verify_page') {
-    $oldMediaItems = $page->media()->get();
+    if ($request->hasFile('file')) {
+        if ($mediaType === 'image') {
+            $request->validate([
+                'file' => [
+                    'image',
+                    'mimes:jpg,jpeg,png,webp,svg',
+                ],
+            ]);
+        }
 
-    foreach ($oldMediaItems as $oldMedia) {
-        $this->deleteMediaFile(
-            $oldMedia->file_path,
-            $oldMedia->media_type
-        );
-
-        $oldMedia->delete();
-    }
-}
-
-$fileName = $this->uploadMediaFile(
-    $request->file('file'),
-    $validated['media_type']
-);
-
-FrontendPageMedia::create([
-    'frontend_page_id' => $page->id,
-    'media_type' => $validated['media_type'],
-    'file_path' => $fileName,
-    'title' => null,
-    'subtitle' => null,
-    'duration_seconds' => 5,
-    'object_fit' => 'cover',
-    'sort_order' => 0,
-    'remark' => null,
-]);
-        return redirect()
-            ->route('frontend.pages.edit', $page)
-->with('success', $screenKey === 'phone_verify_page'
-    ? 'บันทึก Banner / Media สำเร็จ'
-    : 'เพิ่มสไลด์สำเร็จ'
-);
+        if ($mediaType === 'video') {
+            $request->validate([
+                'file' => [
+                    'mimes:mp4,webm,mov',
+                ],
+            ]);
+        }
     }
 
-    public function updateMedia(Request $request, FrontendPageMedia $media)
-    {
-        $validated = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'subtitle' => ['nullable', 'string', 'max:255'],
-            'duration_seconds' => ['nullable', 'integer', 'min:1'],
-            'object_fit' => [
-                'required',
-                Rule::in(['cover', 'contain']),
-            ],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            //'is_active' => ['nullable', 'boolean'],
-            'remark' => ['nullable', 'string'],
-        ]);
+    DB::transaction(function () use (
+        $request,
+        $validated,
+        $media,
+        $mediaType
+    ) {
+        $fileName = $media->file_path;
+
+        if ($request->hasFile('file')) {
+            $newFileName = $this->uploadMediaFile(
+                $request->file('file'),
+                $mediaType
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | อัปโหลดไฟล์ใหม่สำเร็จก่อน แล้วค่อยลบไฟล์เก่า
+            |--------------------------------------------------------------------------
+            */
+            $this->deleteMediaFile(
+                $media->file_path,
+                $media->media_type
+            );
+
+            $fileName = $newFileName;
+        }
 
         $media->update([
-            'title' => $validated['title'] ?? null,
-            'subtitle' => $validated['subtitle'] ?? null,
-            'duration_seconds' => $validated['duration_seconds'] ?? 5,
-            'object_fit' => $validated['object_fit'],
-            'sort_order' => $validated['sort_order'] ?? 0,
-            //'is_active' => $request->boolean('is_active'),
-            'remark' => $validated['remark'] ?? null,
-        ]);
+            'media_type' => $mediaType,
 
-        return redirect()
-            ->route('frontend.pages.edit', $media->page)
-            ->with('success', 'แก้ไขสไลด์สำเร็จ');
-    }
+            'media_slot' => $validated['media_slot']
+                ?? $media->media_slot
+                ?? 'default',
+
+            'file_path' => $fileName,
+
+            'title' => $validated['title']
+                ?? null,
+
+            'subtitle' => $validated['subtitle']
+                ?? null,
+
+            'duration_seconds' => $validated[
+                'duration_seconds'
+            ] ?? 5,
+
+            'object_fit' => $validated['object_fit'],
+
+            'sort_order' => $validated[
+                'sort_order'
+            ] ?? 0,
+
+            'remark' => $validated['remark']
+                ?? null,
+        ]);
+    });
+
+    return redirect()
+        ->route(
+            'frontend.pages.edit',
+            $media->page
+        )
+        ->with(
+            'success',
+            'แก้ไข Media สำเร็จ'
+        );
+}
 
     public function destroyMedia(FrontendPageMedia $media)
     {
