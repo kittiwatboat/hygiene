@@ -22,9 +22,7 @@
     'tabler-package' => 'Package',
   ];
 
-$buttonIcons = [
-    'tabler-arrow-left' => 'Arrow Left',
-    'tabler-chevron-left' => 'Chevron Left',
+  $buttonIcons = [
     'tabler-home' => 'Home',
     'tabler-check' => 'Check',
     'tabler-circle-check' => 'Circle Check',
@@ -35,285 +33,269 @@ $buttonIcons = [
     'tabler-droplet' => 'Droplet',
     'tabler-wallet' => 'Wallet',
     'tabler-cash' => 'Cash',
-];
+  ];
 @endphp
 
 <style>
   .select-product-preview {
-    position: relative;
-    min-height: 520px;
-    border-radius: 0;
+    background: #dff8ff;
+    border-radius: 14px;
+    padding: 22px 26px 20px;
     overflow: hidden;
-    padding: 118px 34px 22px;
-    background:
-      radial-gradient(circle at 8% 74%, rgba(255,255,255,.9) 0 12px, rgba(255,255,255,.35) 13px 16px, transparent 17px),
-      radial-gradient(circle at 92% 72%, rgba(255,255,255,.85) 0 18px, rgba(255,255,255,.35) 19px 23px, transparent 24px),
-      linear-gradient(180deg, #f7fdff 0%, #d8f3ff 55%, #aee6fb 100%);
   }
 
-  .select-product-preview::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 112px;
-    background:
-      linear-gradient(175deg, transparent 0 58%, rgba(255,255,255,.96) 59% 68%, transparent 69%),
-      linear-gradient(180deg, #78d5fa 0%, #c9efff 100%);
-    pointer-events: none;
-  }
-
-  .preview-topbar {
-    position: absolute;
-    top: 16px;
-    left: 22px;
-    right: 22px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .preview-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #28218f;
-    font-size: 18px;
-    font-weight: 900;
-  }
-
-  .preview-brand-logo,
-  .preview-ip-logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.95);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #0877c9;
-    font-weight: 900;
-    box-shadow: 0 3px 10px rgba(0, 108, 175, .18);
-  }
-
-  .preview-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .preview-mini-button,
-  .preview-language {
-    height: 34px;
-    border: 0;
-    border-radius: 7px;
-    background: rgba(255,255,255,.95);
-    color: #0877c9;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 0 10px;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .preview-language {
-    width: 28px;
-    padding: 0;
-    border-radius: 50%;
-    color: #fff;
-  }
-
-  .preview-language.th { background: #ef3340; }
-  .preview-language.en { background: #1a47b8; }
-  .preview-language.cn { background: #ef3340; }
-
-  .preview-stepbar {
-    position: absolute;
-    top: 75px;
-    left: 50%;
-    z-index: 3;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-  }
-
-  .preview-step {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #70bfe9;
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 7px rgba(0, 107, 180, .22);
-  }
-
-  .preview-step.active { background: #0877c9; }
-  .preview-step-line { width: 42px; height: 3px; background: rgba(255,255,255,.88); }
-
-  .preview-screen-title {
-    position: relative;
-    z-index: 2;
+  .select-product-preview-title {
     text-align: center;
-    color: #111;
-    font-size: 18px;
-    font-weight: 900;
+    color: #6f63f6;
+    font-weight: 800;
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  .select-product-preview-subtitle {
+    text-align: center;
+    color: #6c757d;
+    font-size: 13px;
     margin-bottom: 16px;
   }
 
-  .select-product-content {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  .product-category-panel {
-    border-radius: 10px;
-    padding: 14px 14px 12px;
-    color: #fff;
-    box-shadow: 0 6px 12px rgba(0, 78, 140, .13);
-  }
-
-  .product-category-panel.primary { background: #0089df; }
-  .product-category-panel.secondary { background: #dc3d82; }
-
-  .category-name {
+  .select-product-step {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 6px;
-    font-size: 17px;
-    font-weight: 900;
-    margin-bottom: 10px;
+    justify-content: center;
+    margin-bottom: 18px;
   }
 
-  .product-list-preview {
+  .select-product-step-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #6f63f6;
+    font-size: 18px;
+  }
+
+  .select-product-step-circle.pending {
+    background: #e8e8ed;
+    color: #9295a0;
+  }
+
+  .select-product-step-line {
+    width: 52px;
+    height: 2px;
+    background: #6fbff0;
+  }
+
+  .select-product-layout {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
+    grid-template-columns: minmax(190px, .9fr) minmax(220px, .85fr) minmax(240px, 1fr);
+    gap: 16px;
+    align-items: stretch;
   }
 
-  .product-card-preview {
-    position: relative;
-    min-height: 112px;
-    border: 3px solid transparent;
-    border-radius: 8px;
+  .select-product-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .select-product-category {
+    min-height: 94px;
+    border: 2px solid transparent;
+    border-radius: 12px;
     background: #fff;
-    color: #171717;
+    color: #0877c9;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 46px 1fr 28px;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  }
+
+  .select-product-category.is-selected {
+    background: #0b8bd3;
+    color: #fff;
+    border-color: #0b8bd3;
+  }
+
+  .select-product-category-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(8, 119, 201, .10);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .select-product-category.is-selected .select-product-category-icon {
+    background: rgba(255,255,255,.16);
+  }
+
+  .select-product-category-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .select-product-item {
+    position: relative;
+    min-height: 170px;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: #fff;
+    padding: 14px 12px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    padding: 8px 5px 7px;
-    overflow: hidden;
+    justify-content: space-between;
     text-align: center;
-    font-size: 10px;
-    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
   }
 
-  .product-card-preview.is-selected { border-color: #00a4ef; }
-
-  .product-placeholder-icon {
-    font-size: 54px;
-    color: #5ab5e5;
-    margin-bottom: 5px;
+  .select-product-item.is-selected {
+    border-color: #0b8bd3;
   }
 
-  .product-category-panel.secondary .product-placeholder-icon { color: #ee66a0; }
-
-  .selected-icon-badge {
+  .select-product-item-check {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 21px;
-    height: 21px;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: #0784cc;
+    background: #0b8bd3;
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
   }
 
-  .amount-options {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    max-width: 640px;
-    margin: 10px auto 0;
-  }
-
-  .amount-option {
-    position: relative;
-    min-height: 54px;
-    border: 3px solid transparent;
-    border-radius: 9px;
-    background: rgba(255,255,255,.96);
+  .select-product-image {
+    width: 86px;
+    height: 112px;
+    border-radius: 8px;
+    background: #f4f8fb;
+    color: #72b9e5;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 18px;
-    box-shadow: 0 4px 10px rgba(0, 82, 140, .09);
+    justify-content: center;
+    font-size: 44px;
   }
 
-  .amount-option.is-selected { border-color: #078bd5; }
-  .amount-value { color: #0068c9; font-size: 20px; font-weight: 900; }
-  .amount-price { color: #111; font-size: 18px; font-weight: 900; }
-  .amount-option small { font-size: 13px; font-weight: 800; }
+  .select-product-name {
+    color: #0877c9;
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 800;
+    margin-top: 8px;
+  }
+
+  .select-product-amount {
+    min-height: 94px;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: #fff;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  }
+
+  .select-product-amount.is-selected {
+    border-color: #0b8bd3;
+  }
+
+  .select-product-amount-value {
+    color: #075db8;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .select-product-amount-price {
+    color: #111827;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .select-product-amount-unit {
+    font-size: 16px;
+    font-weight: 800;
+    margin-left: 4px;
+  }
+
+  .select-product-amount-check {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: -30px;
+    color: #0b8bd3;
+    font-size: 24px;
+  }
 
   .select-product-footer {
-    position: relative;
-    z-index: 2;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 18px;
   }
 
-  .select-product-home-button,
+  .select-product-back-button,
   .select-product-confirm-button {
-    height: 40px;
     border: 0;
-    border-radius: 7px;
+    border-radius: 9px;
+    min-width: 160px;
+    min-height: 48px;
+    padding: 10px 20px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-weight: 800;
-    box-shadow: 0 4px 10px rgba(0, 70, 130, .15);
+    gap: 10px;
+    font-weight: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
   }
 
-  .select-product-home-button {
-    min-width: 126px;
+  .select-product-back-button {
     background: #fff;
-    color: #0784cc;
+    color: #0877c9;
   }
 
   .select-product-confirm-button {
-    min-width: 126px;
-    background: #0784cc;
+    background: #0877c9;
     color: #fff;
-    font-size: 16px;
+    font-size: 18px;
   }
 
-  @media (max-width: 991.98px) {
-    .select-product-preview { padding-left: 16px; padding-right: 16px; }
-    .select-product-content,
-    .amount-options { grid-template-columns: 1fr; }
-    .preview-brand { font-size: 14px; }
-    .preview-topbar { left: 12px; right: 12px; }
-    .preview-toolbar .preview-language { display: none; }
+  @media (max-width: 1199.98px) {
+    .select-product-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .select-product-footer {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .select-product-footer {
+      flex-direction: column;
+    }
+
+    .select-product-back-button,
+    .select-product-confirm-button {
+      width: 100%;
+    }
   }
 </style>
 
@@ -486,61 +468,41 @@ $buttonIcons = [
         <h6 class="mb-3">Icon ปุ่มด้านล่าง</h6>
 
         <div class="form-check form-switch mb-3">
-          <input type="hidden" name="show_back_button" value="0">
-
-<input
-    type="checkbox"
-    name="show_back_button"
-    value="1"
-    id="show_back_button"
-    class="form-check-input"
-    {{ old(
-        'show_back_button',
-        $settings['show_back_button'] ?? true
-    ) ? 'checked' : '' }}
->
-
-<label
-    class="form-check-label"
-    for="show_back_button"
->
-    แสดงปุ่มย้อนกลับ
-</label>
+          <input type="hidden" name="show_home_button" value="0">
+          <input
+            type="checkbox"
+            name="show_home_button"
+            value="1"
+            id="show_home_button"
+            class="form-check-input"
+            {{ old('show_home_button', $settings['show_home_button'] ?? true) ? 'checked' : '' }}
+          >
+          <label class="form-check-label" for="show_home_button">
+            แสดงปุ่มหน้าหลัก
+          </label>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Icon ปุ่มหน้าหลัก</label>
 
-          <select name="back_button_icon" class="form-select">
-    @php
-        $backButtonIcon = old(
-            'back_button_icon',
-            $settings['back_button_icon']
-                ?? 'tabler-chevron-left'
-        );
-    @endphp
+          <select name="home_button_icon" class="form-select">
+            @php
+              $homeButtonIcon = old('home_button_icon', $settings['home_button_icon'] ?? 'tabler-home');
+            @endphp
 
-    @foreach ($buttonIcons as $iconClass => $iconLabel)
-        <option
-            value="{{ $iconClass }}"
-            {{ $backButtonIcon === $iconClass
-                ? 'selected'
-                : '' }}
-        >
-            {{ $iconLabel }}
-        </option>
-    @endforeach
-</select>
+            @foreach ($buttonIcons as $iconClass => $iconLabel)
+              <option value="{{ $iconClass }}" {{ $homeButtonIcon === $iconClass ? 'selected' : '' }}>
+                {{ $iconLabel }}
+              </option>
+            @endforeach
+          </select>
         </div>
 
         <input
-    type="hidden"
-    name="back_button_action"
-    value="{{ old(
-        'back_button_action',
-        $settings['back_button_action'] ?? 'member_page'
-    ) }}"
->
+          type="hidden"
+          name="home_button_action"
+          value="{{ old('home_button_action', $settings['home_button_action'] ?? 'first_page') }}"
+        >
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_confirm_button" value="0">
@@ -593,117 +555,135 @@ $buttonIcons = [
     <div class="card-header">
       <h5 class="mb-1">Preview หน้าเลือกสินค้า</h5>
       <p class="text-muted mb-0">
-        ปรับ Layout ให้ใกล้เคียงหน้าจอเครื่องจริง โดยข้อมูลสินค้าและราคายังดึงจากระบบ
+        ตัวอย่าง Layout ตามแบบใหม่ สินค้า รูป ราคา และปริมาณจริงจะดึงจากระบบ
       </p>
     </div>
 
     <div class="card-body">
       <div class="select-product-preview">
-        <div class="preview-topbar">
-          <div class="preview-toolbar">
-            <button type="button" class="preview-mini-button">
-              <i class="icon-base ti tabler-home"></i>
-              <span>หน้าหลัก</span>
-            </button>
-            <span class="preview-language th">TH</span>
-            <span class="preview-language en">EN</span>
-            <span class="preview-language cn">中</span>
-          </div>
-
-          <div class="preview-brand">
-            <span class="preview-brand-logo">H</span>
-            <span>ผู้เชี่ยวชาญการดูแลผ้าครบวงจร</span>
-          </div>
-
-          <span class="preview-ip-logo">IP</span>
+        <div class="select-product-preview-title">
+          select_product_page.title
         </div>
 
-        <div class="preview-stepbar">
-          <span class="preview-step active">
+        <div class="select-product-preview-subtitle">
+          select_product_page.subtitle
+        </div>
+
+        <div class="select-product-step">
+          <span class="select-product-step-circle">
             <i class="icon-base ti {{ $settings['step_icon'] ?? 'tabler-bottle' }}"></i>
           </span>
-          <span class="preview-step-line"></span>
-          <span class="preview-step"></span>
-          <span class="preview-step-line"></span>
-          <span class="preview-step"></span>
-          <span class="preview-step-line"></span>
-          <span class="preview-step"></span>
+
+          <span class="select-product-step-line"></span>
+
+          <span class="select-product-step-circle pending">
+            <i class="icon-base ti tabler-minus"></i>
+          </span>
+
+          <span class="select-product-step-line"></span>
+
+          <span class="select-product-step-circle pending">
+            <i class="icon-base ti tabler-minus"></i>
+          </span>
+
+          <span class="select-product-step-line"></span>
+
+          <span class="select-product-step-circle pending">
+            <i class="icon-base ti tabler-minus"></i>
+          </span>
         </div>
 
-        <div class="preview-screen-title">เลือกสินค้า</div>
+        <div class="select-product-layout">
+          <div class="select-product-column">
+            <div class="select-product-category is-selected">
+              <span class="select-product-category-icon">
+                <i class="icon-base ti {{ $settings['category_primary_icon'] ?? 'tabler-basket' }}"></i>
+              </span>
 
-        <div class="select-product-content">
-          <div class="product-category-panel primary">
-            <div class="category-name">
-              <i class="icon-base ti {{ $settings['category_primary_icon'] ?? 'tabler-basket' }}"></i>
               <span>น้ำยาซักผ้า</span>
+
+              <span class="select-product-category-check">
+                <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
+              </span>
             </div>
 
-            <div class="product-list-preview">
-              <div class="product-card-preview">
-                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                <div>กลิ่น เดลี่ ซัน</div>
-              </div>
+            <div class="select-product-category">
+              <span class="select-product-category-icon">
+                <i class="icon-base ti {{ $settings['category_secondary_icon'] ?? 'tabler-droplet' }}"></i>
+              </span>
 
-              <div class="product-card-preview is-selected">
-                <span class="selected-icon-badge">
-                  <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
-                </span>
-                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                <div>กลิ่น ฟลอร่า บลูม</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="product-category-panel secondary">
-            <div class="category-name">
-              <i class="icon-base ti {{ $settings['category_secondary_icon'] ?? 'tabler-droplet' }}"></i>
               <span>น้ำยาปรับผ้านุ่ม</span>
-            </div>
 
-            <div class="product-list-preview">
-              <div class="product-card-preview">
-                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                <div>กลิ่น มิลค์กี้ แคร์</div>
+              <span class="select-product-category-check">
+                <i class="icon-base ti tabler-circle"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="select-product-column">
+            <div class="select-product-item is-selected">
+              <span class="select-product-item-check">
+                <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
+              </span>
+
+              <div class="select-product-image">
+                <i class="icon-base ti tabler-bottle"></i>
               </div>
 
-              <div class="product-card-preview">
-                <i class="icon-base ti tabler-bottle product-placeholder-icon"></i>
-                <div>กลิ่น พิงค์ บลูม</div>
+              <div class="select-product-name">
+                กลิ่น มิลค์กี้ แคร์
+              </div>
+            </div>
+
+            <div class="select-product-item">
+              <div class="select-product-image">
+                <i class="icon-base ti tabler-bottle"></i>
+              </div>
+
+              <div class="select-product-name">
+                กลิ่น ฟลอร่า บลูม
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="amount-options">
-          <div class="amount-option is-selected">
-            <span class="selected-icon-badge">
-              <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
-            </span>
-            <div class="amount-value">1,250 <small>มล.</small></div>
-            <div class="amount-price">115 <small>บาท</small></div>
-          </div>
+          <div class="select-product-column">
+            <div class="select-product-amount is-selected">
+              <div>
+                <span class="select-product-amount-value">1,250</span>
+                <span class="select-product-amount-unit">มล.</span>
+              </div>
 
-          <div class="amount-option">
-            <div class="amount-value">2,500 <small>มล.</small></div>
-            <div class="amount-price">220 <small>บาท</small></div>
+              <div>
+                <span class="select-product-amount-price">115</span>
+                <span class="select-product-amount-unit">บาท</span>
+              </div>
+
+              <span class="select-product-amount-check">
+                <i class="icon-base ti {{ $settings['selected_product_icon'] ?? 'tabler-check' }}"></i>
+              </span>
+            </div>
+
+            <div class="select-product-amount">
+              <div>
+                <span class="select-product-amount-value">2,500</span>
+                <span class="select-product-amount-unit">มล.</span>
+              </div>
+
+              <div>
+                <span class="select-product-amount-price">220</span>
+                <span class="select-product-amount-unit">บาท</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="select-product-footer">
-          @if ($settings['show_back_button'] ?? true)
-    <button
-        type="button"
-        class="select-product-home-button"
-    >
-        <i class="icon-base ti {{
-            $settings['back_button_icon']
-                ?? 'tabler-chevron-left'
-        }}"></i>
-
-        <span>ย้อนกลับ</span>
-    </button>
-@endif
+          @if ($settings['show_home_button'] ?? true)
+            <button type="button" class="select-product-back-button">
+              <i class="icon-base ti {{ $settings['home_button_icon'] ?? 'tabler-chevron-left' }}"></i>
+              <span>ย้อนกลับ</span>
+            </button>
+          @endif
 
           @if ($settings['show_confirm_button'] ?? true)
             <button type="button" class="select-product-confirm-button">
