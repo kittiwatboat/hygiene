@@ -5,12 +5,6 @@
   $popupPoster = $page->media->firstWhere('media_slot', 'popup_poster');
   $popupQr = $page->media->firstWhere('media_slot', 'popup_qr');
 
-  // fallback รองรับข้อมูลเก่า
-  $legacyImage = $page->media->first();
-  if (!$emptyStateImage) {
-      $emptyStateImage = $legacyImage;
-  }
-
   $stepIcons = [
     'tabler-user-off' => 'User Off',
     'tabler-user-question' => 'User Question',
@@ -40,359 +34,298 @@
 @endphp
 
 <style>
-  .member-notfound-preview {
+  .member-reference-preview {
     position: relative;
-    background: #dff8ff;
+    background: linear-gradient(180deg, #ddf4ff 0%, #d6f0ff 100%);
     border-radius: 14px;
-    padding: 22px 24px 20px;
+    padding: 20px 22px 22px;
     overflow: hidden;
-    min-height: 620px;
+    min-height: 700px;
   }
-
-  .member-notfound-title {
-    text-align: center;
-    color: #6f63f6;
-    font-weight: 800;
-    font-size: 20px;
-    margin-bottom: 2px;
+  .member-reference-preview::before,
+  .member-reference-preview::after {
+    content: "";
+    position: absolute;
+    left: -4%;
+    width: 108%;
+    border-radius: 50%;
+    pointer-events: none;
   }
-
-  .member-notfound-subtitle {
-    text-align: center;
-    color: #6c757d;
-    font-size: 13px;
+  .member-reference-preview::before {
+    top: 66px;
+    height: 70px;
+    background: rgba(255, 255, 255, .75);
+  }
+  .member-reference-preview::after {
+    bottom: -40px;
+    height: 120px;
+    background: rgba(110, 192, 245, .28);
+  }
+  .member-ref-topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     margin-bottom: 18px;
   }
-
-  .member-notfound-step {
+  .member-ref-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .member-ref-home-button {
+    min-height: 42px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #fff;
+    color: #0877c9;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  .member-ref-lang {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ff4d4f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .member-ref-brand {
+    text-align: center;
+    flex: 1;
+    color: #2e2a8f;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .member-ref-logos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0877c9;
+    font-weight: 900;
+    font-size: 12px;
+  }
+  .member-ref-logo-dot {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  .member-ref-step {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 18px;
+    margin: 12px 0 24px;
   }
-
-  .member-notfound-step-circle {
-    width: 38px;
-    height: 38px;
+  .member-ref-step-circle {
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: #fff;
+    font-size: 16px;
     background: #6f63f6;
-    font-size: 18px;
   }
-
-  .member-notfound-step-circle.done {
-    background: #26c875;
-  }
-
-  .member-notfound-step-circle.pending {
+  .member-ref-step-circle.done { background: #26c875; }
+  .member-ref-step-circle.pending {
     background: #e8e8ed;
     color: #9295a0;
   }
-
-  .member-notfound-step-line {
-    width: 52px;
+  .member-ref-step-line {
+    width: 48px;
     height: 2px;
     background: #6fbff0;
   }
-
-  .member-notfound-background {
-    background: rgba(255,255,255,.18);
-    border-radius: 14px;
-    padding: 18px 20px 22px;
-    min-height: 450px;
-  }
-
-  .member-notfound-background-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    align-items: stretch;
-  }
-
-  .member-notfound-message {
-    background: rgba(255,255,255,.55);
-    border-radius: 14px;
-    min-height: 250px;
-    padding: 30px 20px;
+  .member-ref-empty-area {
+    position: relative;
+    z-index: 1;
+    min-height: 420px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-  }
-
-  .member-notfound-message h4 {
     color: #111827;
-    font-size: 17px;
+  }
+  .member-ref-empty-title {
+    font-size: 18px;
     font-weight: 900;
-    margin-bottom: 4px;
+    margin-bottom: 18px;
   }
-
-  .member-notfound-message p {
-    color: #667085;
-    font-size: 12px;
-    margin-bottom: 16px;
+  .member-ref-empty-image {
+    width: 200px;
+    max-width: 100%;
+    display: block;
+    object-fit: contain;
   }
-
-  .member-notfound-icon-wrap {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: #e8f2ff;
-    color: #7f91b0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 54px;
+  .member-ref-empty-placeholder {
+    width: 190px;
+    height: 190px;
+    border-radius: 28px;
+    background: rgba(195, 213, 250, .34);
     position: relative;
-  }
-
-  .member-notfound-icon-wrap::after {
-    content: "×";
-    position: absolute;
-    right: 4px;
-    bottom: 4px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #ff5252;
-    color: #fff;
-    border: 4px solid #dff8ff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    color: #7484a7;
+    font-size: 74px;
+  }
+  .member-ref-empty-placeholder::after {
+    content: "⊘";
+    position: absolute;
+    right: 18px;
+    bottom: 12px;
+    color: #ff5a58;
+    font-size: 44px;
     font-weight: 900;
   }
-
-  .member-notfound-banner-panel {
-    background: #fff;
-    border-radius: 14px;
-    padding: 10px;
-    min-height: 250px;
-    overflow: hidden;
+  .member-ref-popup-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 25, 41, .58);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    z-index: 20;
   }
-
-  .member-notfound-banner {
+  .member-ref-popup-box {
+    width: 720px;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 18px;
+    padding: 12px;
+    box-shadow: 0 22px 40px rgba(0,0,0,.24);
+  }
+  .member-ref-popup-grid {
+    display: grid;
+    grid-template-columns: 1.35fr .85fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .member-ref-popup-poster {
+    min-height: 355px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #eef9ff 0%, #d8f1ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .member-ref-popup-poster img {
     width: 100%;
-    min-height: 230px;
+    height: 100%;
+    min-height: 355px;
     object-fit: cover;
-    border-radius: 10px;
     display: block;
   }
-
-  .member-notfound-banner-placeholder {
-    min-height: 230px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #0d8bd7 0%, #65c7f7 35%, #fff 35%, #fff 100%);
-    color: #075db8;
+  .member-ref-popup-poster-placeholder {
+    width: 100%;
+    min-height: 355px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 20px;
-    font-weight: 900;
-    font-size: 26px;
-    line-height: 1.2;
-  }
-
-  .member-notfound-footer {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 18px;
-    flex-wrap: wrap;
-  }
-
-  .member-notfound-back-button,
-  .member-notfound-skip-button,
-  .member-notfound-register-button {
-    border: 0;
-    border-radius: 9px;
-    min-width: 150px;
-    min-height: 48px;
-    padding: 10px 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    font-weight: 800;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  }
-
-  .member-notfound-back-button {
-    background: #fff;
-    color: #0877c9;
-  }
-
-  .member-notfound-skip-button {
-    background: #eef8ff;
-    color: #0877c9;
-    border: 1px solid #8fd0f4;
-  }
-
-  .member-notfound-register-button {
-    background: #0877c9;
-    color: #fff;
-  }
-
-  .popup-demo-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(17, 24, 39, .55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    z-index: 20;
-  }
-
-  .popup-demo-box {
-    width: 680px;
-    max-width: 96%;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.24);
-    padding: 16px;
-  }
-
-  .popup-demo-grid {
-    display: grid;
-    grid-template-columns: 1.25fr .85fr;
-    gap: 14px;
-    align-items: stretch;
-  }
-
-  .popup-demo-poster {
-    border-radius: 14px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #effaff 0%, #ffffff 60%, #d9f1ff 100%);
-    min-height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-  }
-
-  .popup-demo-poster img {
-    width: 100%;
-    height: 100%;
-    min-height: 316px;
-    object-fit: cover;
-    border-radius: 12px;
-    display: block;
-  }
-
-  .popup-demo-poster-placeholder {
-    width: 100%;
-    min-height: 316px;
-    border-radius: 12px;
-    background: linear-gradient(180deg, #f4fbff 0%, #dbf1ff 100%);
     color: #0b79c9;
     font-weight: 900;
     font-size: 34px;
     line-height: 1.15;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px;
+    padding: 26px;
   }
-
-  .popup-demo-qr-panel {
+  .member-ref-popup-side {
+    min-height: 355px;
     border-radius: 14px;
-    background: #f4fbff;
-    border: 1px solid #d2ebff;
-    min-height: 340px;
-    padding: 16px 14px;
+    background: #f6fbff;
+    border: 1px solid #d7eeff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-  }
-
-  .popup-demo-qr-title {
-    color: #0f172a;
-    font-size: 18px;
-    line-height: 1.4;
-    font-weight: 900;
-    margin-bottom: 14px;
+    padding: 16px 14px;
     text-align: center;
   }
-
-  .popup-demo-qr {
+  .member-ref-popup-side-title {
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+  .member-ref-popup-qr {
     width: 170px;
     height: 170px;
-    border: 8px solid #fff;
     border-radius: 10px;
+    overflow: hidden;
+    border: 8px solid #fff;
     background:
       linear-gradient(90deg, #000 12px, transparent 12px) 0 0/42px 42px,
       linear-gradient(#000 12px, transparent 12px) 0 0/42px 42px,
       linear-gradient(90deg, transparent 30px, #000 30px 42px, transparent 42px) 0 0/42px 42px,
       linear-gradient(transparent 30px, #000 30px 42px, transparent 42px) 0 0/42px 42px,
       #fff;
-    box-shadow: inset 0 0 0 10px #fff;
-    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0,0,0,.08);
   }
-
-  .popup-demo-qr img {
+  .member-ref-popup-qr img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
-
-  .popup-demo-qr-note {
+  .member-ref-popup-note {
     margin-top: 12px;
-    color: #667085;
+    color: #ff6b6b;
     font-size: 11px;
-    text-align: center;
+    line-height: 1.4;
   }
-
-  .popup-demo-actions {
+  .member-ref-popup-actions {
     display: grid;
     grid-template-columns: 1fr 1.25fr;
-    gap: 14px;
-    margin-top: 14px;
+    gap: 12px;
+    margin-top: 12px;
   }
-
-  .popup-demo-actions button {
+  .member-ref-popup-skip,
+  .member-ref-popup-register {
     border: 0;
-    border-radius: 9px;
-    min-height: 46px;
+    border-radius: 10px;
+    min-height: 48px;
     font-weight: 800;
   }
-
-  .popup-demo-skip {
+  .member-ref-popup-skip {
     background: #fff;
     color: #0877c9;
-    border: 1px solid #d4eafb;
+    border: 1px solid #d2e9fb;
   }
-
-  .popup-demo-register {
-    background: #0877c9;
+  .member-ref-popup-register {
+    background: #0a89d7;
     color: #fff;
   }
-
   @media (max-width: 991.98px) {
-    .member-notfound-background-content,
-    .popup-demo-grid,
-    .popup-demo-actions {
-      grid-template-columns: 1fr;
-    }
-
-    .member-notfound-footer {
-      flex-direction: column;
-    }
-
-    .member-notfound-back-button,
-    .member-notfound-skip-button,
-    .member-notfound-register-button {
-      width: 100%;
-    }
+    .member-ref-topbar { flex-direction: column; align-items: stretch; }
+    .member-ref-topbar-left,
+    .member-ref-logos { justify-content: center; }
+    .member-ref-popup-grid,
+    .member-ref-popup-actions { grid-template-columns: 1fr; }
+    .member-ref-popup-side,
+    .member-ref-popup-poster img,
+    .member-ref-popup-poster-placeholder { min-height: 280px; }
   }
 </style>
 
@@ -410,13 +343,7 @@
 
         <div class="mb-3">
           <label class="form-label">ชื่อหน้า <span class="text-danger">*</span></label>
-          <input
-            type="text"
-            name="name"
-            value="{{ old('name', $page->name) }}"
-            class="form-control @error('name') is-invalid @enderror"
-            required
-          >
+          <input type="text" name="name" value="{{ old('name', $page->name) }}" class="form-control @error('name') is-invalid @enderror" required>
           @error('name')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
@@ -434,11 +361,7 @@
 
         <div class="mb-3">
           <label class="form-label">หมายเหตุ</label>
-          <textarea
-            name="remark"
-            rows="3"
-            class="form-control @error('remark') is-invalid @enderror"
-          >{{ old('remark', $page->remark) }}</textarea>
+          <textarea name="remark" rows="3" class="form-control @error('remark') is-invalid @enderror">{{ old('remark', $page->remark) }}</textarea>
         </div>
 
         <hr class="my-4">
@@ -456,19 +379,12 @@
         </div>
 
         <hr class="my-4">
-        <h6 class="mb-3">ปุ่มด้านล่าง</h6>
+        <h6 class="mb-3">ปุ่ม Popup</h6>
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_back_button" value="0">
-          <input
-            type="checkbox"
-            name="show_back_button"
-            value="1"
-            id="show_back_button"
-            class="form-check-input"
-            {{ $showBackButton ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="show_back_button">แสดงปุ่มย้อนกลับ</label>
+          <input type="checkbox" name="show_back_button" value="1" id="show_back_button" class="form-check-input" {{ $showBackButton ? 'checked' : '' }}>
+          <label class="form-check-label" for="show_back_button">แสดงปุ่มย้อนกลับหน้าเบื้องหลัง</label>
         </div>
 
         <div class="mb-3">
@@ -486,15 +402,8 @@
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_skip_button" value="0">
-          <input
-            type="checkbox"
-            name="show_skip_button"
-            value="1"
-            id="show_skip_button"
-            class="form-check-input"
-            {{ $showSkipButton ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="show_skip_button">แสดงปุ่มข้าม</label>
+          <input type="checkbox" name="show_skip_button" value="1" id="show_skip_button" class="form-check-input" {{ $showSkipButton ? 'checked' : '' }}>
+          <label class="form-check-label" for="show_skip_button">แสดงปุ่มข้ามใน Popup</label>
         </div>
 
         <div class="mb-3">
@@ -512,15 +421,8 @@
 
         <div class="form-check form-switch mb-3">
           <input type="hidden" name="show_register_button" value="0">
-          <input
-            type="checkbox"
-            name="show_register_button"
-            value="1"
-            id="show_register_button"
-            class="form-check-input"
-            {{ $showRegisterButton ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="show_register_button">แสดงปุ่มสมัครสมาชิก</label>
+          <input type="checkbox" name="show_register_button" value="1" id="show_register_button" class="form-check-input" {{ $showRegisterButton ? 'checked' : '' }}>
+          <label class="form-check-label" for="show_register_button">แสดงปุ่มสมัครสมาชิกใน Popup</label>
         </div>
 
         <div class="mb-3">
@@ -547,7 +449,7 @@
   <div class="card mt-4">
     <div class="card-header">
       <h5 class="mb-1">จัดการรูปแสดงผล</h5>
-      <p class="text-muted mb-0">อัปโหลดรูปพื้นหลังหน้าไม่พบสมาชิก และรูป Popup ชวนสมัครสมาชิก</p>
+      <p class="text-muted mb-0">อัปโหลดรูปหน้าไม่พบสมาชิก และรูป Popup ชวนสมัครสมาชิก</p>
     </div>
 
     <div class="card-body">
@@ -556,11 +458,9 @@
         <input type="hidden" name="media_type" value="image">
         <input type="hidden" name="media_slot" value="empty_state_image">
 
-        <label class="form-label">รูปด้านหลังหน้าไม่พบสมาชิก</label>
+        <label class="form-label">รูปหน้าไม่พบสมาชิก</label>
         <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg" required>
-        <button type="submit" class="btn btn-outline-primary w-100 mt-2">
-          บันทึก / เปลี่ยนรูปด้านหลัง
-        </button>
+        <button type="submit" class="btn btn-outline-primary w-100 mt-2">บันทึก / เปลี่ยนรูปหน้าไม่พบสมาชิก</button>
       </form>
 
       <form action="{{ route('frontend.pages.media.store', $page) }}" method="POST" enctype="multipart/form-data" class="mb-4">
@@ -570,9 +470,7 @@
 
         <label class="form-label">รูป Poster Popup</label>
         <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg" required>
-        <button type="submit" class="btn btn-outline-primary w-100 mt-2">
-          บันทึก / เปลี่ยน Poster Popup
-        </button>
+        <button type="submit" class="btn btn-outline-primary w-100 mt-2">บันทึก / เปลี่ยน Poster Popup</button>
       </form>
 
       <form action="{{ route('frontend.pages.media.store', $page) }}" method="POST" enctype="multipart/form-data">
@@ -582,9 +480,7 @@
 
         <label class="form-label">รูป QR Code Popup</label>
         <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.svg" required>
-        <button type="submit" class="btn btn-outline-primary w-100 mt-2">
-          บันทึก / เปลี่ยน QR Code Popup
-        </button>
+        <button type="submit" class="btn btn-outline-primary w-100 mt-2">บันทึก / เปลี่ยน QR Code Popup</button>
       </form>
     </div>
   </div>
@@ -594,117 +490,86 @@
   <div class="card">
     <div class="card-header">
       <h5 class="mb-1">Preview หน้าไม่พบสมาชิก + Popup</h5>
-      <p class="text-muted mb-0">ตัวอย่างหน้าหลังเมื่อไม่พบสมาชิก และมี Popup ชวนสมัครสมาชิกแสดงซ้อนขึ้นมา</p>
+      <p class="text-muted mb-0">พื้นหลังเป็นหน้าไม่พบสมาชิก และมี Popup สมัครสมาชิกซ้อนขึ้นมาตามแบบอ้างอิง</p>
     </div>
 
     <div class="card-body">
-      <div class="member-notfound-preview">
-        <div class="member-notfound-title">member_page.not_found_title</div>
-        <div class="member-notfound-subtitle">member_page.not_found_subtitle</div>
-
-        <div class="member-notfound-step">
-          <span class="member-notfound-step-circle done">
-            <i class="icon-base ti tabler-check"></i>
-          </span>
-          <span class="member-notfound-step-line"></span>
-          <span class="member-notfound-step-circle done">
-            <i class="icon-base ti tabler-check"></i>
-          </span>
-          <span class="member-notfound-step-line"></span>
-          <span class="member-notfound-step-circle">
-            <i class="icon-base ti {{ $stepIcon }}"></i>
-          </span>
-          <span class="member-notfound-step-line"></span>
-          <span class="member-notfound-step-circle pending">
-            <i class="icon-base ti tabler-minus"></i>
-          </span>
-        </div>
-
-        <div class="member-notfound-background">
-          <div class="member-notfound-background-content">
-            <div class="member-notfound-message">
-              <h4>ไม่พบข้อมูลสมาชิก</h4>
-              <p>กรุณาตรวจสอบหมายเลขโทรศัพท์อีกครั้ง</p>
-
-              <div class="member-notfound-icon-wrap">
-                <i class="icon-base ti {{ $stepIcon }}"></i>
-              </div>
+      <div class="member-reference-preview">
+        <div class="member-ref-topbar">
+          <div class="member-ref-topbar-left">
+            <div class="member-ref-home-button">
+              <i class="icon-base ti tabler-home"></i>
+              <span>หน้าหลัก</span>
             </div>
 
-            <div class="member-notfound-banner-panel">
-              @if ($emptyStateImage && $emptyStateImage->media_type === 'image')
-                <img src="{{ $emptyStateImage->file_url }}" alt="ไม่พบสมาชิก" class="member-notfound-banner">
-              @else
-                <div class="member-notfound-banner-placeholder">
-                  ไม่พบข้อมูลสมาชิก
-                </div>
-              @endif
-            </div>
+            <span class="member-ref-lang">TH</span>
+            <span class="member-ref-lang" style="background:#315efb;">EN</span>
+            <span class="member-ref-lang" style="background:#ff4d4f;">中</span>
           </div>
 
-          <div class="member-notfound-footer">
-            @if ($showBackButton)
-              <button type="button" class="member-notfound-back-button">
-                <i class="icon-base ti {{ $backButtonIcon }}"></i>
-                <span>ย้อนกลับ</span>
-              </button>
-            @endif
+          <div class="member-ref-brand">ผู้เชี่ยวชาญการดูแลผ้าครบวงจร</div>
 
-            @if ($showSkipButton)
-              <button type="button" class="member-notfound-skip-button">
-                <span>ข้าม</span>
-                <i class="icon-base ti {{ $skipButtonIcon }}"></i>
-              </button>
-            @endif
-
-            @if ($showRegisterButton)
-              <button type="button" class="member-notfound-register-button">
-                <span>สมัครสมาชิก</span>
-                <i class="icon-base ti {{ $registerButtonIcon }}"></i>
-              </button>
-            @endif
+          <div class="member-ref-logos">
+            <span class="member-ref-logo-dot">H</span>
+            <span class="member-ref-logo-dot">IP</span>
           </div>
         </div>
 
-        <div class="popup-demo-overlay">
-          <div class="popup-demo-box">
-            <div class="popup-demo-grid">
-              <div class="popup-demo-poster">
+        <div class="member-ref-step">
+          <span class="member-ref-step-circle done"><i class="icon-base ti tabler-check"></i></span>
+          <span class="member-ref-step-line"></span>
+          <span class="member-ref-step-circle done"><i class="icon-base ti tabler-check"></i></span>
+          <span class="member-ref-step-line"></span>
+          <span class="member-ref-step-circle done"><i class="icon-base ti tabler-check"></i></span>
+          <span class="member-ref-step-line"></span>
+          <span class="member-ref-step-circle"><i class="icon-base ti {{ $stepIcon }}"></i></span>
+          <span class="member-ref-step-line"></span>
+          <span class="member-ref-step-circle pending"><i class="icon-base ti tabler-minus"></i></span>
+        </div>
+
+        <div class="member-ref-empty-area">
+          <div class="member-ref-empty-title">ไม่พบข้อมูลสมาชิก</div>
+
+          @if ($emptyStateImage && $emptyStateImage->media_type === 'image')
+            <img src="{{ $emptyStateImage->file_url }}" alt="ไม่พบข้อมูลสมาชิก" class="member-ref-empty-image">
+          @else
+            <div class="member-ref-empty-placeholder">
+              <i class="icon-base ti {{ $stepIcon }}"></i>
+            </div>
+          @endif
+        </div>
+
+        <div class="member-ref-popup-overlay">
+          <div class="member-ref-popup-box">
+            <div class="member-ref-popup-grid">
+              <div class="member-ref-popup-poster">
                 @if ($popupPoster && $popupPoster->media_type === 'image')
                   <img src="{{ $popupPoster->file_url }}" alt="Poster Popup">
                 @else
-                  <div class="popup-demo-poster-placeholder">
-                    สมัครสมาชิกวันนี้<br>รับส่วนลดทันที 20 บาท
-                  </div>
+                  <div class="member-ref-popup-poster-placeholder">สมัครสมาชิกวันนี้<br>รับส่วนลดทันที 20 บาท</div>
                 @endif
               </div>
 
-              <div class="popup-demo-qr-panel">
-                <div class="popup-demo-qr-title">
-                  สแกน QR Code<br>
-                  เพื่อสมัครสมาชิก
+              <div class="member-ref-popup-side">
+                <div class="member-ref-popup-side-title">
+                  สแกน QR Code<br>เพื่อสมัครสมาชิก
                 </div>
 
-                <div class="popup-demo-qr">
+                <div class="member-ref-popup-qr">
                   @if ($popupQr && $popupQr->media_type === 'image')
                     <img src="{{ $popupQr->file_url }}" alt="QR Code Popup">
                   @endif
                 </div>
 
-                <div class="popup-demo-qr-note">
+                <div class="member-ref-popup-note">
                   สแกนด้วยโทรศัพท์มือถือเพื่อสมัครสมาชิก
                 </div>
               </div>
             </div>
 
-            <div class="popup-demo-actions">
-              <button type="button" class="popup-demo-skip">
-                ข้าม
-              </button>
-
-              <button type="button" class="popup-demo-register">
-                สมัครสมาชิก
-              </button>
+            <div class="member-ref-popup-actions">
+              <button type="button" class="member-ref-popup-skip">ข้าม</button>
+              <button type="button" class="member-ref-popup-register">สมัครสมาชิก</button>
             </div>
           </div>
         </div>
