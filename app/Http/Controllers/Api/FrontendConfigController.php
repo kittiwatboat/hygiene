@@ -9,6 +9,7 @@ use App\Models\FrontendTheme;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Throwable;
 
 class FrontendConfigController extends Controller
