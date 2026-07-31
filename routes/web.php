@@ -394,10 +394,15 @@ Route::prefix('promotions')
         Route::delete('/{theme}', [FrontendThemeController::class, 'destroy'])
             ->name('destroy');
 
-            Route::patch(
-    '/themes/{theme}/activate',
-    [FrontendThemeController::class, 'activate']
-)->name('themes.activate');
+             Route::patch(
+            'themes/{theme}/activate',
+            [FrontendThemeController::class, 'activate']
+        )->name('themes.activate');
+
+        Route::resource(
+            'themes',
+            FrontendThemeController::class
+        );
     });
 
 
