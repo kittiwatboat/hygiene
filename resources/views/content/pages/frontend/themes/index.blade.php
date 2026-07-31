@@ -41,6 +41,7 @@
           <th>ปุ่ม / การ์ด</th>
           <th>โลโก้</th>
           <th>สถานะ</th>
+          <th style="width: 180px;">Theme ที่ใช้งาน</th>
           <th class="text-center">จัดการ</th>
         </tr>
       </thead>
@@ -119,7 +120,37 @@
                 {{ $theme->status_text }}
               </span>
             </td>
+            <td>
+  @if ($theme->is_default && $theme->is_active)
+    <span class="badge bg-label-success">
+      <i class="icon-base ti tabler-check me-1"></i>
+      กำลังใช้งาน
+    </span>
+  @elseif ($theme->is_active)
+    <form
+      action="{{ route('frontend.themes.activate', $theme) }}"
+      method="POST"
+      onsubmit="return confirm(
+        'ยืนยันเปลี่ยน Theme หน้าตู้เป็น {{ $theme->name }}?'
+      )"
+    >
+      @csrf
+      @method('PATCH')
 
+      <button
+        type="submit"
+        class="btn btn-sm btn-outline-primary"
+      >
+        <i class="icon-base ti tabler-palette me-1"></i>
+        ใช้ Theme นี้
+      </button>
+    </form>
+  @else
+    <span class="badge bg-label-secondary">
+      ปิดใช้งาน
+    </span>
+  @endif
+</td>
             <td class="text-center">
               <div class="dropdown">
                 <button
