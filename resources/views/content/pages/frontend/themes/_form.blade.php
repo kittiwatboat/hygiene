@@ -633,65 +633,7 @@
   </div>
 </div>
 
-<div class="col-md-4">
-  <div class="card border shadow-none h-100 mb-0">
-    <div class="card-body">
-      <label class="form-label fw-semibold d-block">
-        ภาษาที่เปิดให้เลือก
-      </label>
 
-      <div class="d-flex flex-column gap-2">
-        <div class="form-check">
-          <input type="hidden" name="enabled_languages[]" value="">
-
-          <input
-            type="checkbox"
-            name="enabled_languages[]"
-            value="th"
-            id="language_th"
-            class="form-check-input language-option"
-            {{ in_array('th', $enabledLanguages, true) ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="language_th">
-            🇹🇭 ไทย
-          </label>
-        </div>
-
-        <div class="form-check">
-          <input
-            type="checkbox"
-            name="enabled_languages[]"
-            value="en"
-            id="language_en"
-            class="form-check-input language-option"
-            {{ in_array('en', $enabledLanguages, true) ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="language_en">
-            🇬🇧 English
-          </label>
-        </div>
-
-        <div class="form-check">
-          <input
-            type="checkbox"
-            name="enabled_languages[]"
-            value="zh"
-            id="language_zh"
-            class="form-check-input language-option"
-            {{ in_array('zh', $enabledLanguages, true) ? 'checked' : '' }}
-          >
-          <label class="form-check-label" for="language_zh">
-            🇨🇳 中文
-          </label>
-        </div>
-      </div>
-
-      @error('enabled_languages')
-        <div class="text-danger small mt-2">{{ $message }}</div>
-      @enderror
-    </div>
-  </div>
-</div>
 
 <div class="col-12">
   <div class="card border shadow-none mb-0">
