@@ -5,7 +5,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('frontend')->group(function () {
     Route::get(
+        '/theme',
+        [FrontendConfigController::class, 'theme']
+    );
+
+    Route::get(
         '/first-page',
         [FrontendConfigController::class, 'firstPage']
-    )->name('api.frontend.first-page');
+    );
+
+    Route::get(
+        '/screens/select-product',
+        [FrontendConfigController::class, 'selectProduct']
+    );
 });

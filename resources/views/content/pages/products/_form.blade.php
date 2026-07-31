@@ -54,12 +54,12 @@
       <option value="softener" {{ $selectedType === 'softener' ? 'selected' : '' }}>
         น้ำยาปรับผ้านุ่ม
       </option>
-      <option value="disinfectant" {{ $selectedType === 'disinfectant' ? 'selected' : '' }}>
+      {{-- <option value="disinfectant" {{ $selectedType === 'disinfectant' ? 'selected' : '' }}>
         น้ำยาฆ่าเชื้อ
       </option>
       <option value="other" {{ $selectedType === 'other' ? 'selected' : '' }}>
         อื่น ๆ
-      </option>
+      </option> --}}
     </select>
 
     @error('type')
