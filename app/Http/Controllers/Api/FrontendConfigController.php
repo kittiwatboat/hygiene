@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\FrontendLanguage;
 use App\Models\FrontendPage;
 use App\Models\FrontendTheme;
 use App\Models\Product;
@@ -17,33 +18,30 @@ class FrontendConfigController extends Controller
      * ส่งข้อมูล Theme และหน้าแรกของตู้
      */
     public function theme(): JsonResponse
-{
-    try {
-        $theme = FrontendTheme::query()
-            ->orderByDesc('id')
-            ->first();
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'message' => 'ดึงข้อมูล Theme สำเร็จ',
+                'data' => $this->getThemeWithLanguages(),
+            ]);
+        } catch (Throwable $exception) {
+            Log::error('Frontend theme API error', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'ดึงข้อมูล Theme สำเร็จ',
-            'data' => $theme
-                ? $this->formatTheme($theme)
-                : null,
-        ]);
-    } catch (Throwable $exception) {
-        Log::error('Frontend theme API error', [
-            'message' => $exception->getMessage(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'ไม่สามารถดึงข้อมูล Theme ได้',
-            'error' => config('app.debug')
-                ? $exception->getMessage()
-                : null,
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่สามารถดึงข้อมูล Theme ได้',
+                'error' => config('app.debug')
+                    ? $exception->getMessage()
+                    : null,
+            ], 500);
+        }
     }
-}
+
 public function firstPage(
     Request $request
 ): JsonResponse {
@@ -150,13 +148,10 @@ public function firstPage(
         |--------------------------------------------------------------------------
         */
         if ($request->boolean('include_theme')) {
-            $theme = FrontendTheme::query()
-                ->orderByDesc('id')
-                ->first();
+            $themeData = $this->getThemeWithLanguages();
 
-            $responseData['theme'] = $theme
-                ? $this->formatTheme($theme)
-                : null;
+            $responseData['theme'] = $themeData['theme'];
+            $responseData['languages'] = $themeData['languages'];
         }
 
         return response()->json([
@@ -181,68 +176,6 @@ public function firstPage(
     }
 }
 
-    /**
-     * จัดรูปแบบ Theme ที่ส่งให้หน้าตู้
-     */
-    private function formatTheme(
-        FrontendTheme $theme
-    ): array {
-        return [
-            'id' => $theme->id,
-            'name' => $theme->name,
-
-            'background_type' =>
-                $theme->background_type
-                ?? 'color',
-
-            'background_color' =>
-                $theme->background_color
-                ?? '#DFF8FF',
-
-            'background_image_url' =>
-                $theme->background_image_url
-                ?? null,
-
-            'primary_color' =>
-                $theme->primary_color
-                ?? '#0877C9',
-
-            'secondary_color' =>
-                $theme->secondary_color
-                ?? '#6F63F6',
-
-            'text_color' =>
-                $theme->text_color
-                ?? '#111827',
-
-            'button_text_color' =>
-                $theme->button_text_color
-                ?? '#FFFFFF',
-
-            'header_logo_left_url' =>
-                $theme->header_logo_left_url
-                ?? null,
-
-            'header_logo_right_1_url' =>
-                $theme->header_logo_right_1_url
-                ?? null,
-
-            'header_logo_right_2_url' =>
-                $theme->header_logo_right_2_url
-                ?? null,
-
-            'show_home_button' => (bool) (
-                $theme->show_home_button
-                ?? true
-            ),
-
-            'home_button_text' =>
-                $theme->home_button_text
-                ?? 'หน้าหลัก',
-
-            'is_active' => true,
-        ];
-    }
 public function selectProduct(
     Request $request
 ): JsonResponse {
@@ -451,13 +384,10 @@ public function selectProduct(
         ];
 
         if ($request->boolean('include_theme')) {
-            $theme = FrontendTheme::query()
-                ->orderByDesc('id')
-                ->first();
+            $themeData = $this->getThemeWithLanguages();
 
-            $responseData['theme'] = $theme
-                ? $this->formatTheme($theme)
-                : null;
+            $responseData['theme'] = $themeData['theme'];
+            $responseData['languages'] = $themeData['languages'];
         }
 
         return response()->json([
@@ -583,4 +513,87 @@ private function formatProductAmounts(
         ],
     ];
 }
+
+    /**
+     * ส่ง Theme พร้อมภาษาที่เปิดใช้งานจากตาราง frontend_languages
+     */
+    private function getThemeWithLanguages(): array
+    {
+        $theme = FrontendTheme::query()
+            ->orderByDesc('id')
+            ->first();
+
+        $languages = FrontendLanguage::query()
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $defaultLanguage = $languages->firstWhere('is_default', true)
+            ?? $languages->first();
+
+        return [
+            'theme' => $theme
+                ? $this->formatTheme($theme)
+                : null,
+
+            'languages' => [
+                'default' => $defaultLanguage
+                    ? $this->formatLanguage($defaultLanguage)
+                    : null,
+
+                'items' => $languages
+                    ->map(fn (FrontendLanguage $language) =>
+                        $this->formatLanguage($language)
+                    )
+                    ->values(),
+            ],
+        ];
+    }
+
+    /**
+     * จัดรูปแบบ Theme โดยไม่ส่งค่าภาษาเดิมจากตาราง Theme
+     */
+    private function formatTheme(FrontendTheme $theme): array
+    {
+        return [
+            'id' => $theme->id,
+            'name' => $theme->name,
+            'background_type' => $theme->background_type ?? 'color',
+            'background_color' => $theme->background_color ?? '#DFF8FF',
+            'background_image_url' => $theme->background_image_url ?? null,
+            'primary_color' => $theme->primary_color ?? '#0877C9',
+            'secondary_color' => $theme->secondary_color ?? '#6F63F6',
+            'text_color' => $theme->text_color ?? '#111827',
+            'button_text_color' => $theme->button_text_color ?? '#FFFFFF',
+            'header_logo_left_url' => $theme->header_logo_left_url ?? null,
+            'header_logo_right_1_url' => $theme->header_logo_right_1_url ?? null,
+            'header_logo_right_2_url' => $theme->header_logo_right_2_url ?? null,
+            'show_home_button' => (bool) ($theme->show_home_button ?? true),
+            'home_button_text' => $theme->home_button_text ?? 'หน้าหลัก',
+            'is_active' => isset($theme->is_active)
+                ? (bool) $theme->is_active
+                : true,
+        ];
+    }
+
+    /**
+     * จัดรูปแบบภาษา
+     */
+    private function formatLanguage(FrontendLanguage $language): array
+    {
+        return [
+            'id' => $language->id,
+            'name' => $language->name,
+            'native_name' => $language->native_name ?? $language->name,
+            'code' => $language->code,
+            'locale' => $language->locale,
+            'flag' => $language->flag ?? null,
+            'flag_url' => $language->flag_url ?? null,
+            'sort_order' => (int) ($language->sort_order ?? 0),
+            'is_default' => (bool) ($language->is_default ?? false),
+            'is_active' => (bool) ($language->is_active ?? true),
+        ];
+    }
+
 }
