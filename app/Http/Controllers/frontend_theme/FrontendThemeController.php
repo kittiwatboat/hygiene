@@ -351,34 +351,24 @@ class FrontendThemeController extends Controller
     }
 
     public function destroy(FrontendTheme $theme)
-    {
-        if ($theme->is_default) {
-            return back()->with(
-                'error',
-                'ไม่สามารถลบ Theme ที่กำลังใช้งานอยู่ได้'
-            );
-        }
-
-        if (
-            $theme->layouts()->exists()
-            || $theme->screens()->exists()
-        ) {
-            return back()->with(
-                'error',
-                'ไม่สามารถลบธีมนี้ได้ เนื่องจากมี Layout หรือหน้าจอใช้งานอยู่'
-            );
-        }
-
-        $this->deleteLogo($theme->logo);
-        $this->deleteThemeImage($theme->background_image);
-        $this->deleteThemeVideo($theme->background_video);
-
-        $theme->delete();
-
-        return redirect()
-            ->route('frontend.themes.index')
-            ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
+{
+    if ($theme->is_default) {
+        return back()->with(
+            'error',
+            'ไม่สามารถลบ Theme ที่กำลังใช้งานอยู่ได้'
+        );
     }
+
+    $this->deleteLogo($theme->logo);
+    $this->deleteThemeImage($theme->background_image);
+    $this->deleteThemeVideo($theme->background_video);
+
+    $theme->delete();
+
+    return redirect()
+        ->route('frontend.themes.index')
+        ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
+}
 
     private function validateTheme(
         Request $request,
