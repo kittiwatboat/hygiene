@@ -210,7 +210,6 @@ public function selectProduct(): JsonResponse {
         $settings = $page->settings_json ?? [];
 
         $products = Product::query()
-            ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
 
