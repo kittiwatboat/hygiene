@@ -18,7 +18,6 @@ class FrontendConfigController extends Controller
     {
         try {
             $theme = FrontendTheme::query()
-                ->where('status', 1)
                 ->orderByDesc('id')
                 ->first();
 
@@ -189,7 +188,7 @@ class FrontendConfigController extends Controller
                 $theme->home_button_text
                 ?? 'หน้าหลัก',
 
-            'status' => (bool) $theme->status,
+            'is_active' => true,
         ];
     }
 }
