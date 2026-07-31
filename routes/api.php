@@ -18,4 +18,8 @@ Route::prefix('frontend')->group(function () {
         '/screens/select-product',
         [FrontendConfigController::class, 'selectProduct']
     );
+    Route::get(
+    '/screens/order-summary',
+    [FrontendConfigController::class, 'orderSummary']
+);
 });

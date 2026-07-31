@@ -8,7 +8,6 @@ use App\Models\FrontendPage;
 use App\Models\FrontendTheme;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -17,6 +16,28 @@ class FrontendConfigController extends Controller
     /**
      * ส่งข้อมูล Theme และหน้าแรกของตู้
      */
+    private function getActiveTheme(): ?FrontendTheme
+{
+    $theme = FrontendTheme::query()
+        ->where('is_active', true)
+        ->where('is_default', true)
+        ->first();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fallback กรณียังไม่มี Theme Default
+    |--------------------------------------------------------------------------
+    */
+    if (!$theme) {
+        $theme = FrontendTheme::query()
+            ->where('is_active', true)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    return $theme;
+}
     public function theme(): JsonResponse
     {
         try {
@@ -42,9 +63,7 @@ class FrontendConfigController extends Controller
         }
     }
 
-public function firstPage(
-    Request $request
-): JsonResponse {
+public function firstPage(): JsonResponse {
     try {
         $page = FrontendPage::query()
             ->with([
@@ -147,12 +166,10 @@ public function firstPage(
         | ส่ง Theme เฉพาะเมื่อระบุ include_theme=1
         |--------------------------------------------------------------------------
         */
-        if ($request->boolean('include_theme')) {
-            $themeData = $this->getThemeWithLanguages();
+        $themeData = $this->getThemeWithLanguages();
 
-            $responseData['theme'] = $themeData['theme'];
-            $responseData['languages'] = $themeData['languages'];
-        }
+        $responseData['theme'] = $themeData['theme'];
+        $responseData['languages'] = $themeData['languages'];
 
         return response()->json([
             'success' => true,
@@ -176,9 +193,7 @@ public function firstPage(
     }
 }
 
-public function selectProduct(
-    Request $request
-): JsonResponse {
+public function selectProduct(): JsonResponse {
     try {
         $page = FrontendPage::query()
             ->where('screen_key', 'select_product_page')
@@ -195,7 +210,6 @@ public function selectProduct(
         $settings = $page->settings_json ?? [];
 
         $products = Product::query()
-            ->where('status', 1)
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
@@ -371,10 +385,9 @@ public function selectProduct(
                                         ?? 0
                                     ),
 
-                                    'is_active' => (bool) (
-                                        $product->status
-                                        ?? true
-                                    ),
+                                    'is_active' => isset($product->is_active)
+                                        ? (bool) $product->is_active
+                                        : true,
                                 ];
                             })
                             ->values(),
@@ -383,12 +396,10 @@ public function selectProduct(
                 ->values(),
         ];
 
-        if ($request->boolean('include_theme')) {
-            $themeData = $this->getThemeWithLanguages();
+        $themeData = $this->getThemeWithLanguages();
 
-            $responseData['theme'] = $themeData['theme'];
-            $responseData['languages'] = $themeData['languages'];
-        }
+        $responseData['theme'] = $themeData['theme'];
+        $responseData['languages'] = $themeData['languages'];
 
         return response()->json([
             'success' => true,
@@ -519,9 +530,7 @@ private function formatProductAmounts(
      */
     private function getThemeWithLanguages(): array
     {
-        $theme = FrontendTheme::query()
-            ->orderByDesc('id')
-            ->first();
+        $theme = $this->getActiveTheme();
 
         $languages = FrontendLanguage::query()
             ->where('is_active', 1)
@@ -595,5 +604,157 @@ private function formatProductAmounts(
             'is_active' => (bool) ($language->is_active ?? true),
         ];
     }
+/**
+ * ส่งข้อมูลตั้งค่าหน้าสรุปรายการ
+ *
+ * รายการสินค้าและยอดเงินจริงให้หน้าบ้านใช้ข้อมูลจาก cart/session
+ * ส่ง Theme ที่กำลังใช้งานและภาษามาพร้อมกันทุกครั้ง
+ */
+public function orderSummary(): JsonResponse {
+    try {
+        $page = FrontendPage::query()
+            ->where('screen_key', 'order_summary_page')
+            ->first();
 
+        if (!$page) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบข้อมูลหน้าสรุปรายการ',
+                'data' => null,
+            ], 404);
+        }
+
+        $settings = $page->settings_json ?? [];
+
+        $responseData = [
+            'page' => [
+                'id' => $page->id,
+                'screen_key' => $page->screen_key,
+                'name' => $page->name,
+                'title' => $page->title,
+                'subtitle' => $page->subtitle,
+                'remark' => $page->remark,
+
+                'is_active' => isset($page->is_active)
+                    ? (bool) $page->is_active
+                    : true,
+
+                'translation_keys' => [
+                    'title' =>
+                        'order_summary_page.title',
+
+                    'subtitle' =>
+                        'order_summary_page.subtitle',
+
+                    'order_list' =>
+                        'order_summary_page.order_list',
+
+                    'quantity' =>
+                        'order_summary_page.quantity',
+
+                    'promotion_discount' =>
+                        'order_summary_page.promotion_discount',
+
+                    'point_discount' =>
+                        'order_summary_page.point_discount',
+
+                    'net_total' =>
+                        'order_summary_page.net_total',
+
+                    'currency' =>
+                        'order_summary_page.currency',
+
+                    'back_button' =>
+                        'order_summary_page.back_button',
+
+                    'confirm_button' =>
+                        'order_summary_page.confirm_button',
+                ],
+
+                'settings' => [
+                    'step_icon' =>
+                        $settings['step_icon']
+                        ?? 'tabler-list-details',
+
+                    'order_summary_icon' =>
+                        $settings['order_summary_icon']
+                        ?? 'tabler-shopping-bag',
+
+                    'discount_summary_icon' =>
+                        $settings['discount_summary_icon']
+                        ?? 'tabler-discount',
+
+                    'net_total_icon' =>
+                        $settings['net_total_icon']
+                        ?? 'tabler-wallet',
+
+                    'show_back_button' => (bool) (
+                        $settings['show_back_button']
+                        ?? true
+                    ),
+
+                    'back_button_icon' =>
+                        $settings['back_button_icon']
+                        ?? 'tabler-chevron-left',
+
+                    'back_button_action' =>
+                        $settings['back_button_action']
+                        ?? 'select_product_page',
+
+                    'show_confirm_button' => (bool) (
+                        $settings['show_confirm_button']
+                        ?? true
+                    ),
+
+                    'confirm_button_icon' =>
+                        $settings['confirm_button_icon']
+                        ?? 'tabler-chevron-right',
+
+                    'confirm_button_action' =>
+                        $settings['confirm_button_action']
+                        ?? 'promotion_page',
+                ],
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | แจ้งให้หน้าบ้านรู้ว่า Order Data มาจาก Cart/Session
+            |--------------------------------------------------------------------------
+            */
+            'order_data_source' => 'client_cart',
+        ];
+
+        if ($request->boolean('include_theme')) {
+            $themeData = $this->getThemeWithLanguages();
+
+            $responseData['theme'] =
+                $themeData['theme'];
+
+            $responseData['languages'] =
+                $themeData['languages'];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ดึงข้อมูลหน้าสรุปรายการสำเร็จ',
+            'data' => $responseData,
+        ]);
+    } catch (Throwable $exception) {
+        Log::error('Order summary page API error', [
+            'message' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'ไม่สามารถดึงข้อมูลหน้าสรุปรายการได้',
+
+            'error' => config('app.debug')
+                ? $exception->getMessage()
+                : null,
+        ], 500);
+    }
+}
 }
