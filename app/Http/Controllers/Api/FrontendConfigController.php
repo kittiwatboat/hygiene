@@ -609,8 +609,22 @@ private function formatProductAmounts(
  * รายการสินค้าและยอดเงินจริงให้หน้าบ้านใช้ข้อมูลจาก cart/session
  * ส่ง Theme ที่กำลังใช้งานและภาษามาพร้อมกันทุกครั้ง
  */
-public function orderSummary(): JsonResponse {
+public function orderSummary(Request $request): JsonResponse
+{
     try {
+        $validated = $request->validate([
+            'product_id' => [
+                'nullable',
+                'integer',
+                'exists:products,id',
+            ],
+            'quantity' => [
+                'nullable',
+                'integer',
+                'min:1',
+            ],
+        ]);
+
         $page = FrontendPage::query()
             ->where('screen_key', 'order_summary_page')
             ->first();
@@ -624,6 +638,81 @@ public function orderSummary(): JsonResponse {
         }
 
         $settings = $page->settings_json ?? [];
+        $themeData = $this->getThemeWithLanguages();
+
+        $productSummary = null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | ดึงสินค้าที่ผู้ใช้เลือก
+        |--------------------------------------------------------------------------
+        */
+        if (!empty($validated['product_id'])) {
+            $product = Product::query()
+                ->whereKey($validated['product_id'])
+                ->first();
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่พบสินค้าที่เลือก',
+                    'data' => null,
+                ], 404);
+            }
+
+            $quantity = (int) (
+                $validated['quantity'] ?? 1
+            );
+
+            $normalPrice = (float) (
+                $product->price ?? 0
+            );
+
+            $specialPrice = !is_null(
+                $product->special_price ?? null
+            )
+                ? (float) $product->special_price
+                : null;
+
+            $unitPrice = $specialPrice ?? $normalPrice;
+            $subtotal = $unitPrice * $quantity;
+
+            $productSummary = [
+                'product_id' => $product->id,
+                'product_type' =>
+                    $product->product_type ?? null,
+
+                'name' => $product->name,
+                'sku' => $product->sku ?? null,
+
+                'description' =>
+                    $product->short_detail
+                    ?? $product->description
+                    ?? null,
+
+                'image_url' =>
+                    $product->image_url
+                    ?? (
+                        !empty($product->image)
+                            ? url(
+                                'storage/' . $product->image
+                            )
+                            : null
+                    ),
+
+                'quantity' => $quantity,
+                'unit' => $product->unit ?? 'ชิ้น',
+
+                'normal_price' => $normalPrice,
+                'special_price' => $specialPrice,
+                'unit_price' => $unitPrice,
+
+                'subtotal' => $subtotal,
+                'promotion_discount' => 0,
+                'point_discount' => 0,
+                'net_total' => $subtotal,
+            ];
+        }
 
         $responseData = [
             'page' => [
@@ -679,10 +768,6 @@ public function orderSummary(): JsonResponse {
                         $settings['order_summary_icon']
                         ?? 'tabler-shopping-bag',
 
-                    'discount_summary_icon' =>
-                        $settings['discount_summary_icon']
-                        ?? 'tabler-discount',
-
                     'net_total_icon' =>
                         $settings['net_total_icon']
                         ?? 'tabler-wallet',
@@ -715,34 +800,32 @@ public function orderSummary(): JsonResponse {
                 ],
             ],
 
-            /*
-            |--------------------------------------------------------------------------
-            | แจ้งให้หน้าบ้านรู้ว่า Order Data มาจาก Cart/Session
-            |--------------------------------------------------------------------------
-            */
-            'order_data_source' => 'client_cart',
+            'summary' => $productSummary,
+            'theme' => $themeData['theme'],
+            'languages' => $themeData['languages'],
         ];
-
-        if ($request->boolean('include_theme')) {
-            $themeData = $this->getThemeWithLanguages();
-
-            $responseData['theme'] =
-                $themeData['theme'];
-
-            $responseData['languages'] =
-                $themeData['languages'];
-        }
 
         return response()->json([
             'success' => true,
-            'message' => 'ดึงข้อมูลหน้าสรุปรายการสำเร็จ',
+            'message' =>
+                'ดึงข้อมูลหน้าสรุปรายการสำเร็จ',
             'data' => $responseData,
         ]);
+    } catch (
+        \Illuminate\Validation\ValidationException $exception
+    ) {
+        return response()->json([
+            'success' => false,
+            'message' => 'ข้อมูลที่ส่งมาไม่ถูกต้อง',
+            'errors' => $exception->errors(),
+        ], 422);
     } catch (Throwable $exception) {
         Log::error('Order summary page API error', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
         ]);
 
         return response()->json([
