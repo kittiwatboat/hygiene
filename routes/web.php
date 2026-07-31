@@ -397,7 +397,7 @@ Route::prefix('promotions')
              Route::patch(
             'themes/{theme}/activate',
             [FrontendThemeController::class, 'activate']
-        )->name('themes.activate');
+        )->name('activate');
 
         Route::resource(
             'themes',
