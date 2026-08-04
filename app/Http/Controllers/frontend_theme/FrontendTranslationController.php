@@ -18,7 +18,6 @@ class FrontendTranslationController extends Controller
     {
         $languages = FrontendLanguage::query()
             ->withCount('translations')
-            ->orderByDesc('is_default')
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();

@@ -88,11 +88,11 @@
                                     </small>
                                 </div>
 
-                                @if ($language->is_default)
+                                {{-- @if ($language->is_default)
                                     <span class="badge bg-label-primary">
                                         ภาษาเริ่มต้น
                                     </span>
-                                @endif
+                                @endif --}}
                             </div>
                         </td>
 
