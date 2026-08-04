@@ -10,6 +10,7 @@
     {
       "menuHeader": "จัดการข้อมูล"
     },
+
     {
       "name": "ตู้และอุปกรณ์",
       "icon": "menu-icon icon-base ti tabler-device-desktop-cog",
@@ -41,41 +42,43 @@
         }
       ]
     },
+
     {
-  "name": "จัดการหน้าตู้",
-  "icon": "menu-icon icon-base ti tabler-device-desktop",
-  "slug": "frontend-management",
-  "submenu": [
-    {
-      "url": "/frontend/languages",
-      "name": "ตั้งค่าภาษา",
-      "icon": "menu-icon icon-base ti tabler-language",
-      "slug": "frontend-languages"
-    },
-    {
-      "url": "/frontend/themes",
-      "name": "ธีมหน้าตู้",
-      "icon": "menu-icon icon-base ti tabler-palette",
-      "slug": "frontend-themes"
-    }
-  ]
-},
-{
-  "name": "จัดการหน้าบ้าน",
-  "icon": "menu-icon icon-base ti tabler-layout-dashboard",
-  "slug": "frontend-management",
-  "submenu": [
-    {
-      "url": "/frontend/pages",
-      "name": "จัดการหน้า",
+      "name": "จัดการหน้าตู้",
       "icon": "menu-icon icon-base ti tabler-device-desktop",
-      "slug": "frontend-pages"
-    }
-  ]
-},
+      "slug": "frontend-management",
+      "submenu": [
+        {
+          "url": "/frontend/languages",
+          "name": "ตั้งค่าภาษา",
+          "icon": "menu-icon icon-base ti tabler-language",
+          "slug": "frontend-languages"
+        },
+        {
+          "url": "/frontend/translations",
+          "name": "ข้อความแปล",
+          "icon": "menu-icon icon-base ti tabler-language-hiragana",
+          "slug": "frontend-translations"
+        },
+        {
+          "url": "/frontend/themes",
+          "name": "ธีมหน้าตู้",
+          "icon": "menu-icon icon-base ti tabler-palette",
+          "slug": "frontend-themes"
+        },
+        {
+          "url": "/frontend/pages",
+          "name": "จัดการหน้า",
+          "icon": "menu-icon icon-base ti tabler-layout",
+          "slug": "frontend-pages"
+        }
+      ]
+    },
+
     {
       "menuHeader": "การทำงาน"
     },
+
     {
       "name": "งานประจำวัน",
       "icon": "menu-icon icon-base ti tabler-clipboard-check",
@@ -109,34 +112,35 @@
     },
 
     {
-  "url": "/alerts",
-  "name": "แจ้งเตือน",
-  "icon": "menu-icon icon-base ti tabler-bell",
-  "slug": "alerts"
-},
+      "url": "/alerts",
+      "name": "แจ้งเตือน",
+      "icon": "menu-icon icon-base ti tabler-bell",
+      "slug": "alerts"
+    },
+
     {
       "menuHeader": "ตั้งค่าระบบ"
     },
-    
-{
-  "name": "สมาชิกและแต้ม",
-  "icon": "menu-icon icon-base ti tabler-users",
-  "slug": "membership",
-  "submenu": [
+
     {
-      "url": "/customers",
-      "name": "สมาชิก",
-      "icon": "menu-icon icon-base ti tabler-user",
-      "slug": "customers"
-    }
-  ]
-},
+      "name": "สมาชิกและแต้ม",
+      "icon": "menu-icon icon-base ti tabler-users",
+      "slug": "membership",
+      "submenu": [
+        {
+          "url": "/customers",
+          "name": "สมาชิก",
+          "icon": "menu-icon icon-base ti tabler-user",
+          "slug": "customers"
+        }
+      ]
+    },
+
     {
       "name": "จัดการระบบ",
       "icon": "menu-icon icon-base ti tabler-settings",
       "slug": "system-management",
       "submenu": [
-
         {
           "url": "/users",
           "name": "ผู้ใช้งาน",
@@ -151,6 +155,5 @@
         }
       ]
     }
-
   ]
 }
