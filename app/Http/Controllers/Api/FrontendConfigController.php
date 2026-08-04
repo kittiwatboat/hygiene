@@ -9,6 +9,7 @@ use App\Models\FrontendTheme;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use App\Models\FrontendTranslation;
 
 class FrontendConfigController extends Controller
 {
