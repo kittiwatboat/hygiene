@@ -25,6 +25,7 @@ use App\Http\Controllers\frontend_theme\FrontendLanguageController;
 use App\Http\Controllers\frontend_theme\FrontendThemeController;
 use App\Http\Controllers\FrontendPageController;
 use App\Http\Controllers\FrontendPaymentMethodController;
+use App\Http\Controllers\frontend_theme\FrontendTranslationController;
 
 
 Route::get('/cookie-test', function () {
@@ -405,6 +406,29 @@ Route::prefix('promotions')
         );
     });
 
+    Route::prefix('frontend')
+    ->name('frontend.')
+    ->group(function () {
+        Route::get(
+            '/translations',
+            [FrontendTranslationController::class, 'index']
+        )->name('translations.index');
+
+        Route::get(
+            '/translations/{language}/edit',
+            [FrontendTranslationController::class, 'edit']
+        )->name('translations.edit');
+
+        Route::put(
+            '/translations/{language}',
+            [FrontendTranslationController::class, 'update']
+        )->name('translations.update');
+
+        Route::post(
+            '/translations/{language}/sync',
+            [FrontendTranslationController::class, 'sync']
+        )->name('translations.sync');
+    });
 
     Route::prefix('frontend/payment-methods')
     ->name('frontend.payment-methods.')

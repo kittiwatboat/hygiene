@@ -16,7 +16,7 @@ class FrontendConfigController extends Controller
     {
         try {
             $themeData = $this->getThemeWithLanguages();
-
+            $translations = $this->getTranslations();
             $pages = FrontendPage::query()
                 ->with([
                     'media' => function ($query) {
@@ -35,6 +35,7 @@ class FrontendConfigController extends Controller
                     'theme' => $themeData['theme'],
                     'languages' => $themeData['languages'],
                     'pages' => $pages,
+                    'translations' => $translations,
                 ],
             ]);
         } catch (Throwable $exception) {
@@ -282,4 +283,38 @@ class FrontendConfigController extends Controller
                 : null,
         ], 500);
     }
+    private function getTranslations(): array
+{
+    $translations = FrontendTranslation::query()
+        ->with([
+            'language',
+            'translationKey',
+        ])
+        ->whereHas('language', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->get();
+
+    $result = [];
+
+    foreach ($translations as $translation) {
+        $languageCode =
+            $translation->language?->code;
+
+        $translationKey =
+            $translation->translationKey?->key;
+
+        if (!$languageCode || !$translationKey) {
+            continue;
+        }
+
+        data_set(
+            $result[$languageCode],
+            $translationKey,
+            $translation->value
+        );
+    }
+
+    return $result;
+}
 }

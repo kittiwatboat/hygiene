@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class FrontendLanguage extends Model
 {
     use SoftDeletes;
@@ -59,5 +59,11 @@ public function getIconUrlAttribute(): ?string
         ? asset('assets/img/frontend/languages/' . $this->icon_path)
         : null;
 }
-
+public function translations(): HasMany
+{
+    return $this->hasMany(
+        FrontendTranslation::class,
+        'language_id'
+    );
+}
 }

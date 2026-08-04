@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\FrontendConfigController;
 use Illuminate\Support\Facades\Route;
+use App\Models\FrontendTranslation;
 
 Route::prefix('frontend')->group(function () {
     Route::get(
