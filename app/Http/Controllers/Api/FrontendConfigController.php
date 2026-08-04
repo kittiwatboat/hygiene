@@ -6,39 +6,46 @@ use App\Http\Controllers\Controller;
 use App\Models\FrontendLanguage;
 use App\Models\FrontendPage;
 use App\Models\FrontendTheme;
-use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
 use Throwable;
 
 class FrontendConfigController extends Controller
 {
-    /**
-     * ส่งข้อมูล Theme และหน้าแรกของตู้
-     */
-    private function getActiveTheme(): ?FrontendTheme
-{
-    $theme = FrontendTheme::query()
-        ->where('is_active', true)
-        ->where('is_default', true)
-        ->first();
+    public function bootstrap(): JsonResponse
+    {
+        try {
+            $themeData = $this->getThemeWithLanguages();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Fallback กรณียังไม่มี Theme Default
-    |--------------------------------------------------------------------------
-    */
-    if (!$theme) {
-        $theme = FrontendTheme::query()
-            ->where('is_active', true)
-            ->orderByDesc('updated_at')
-            ->orderByDesc('id')
-            ->first();
+            $pages = FrontendPage::query()
+                ->with([
+                    'media' => function ($query) {
+                        $query->orderBy('sort_order')->orderBy('id');
+                    },
+                ])
+                ->orderBy('id')
+                ->get()
+                ->map(fn (FrontendPage $page) => $this->formatPage($page))
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ดึงข้อมูลหน้าบ้านทั้งหมดสำเร็จ',
+                'data' => [
+                    'theme' => $themeData['theme'],
+                    'languages' => $themeData['languages'],
+                    'pages' => $pages,
+                ],
+            ]);
+        } catch (Throwable $exception) {
+            return $this->errorResponse(
+                'Frontend bootstrap API error',
+                'ไม่สามารถดึงข้อมูลหน้าบ้านทั้งหมดได้',
+                $exception
+            );
+        }
     }
 
-    return $theme;
-}
     public function theme(): JsonResponse
     {
         try {
@@ -48,492 +55,109 @@ class FrontendConfigController extends Controller
                 'data' => $this->getThemeWithLanguages(),
             ]);
         } catch (Throwable $exception) {
-            Log::error('Frontend theme API error', [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
+            return $this->errorResponse(
+                'Frontend theme API error',
+                'ไม่สามารถดึงข้อมูล Theme ได้',
+                $exception
+            );
+        }
+    }
+
+    public function pages(): JsonResponse
+    {
+        try {
+            $pages = FrontendPage::query()
+                ->with([
+                    'media' => function ($query) {
+                        $query->orderBy('sort_order')->orderBy('id');
+                    },
+                ])
+                ->orderBy('id')
+                ->get()
+                ->map(fn (FrontendPage $page) => $this->formatPage($page))
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ดึงข้อมูลหน้าทั้งหมดสำเร็จ',
+                'data' => [
+                    'pages' => $pages,
+                ],
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่สามารถดึงข้อมูล Theme ได้',
-                'error' => config('app.debug')
-                    ? $exception->getMessage()
-                    : null,
-            ], 500);
+        } catch (Throwable $exception) {
+            return $this->errorResponse(
+                'Frontend pages API error',
+                'ไม่สามารถดึงข้อมูลหน้าทั้งหมดได้',
+                $exception
+            );
         }
     }
 
-public function firstPage(): JsonResponse {
-    try {
-        $page = FrontendPage::query()
-            ->with([
-                'media' => function ($query) {
-                    $query
-                        ->orderBy('sort_order')
-                        ->orderBy('id');
-                },
-            ])
-            ->where('screen_key', 'first_page')
+    public function page(string $screenKey): JsonResponse
+    {
+        try {
+            $page = FrontendPage::query()
+                ->with([
+                    'media' => function ($query) {
+                        $query->orderBy('sort_order')->orderBy('id');
+                    },
+                ])
+                ->where('screen_key', $screenKey)
+                ->first();
+
+            if (!$page) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่พบข้อมูลหน้าที่ต้องการ',
+                    'data' => null,
+                ], 404);
+            }
+
+            $themeData = $this->getThemeWithLanguages();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ดึงข้อมูลหน้าสำเร็จ',
+                'data' => [
+                    'page' => $this->formatPage($page),
+                    'theme' => $themeData['theme'],
+                    'languages' => $themeData['languages'],
+                ],
+            ]);
+        } catch (Throwable $exception) {
+            return $this->errorResponse(
+                'Frontend page API error',
+                'ไม่สามารถดึงข้อมูลหน้าได้',
+                $exception,
+                ['screen_key' => $screenKey]
+            );
+        }
+    }
+
+    private function getActiveTheme(): ?FrontendTheme
+    {
+        $theme = FrontendTheme::query()
+            ->where('is_active', true)
+            ->where('is_default', true)
             ->first();
 
-        if (!$page) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบข้อมูลหน้าแรก',
-                'data' => null,
-            ], 404);
+        if (!$theme) {
+            $theme = FrontendTheme::query()
+                ->where('is_active', true)
+                ->orderByDesc('updated_at')
+                ->orderByDesc('id')
+                ->first();
         }
 
-        $settings = $page->settings_json ?? [];
-
-        $responseData = [
-            'page' => [
-                'id' => $page->id,
-                'screen_key' => $page->screen_key,
-                'name' => $page->name,
-                'title' => $page->title,
-                'subtitle' => $page->subtitle,
-                'remark' => $page->remark,
-
-                'is_active' => isset($page->is_active)
-                    ? (bool) $page->is_active
-                    : true,
-
-                'translation_keys' => [
-                    'start_button' =>
-                        'first_page.start_button',
-                ],
-
-                'settings' => [
-                    'show_start_button' => (bool) (
-                        $settings['show_start_button']
-                        ?? true
-                    ),
-
-                    'start_button_icon' =>
-                        $settings['start_button_icon']
-                        ?? 'tabler-bottle',
-
-                    'start_button_action' =>
-                        $settings['start_button_action']
-                        ?? 'phone_verify_page',
-                ],
-
-                'media' => $page->media
-                    ->map(function ($media) {
-                        return [
-                            'id' => $media->id,
-
-                            'type' =>
-                                $media->media_type,
-
-                            'url' =>
-                                $media->file_url,
-
-                            'title' =>
-                                $media->title,
-
-                            'subtitle' =>
-                                $media->subtitle,
-
-                            'duration_seconds' => (int) (
-                                $media->duration_seconds
-                                ?? 5
-                            ),
-
-                            'object_fit' =>
-                                $media->object_fit
-                                ?? 'cover',
-
-                            'sort_order' => (int) (
-                                $media->sort_order
-                                ?? 0
-                            ),
-
-                            'is_active' => isset(
-                                $media->is_active
-                            )
-                                ? (bool) $media->is_active
-                                : true,
-                        ];
-                    })
-                    ->values(),
-            ],
-        ];
-
-        /*
-        |--------------------------------------------------------------------------
-        | ส่ง Theme เฉพาะเมื่อระบุ include_theme=1
-        |--------------------------------------------------------------------------
-        */
-        $themeData = $this->getThemeWithLanguages();
-
-        $responseData['theme'] = $themeData['theme'];
-        $responseData['languages'] = $themeData['languages'];
-
-        return response()->json([
-            'success' => true,
-            'message' => 'ดึงข้อมูลหน้าแรกสำเร็จ',
-            'data' => $responseData,
-        ]);
-    } catch (Throwable $exception) {
-        Log::error('Frontend first page API error', [
-            'message' => $exception->getMessage(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'ไม่สามารถดึงข้อมูลหน้าแรกได้',
-            'error' => config('app.debug')
-                ? $exception->getMessage()
-                : null,
-        ], 500);
-    }
-}
-
-public function selectProduct(): JsonResponse {
-    try {
-        $page = FrontendPage::query()
-            ->where('screen_key', 'select_product_page')
-            ->first();
-
-        if (!$page) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบข้อมูลหน้าเลือกสินค้า',
-                'data' => null,
-            ], 404);
-        }
-
-        $settings = $page->settings_json ?? [];
-
-        $products = Product::query()
-            ->orderBy('id')
-            ->get();
-
-        $productGroups = [
-            [
-                'code' => 'detergent',
-                'name' => 'น้ำยาซักผ้า',
-                'icon' => $settings[
-                    'category_primary_icon'
-                ] ?? 'tabler-basket',
-            ],
-            [
-                'code' => 'softener',
-                'name' => 'น้ำยาปรับผ้านุ่ม',
-                'icon' => $settings[
-                    'category_secondary_icon'
-                ] ?? 'tabler-droplet',
-            ],
-        ];
-
-        $responseData = [
-            'page' => [
-                'id' => $page->id,
-                'screen_key' => $page->screen_key,
-                'name' => $page->name,
-                'title' => $page->title,
-                'subtitle' => $page->subtitle,
-
-                'is_active' => isset($page->is_active)
-                    ? (bool) $page->is_active
-                    : true,
-
-                'translation_keys' => [
-                    'title' =>
-                        'select_product_page.title',
-
-                    'subtitle' =>
-                        'select_product_page.subtitle',
-
-                    'back_button' =>
-                        'select_product_page.back_button',
-
-                    'confirm_button' =>
-                        'select_product_page.confirm_button',
-
-                    'amount_unit' =>
-                        'select_product_page.amount_unit',
-
-                    'currency' =>
-                        'select_product_page.currency',
-                ],
-
-                'settings' => [
-                    'step_icon' =>
-                        $settings['step_icon']
-                        ?? 'tabler-bottle',
-
-                    'category_primary_icon' =>
-                        $settings['category_primary_icon']
-                        ?? 'tabler-basket',
-
-                    'category_secondary_icon' =>
-                        $settings['category_secondary_icon']
-                        ?? 'tabler-droplet',
-
-                    'selected_product_icon' =>
-                        $settings['selected_product_icon']
-                        ?? 'tabler-check',
-
-                    'amount_section_icon' =>
-                        $settings['amount_section_icon']
-                        ?? 'tabler-basket',
-
-                    'total_price_icon' =>
-                        $settings['total_price_icon']
-                        ?? 'tabler-wallet',
-
-                    'show_home_button' => (bool) (
-                        $settings['show_home_button']
-                        ?? true
-                    ),
-
-                    'home_button_icon' =>
-                        $settings['home_button_icon']
-                        ?? 'tabler-home',
-
-                    'home_button_action' =>
-                        $settings['home_button_action']
-                        ?? 'first_page',
-
-                    'show_confirm_button' => (bool) (
-                        $settings['show_confirm_button']
-                        ?? true
-                    ),
-
-                    'confirm_button_icon' =>
-                        $settings['confirm_button_icon']
-                        ?? 'tabler-chevron-right',
-
-                    'confirm_button_action' =>
-                        $settings['confirm_button_action']
-                        ?? 'promotion_page',
-                ],
-            ],
-
-            'product_types' => collect($productGroups)
-                ->map(function ($group) use ($products) {
-                    $groupProducts = $products
-                        ->where(
-                            'product_type',
-                            $group['code']
-                        )
-                        ->values();
-
-                    return [
-                        'code' => $group['code'],
-                        'name' => $group['name'],
-                        'icon' => $group['icon'],
-
-                        'products' => $groupProducts
-                            ->map(function ($product) {
-                                return [
-                                    'id' => $product->id,
-
-                                    'product_type' =>
-                                        $product->product_type,
-
-                                    'name' =>
-                                        $product->name,
-
-                                    'sku' =>
-                                        $product->sku
-                                        ?? null,
-
-                                    'description' =>
-                                        $product->short_detail
-                                        ?? $product->description
-                                        ?? null,
-
-                                    'image_url' =>
-                                        $product->image_url
-                                        ?? (
-                                            !empty($product->image)
-                                                ? url(
-                                                    'storage/'
-                                                    . $product->image
-                                                )
-                                                : null
-                                        ),
-
-                                    'price' => (float) (
-                                        $product->price
-                                        ?? 0
-                                    ),
-
-                                    'special_price' =>
-                                        !is_null(
-                                            $product->special_price
-                                            ?? null
-                                        )
-                                            ? (float) $product
-                                                ->special_price
-                                            : null,
-
-                                    'amount_options' =>
-                                        $this->formatProductAmounts(
-                                            $product
-                                        ),
-
-                                    'sort_order' => (int) (
-                                        $product->sort_order
-                                        ?? 0
-                                    ),
-
-                                    'is_active' => isset($product->is_active)
-                                        ? (bool) $product->is_active
-                                        : true,
-                                ];
-                            })
-                            ->values(),
-                    ];
-                })
-                ->values(),
-        ];
-
-        $themeData = $this->getThemeWithLanguages();
-
-        $responseData['theme'] = $themeData['theme'];
-        $responseData['languages'] = $themeData['languages'];
-
-        return response()->json([
-            'success' => true,
-            'message' =>
-                'ดึงข้อมูลหน้าเลือกสินค้าสำเร็จ',
-            'data' => $responseData,
-        ]);
-    } catch (Throwable $exception) {
-        Log::error('Select product API error', [
-            'message' => $exception->getMessage(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' =>
-                'ไม่สามารถดึงข้อมูลหน้าเลือกสินค้าได้',
-
-            'error' => config('app.debug')
-                ? $exception->getMessage()
-                : null,
-        ], 500);
-    }
-}
-private function formatProductAmounts(
-    Product $product
-): array {
-    $amountOptions = [];
-
-    /*
-    |--------------------------------------------------------------------------
-    | รองรับ JSON amount_options
-    |--------------------------------------------------------------------------
-    | ตัวอย่าง:
-    | [
-    |   {"amount":1250,"unit":"ml","price":115},
-    |   {"amount":2500,"unit":"ml","price":220}
-    | ]
-    */
-    $storedOptions = $product->amount_options ?? null;
-
-    if (is_string($storedOptions)) {
-        $storedOptions = json_decode(
-            $storedOptions,
-            true
-        );
+        return $theme;
     }
 
-    if (
-        is_array($storedOptions)
-        && count($storedOptions) > 0
-    ) {
-        foreach ($storedOptions as $index => $option) {
-            $amountOptions[] = [
-                'id' => $option['id']
-                    ?? $index + 1,
-
-                'amount' => (float) (
-                    $option['amount']
-                    ?? 0
-                ),
-
-                'unit' => $option['unit']
-                    ?? 'ml',
-
-                'price' => (float) (
-                    $option['price']
-                    ?? $product->price
-                    ?? 0
-                ),
-
-                'special_price' => isset(
-                    $option['special_price']
-                )
-                    ? (float) $option[
-                        'special_price'
-                    ]
-                    : null,
-
-                'is_default' => (bool) (
-                    $option['is_default']
-                    ?? $index === 0
-                ),
-            ];
-        }
-
-        return $amountOptions;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Fallback จากข้อมูล Product ปกติ
-    |--------------------------------------------------------------------------
-    */
-    return [
-        [
-            'id' => $product->id,
-            'amount' => (float) (
-                $product->volume
-                ?? $product->amount
-                ?? $product->size
-                ?? 0
-            ),
-
-            'unit' => $product->unit
-                ?? 'ml',
-
-            'price' => (float) (
-                $product->price
-                ?? 0
-            ),
-
-            'special_price' => !is_null(
-                $product->special_price
-                ?? null
-            )
-                ? (float) $product->special_price
-                : null,
-
-            'is_default' => true,
-        ],
-    ];
-}
-
-    /**
-     * ส่ง Theme พร้อมภาษาที่เปิดใช้งานจากตาราง frontend_languages
-     */
     private function getThemeWithLanguages(): array
     {
         $theme = $this->getActiveTheme();
 
         $languages = FrontendLanguage::query()
-            ->where('is_active', 1)
+            ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
@@ -542,53 +166,86 @@ private function formatProductAmounts(
             ?? $languages->first();
 
         return [
-            'theme' => $theme
-                ? $this->formatTheme($theme)
-                : null,
-
+            'theme' => $theme ? $this->formatTheme($theme) : null,
             'languages' => [
                 'default' => $defaultLanguage
                     ? $this->formatLanguage($defaultLanguage)
                     : null,
-
                 'items' => $languages
-                    ->map(fn (FrontendLanguage $language) =>
-                        $this->formatLanguage($language)
-                    )
+                    ->map(fn (FrontendLanguage $language) => $this->formatLanguage($language))
                     ->values(),
             ],
         ];
     }
 
-    /**
-     * จัดรูปแบบ Theme โดยไม่ส่งค่าภาษาเดิมจากตาราง Theme
-     */
+    private function formatPage(FrontendPage $page): array
+    {
+        $settings = $page->settings_json ?? [];
+
+        if (is_string($settings)) {
+            $settings = json_decode($settings, true) ?: [];
+        }
+
+        return [
+            'id' => $page->id,
+            'screen_key' => $page->screen_key,
+            'name' => $page->name,
+            'title' => $page->title ?? null,
+            'subtitle' => $page->subtitle ?? null,
+            'remark' => $page->remark ?? null,
+            'is_active' => isset($page->is_active) ? (bool) $page->is_active : true,
+            'settings' => $settings,
+            'media' => $page->media
+                ->map(function ($media) {
+                    return [
+                        'id' => $media->id,
+                        'media_slot' => $media->media_slot ?? null,
+                        'type' => $media->media_type ?? null,
+                        'url' => $media->file_url ?? null,
+                        'title' => $media->title ?? null,
+                        'subtitle' => $media->subtitle ?? null,
+                        'duration_seconds' => (int) ($media->duration_seconds ?? 5),
+                        'object_fit' => $media->object_fit ?? 'cover',
+                        'sort_order' => (int) ($media->sort_order ?? 0),
+                        'is_active' => isset($media->is_active)
+                            ? (bool) $media->is_active
+                            : true,
+                    ];
+                })
+                ->values(),
+        ];
+    }
+
     private function formatTheme(FrontendTheme $theme): array
     {
         return [
             'id' => $theme->id,
             'name' => $theme->name,
+            'slug' => $theme->slug ?? null,
             'background_type' => $theme->background_type ?? 'color',
             'background_color' => $theme->background_color ?? '#DFF8FF',
             'background_image_url' => $theme->background_image_url ?? null,
-            'primary_color' => $theme->primary_color ?? '#0877C9',
-            'secondary_color' => $theme->secondary_color ?? '#6F63F6',
+            'background_video_url' => $theme->background_video_url ?? null,
             'text_color' => $theme->text_color ?? '#111827',
+            'button_color' => $theme->button_color ?? '#0877C9',
             'button_text_color' => $theme->button_text_color ?? '#FFFFFF',
-            'header_logo_left_url' => $theme->header_logo_left_url ?? null,
+            'button_hover_border_color' => $theme->button_hover_border_color ?? '#0877C9',
+            'logo_url' => $theme->logo_url ?? null,
+            'header_type' => $theme->header_type ?? 'none',
+            'header_height' => (int) ($theme->header_height ?? 100),
+            'header_background_color' => $theme->header_background_color ?? null,
+            'header_background_image_url' => $theme->header_background_image_url ?? null,
+            'header_background_video_url' => $theme->header_background_video_url ?? null,
+            'header_logo_main_url' => $theme->header_logo_main_url ?? null,
             'header_logo_right_1_url' => $theme->header_logo_right_1_url ?? null,
             'header_logo_right_2_url' => $theme->header_logo_right_2_url ?? null,
             'show_home_button' => (bool) ($theme->show_home_button ?? true),
             'home_button_text' => $theme->home_button_text ?? 'หน้าหลัก',
-            'is_active' => isset($theme->is_active)
-                ? (bool) $theme->is_active
-                : true,
+            'is_default' => (bool) ($theme->is_default ?? false),
+            'is_active' => (bool) ($theme->is_active ?? true),
         ];
     }
 
-    /**
-     * จัดรูปแบบภาษา
-     */
     private function formatLanguage(FrontendLanguage $language): array
     {
         return [
@@ -604,240 +261,25 @@ private function formatProductAmounts(
             'is_active' => (bool) ($language->is_active ?? true),
         ];
     }
-/**
- * ส่งข้อมูลตั้งค่าหน้าสรุปรายการ
- *
- * รายการสินค้าและยอดเงินจริงให้หน้าบ้านใช้ข้อมูลจาก cart/session
- * ส่ง Theme ที่กำลังใช้งานและภาษามาพร้อมกันทุกครั้ง
- */
-public function orderSummary(Request $request): JsonResponse
-{
-    try {
-        $validated = $request->validate([
-            'product_id' => [
-                'nullable',
-                'integer',
-                'exists:products,id',
-            ],
-            'quantity' => [
-                'nullable',
-                'integer',
-                'min:1',
-            ],
-        ]);
 
-        $page = FrontendPage::query()
-            ->where('screen_key', 'order_summary_page')
-            ->first();
-
-        if (!$page) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบข้อมูลหน้าสรุปรายการ',
-                'data' => null,
-            ], 404);
-        }
-
-        $settings = $page->settings_json ?? [];
-        $themeData = $this->getThemeWithLanguages();
-
-        $productSummary = null;
-
-        /*
-        |--------------------------------------------------------------------------
-        | ดึงสินค้าที่ผู้ใช้เลือก
-        |--------------------------------------------------------------------------
-        */
-        if (!empty($validated['product_id'])) {
-            $product = Product::query()
-                ->whereKey($validated['product_id'])
-                ->first();
-
-            if (!$product) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'ไม่พบสินค้าที่เลือก',
-                    'data' => null,
-                ], 404);
-            }
-
-            $quantity = (int) (
-                $validated['quantity'] ?? 1
-            );
-
-            $normalPrice = (float) (
-                $product->price ?? 0
-            );
-
-            $specialPrice = !is_null(
-                $product->special_price ?? null
-            )
-                ? (float) $product->special_price
-                : null;
-
-            $unitPrice = $specialPrice ?? $normalPrice;
-            $subtotal = $unitPrice * $quantity;
-
-            $productSummary = [
-                'product_id' => $product->id,
-                'product_type' =>
-                    $product->product_type ?? null,
-
-                'name' => $product->name,
-                'sku' => $product->sku ?? null,
-
-                'description' =>
-                    $product->short_detail
-                    ?? $product->description
-                    ?? null,
-
-                'image_url' =>
-                    $product->image_url
-                    ?? (
-                        !empty($product->image)
-                            ? url(
-                                'storage/' . $product->image
-                            )
-                            : null
-                    ),
-
-                'quantity' => $quantity,
-                'unit' => $product->unit ?? 'ชิ้น',
-
-                'normal_price' => $normalPrice,
-                'special_price' => $specialPrice,
-                'unit_price' => $unitPrice,
-
-                'subtotal' => $subtotal,
-                'promotion_discount' => 0,
-                'point_discount' => 0,
-                'net_total' => $subtotal,
-            ];
-        }
-
-        $responseData = [
-            'page' => [
-                'id' => $page->id,
-                'screen_key' => $page->screen_key,
-                'name' => $page->name,
-                'title' => $page->title,
-                'subtitle' => $page->subtitle,
-                'remark' => $page->remark,
-
-                'is_active' => isset($page->is_active)
-                    ? (bool) $page->is_active
-                    : true,
-
-                'translation_keys' => [
-                    'title' =>
-                        'order_summary_page.title',
-
-                    'subtitle' =>
-                        'order_summary_page.subtitle',
-
-                    'order_list' =>
-                        'order_summary_page.order_list',
-
-                    'quantity' =>
-                        'order_summary_page.quantity',
-
-                    'promotion_discount' =>
-                        'order_summary_page.promotion_discount',
-
-                    'point_discount' =>
-                        'order_summary_page.point_discount',
-
-                    'net_total' =>
-                        'order_summary_page.net_total',
-
-                    'currency' =>
-                        'order_summary_page.currency',
-
-                    'back_button' =>
-                        'order_summary_page.back_button',
-
-                    'confirm_button' =>
-                        'order_summary_page.confirm_button',
-                ],
-
-                'settings' => [
-                    'step_icon' =>
-                        $settings['step_icon']
-                        ?? 'tabler-list-details',
-
-                    'order_summary_icon' =>
-                        $settings['order_summary_icon']
-                        ?? 'tabler-shopping-bag',
-
-                    'net_total_icon' =>
-                        $settings['net_total_icon']
-                        ?? 'tabler-wallet',
-
-                    'show_back_button' => (bool) (
-                        $settings['show_back_button']
-                        ?? true
-                    ),
-
-                    'back_button_icon' =>
-                        $settings['back_button_icon']
-                        ?? 'tabler-chevron-left',
-
-                    'back_button_action' =>
-                        $settings['back_button_action']
-                        ?? 'select_product_page',
-
-                    'show_confirm_button' => (bool) (
-                        $settings['show_confirm_button']
-                        ?? true
-                    ),
-
-                    'confirm_button_icon' =>
-                        $settings['confirm_button_icon']
-                        ?? 'tabler-chevron-right',
-
-                    'confirm_button_action' =>
-                        $settings['confirm_button_action']
-                        ?? 'promotion_page',
-                ],
-            ],
-
-            'summary' => $productSummary,
-            'theme' => $themeData['theme'],
-            'languages' => $themeData['languages'],
-        ];
-
-        return response()->json([
-            'success' => true,
-            'message' =>
-                'ดึงข้อมูลหน้าสรุปรายการสำเร็จ',
-            'data' => $responseData,
-        ]);
-    } catch (
-        \Illuminate\Validation\ValidationException $exception
-    ) {
-        return response()->json([
-            'success' => false,
-            'message' => 'ข้อมูลที่ส่งมาไม่ถูกต้อง',
-            'errors' => $exception->errors(),
-        ], 422);
-    } catch (Throwable $exception) {
-        Log::error('Order summary page API error', [
+    private function errorResponse(
+        string $logTitle,
+        string $message,
+        Throwable $exception,
+        array $context = []
+    ): JsonResponse {
+        Log::error($logTitle, array_merge($context, [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity,
-        ]);
+        ]));
 
         return response()->json([
             'success' => false,
-            'message' =>
-                'ไม่สามารถดึงข้อมูลหน้าสรุปรายการได้',
-
+            'message' => $message,
             'error' => config('app.debug')
                 ? $exception->getMessage()
                 : null,
         ], 500);
     }
-}
 }

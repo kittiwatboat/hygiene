@@ -5,21 +5,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('frontend')->group(function () {
     Route::get(
+        '/bootstrap',
+        [FrontendConfigController::class, 'bootstrap']
+    );
+
+    Route::get(
         '/theme',
         [FrontendConfigController::class, 'theme']
     );
 
     Route::get(
-        '/first-page',
-        [FrontendConfigController::class, 'firstPage']
+        '/pages',
+        [FrontendConfigController::class, 'pages']
     );
 
     Route::get(
-        '/screens/select-product',
-        [FrontendConfigController::class, 'selectProduct']
+        '/pages/{screenKey}',
+        [FrontendConfigController::class, 'page']
     );
-    Route::get(
-    '/screens/order-summary',
-    [FrontendConfigController::class, 'orderSummary']
-);
 });
