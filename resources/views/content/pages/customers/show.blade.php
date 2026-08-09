@@ -3,92 +3,183 @@
 @section('title', 'รายละเอียดสมาชิก')
 
 @section('content')
-<div class="row g-4">
 
-  <div class="col-12">
-    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
-      <div>
-        <h4 class="mb-1">{{ $customer->name }}</h4>
-        <p class="text-muted mb-0">
-          รหัสสมาชิก {{ $customer->member_code }}
-        </p>
-      </div>
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+  <div>
+    <h4 class="mb-1">
+      รายละเอียดสมาชิก
+    </h4>
 
-      <div class="d-flex gap-2">
-        <a
-          href="{{ route('customers.index') }}"
-          class="btn btn-label-secondary"
-        >
-          กลับ
-        </a>
-
-        <a
-          href="{{ route('customers.edit', $customer) }}"
-          class="btn btn-primary"
-        >
-          <i class="icon-base ti tabler-pencil me-1"></i>
-          แก้ไข
-        </a>
-      </div>
+    <div class="text-muted">
+      {{ $customer->member_code }}
     </div>
   </div>
 
-  @if (session('success'))
-    <div class="col-12">
-      <div class="alert alert-success mb-0">
-        {{ session('success') }}
-      </div>
-    </div>
-  @endif
+  <div class="d-flex gap-2">
+    <a
+      href="{{ route('customers.index') }}"
+      class="btn btn-label-secondary"
+    >
+      กลับ
+    </a>
 
-  <div class="col-md-4">
+    <a
+      href="{{ route('customers.edit', $customer) }}"
+      class="btn btn-primary"
+    >
+      <i class="icon-base ti tabler-pencil me-1"></i>
+      แก้ไข
+    </a>
+  </div>
+</div>
+
+@if (session('success'))
+  <div class="alert alert-success">
+    {{ session('success') }}
+  </div>
+@endif
+
+@if (session('error'))
+  <div class="alert alert-danger">
+    {{ session('error') }}
+  </div>
+@endif
+
+<div class="row g-4">
+
+  <div class="col-xl-4">
     <div class="card h-100">
-      <div class="card-body text-center">
-        <div class="avatar avatar-xl mx-auto mb-3">
-          <span class="avatar-initial rounded-circle bg-label-primary">
-            <i class="icon-base ti tabler-coins"></i>
+      <div class="card-body">
+        <div class="text-muted mb-1">
+          แต้มคงเหลือ
+        </div>
+
+        <h2 class="mb-2 text-primary">
+          {{ number_format((int) ($customer->points_balance ?? 0)) }}
+        </h2>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge {{ $customer->status_class }}">
+            {{ $customer->status_text }}
+          </span>
+
+          <span class="badge bg-label-info">
+            {{ \App\Models\Customer::MEMBER_TYPE_OPTIONS[$customer->member_type] ?? $customer->member_type }}
           </span>
         </div>
 
-        <div class="text-muted mb-1">แต้มคงเหลือ</div>
+        <div class="alert alert-info mt-4 mb-0">
+          <div class="d-flex gap-2">
+            <i class="icon-base ti tabler-info-circle mt-1"></i>
 
-        <h2 class="mb-2 text-primary">
-          {{ number_format((int) $customer->points_balance) }}
-        </h2>
+            <div>
+              <div class="fw-semibold mb-1">
+                แต้มสะสม
+              </div>
 
-        <span class="badge {{ $customer->status_class }}">
-          {{ $customer->status_text }}
-        </span>
+              <div class="small">
+                แต้มเป็นข้อมูลจากระบบ และไม่สามารถเพิ่ม ลด
+                หรือแก้ไขจากหน้าจัดการสมาชิกได้
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-8">
+  <div class="col-xl-8">
     <div class="card h-100">
       <div class="card-header">
-        <h5 class="mb-0">ข้อมูลสมาชิก</h5>
+        <h5 class="mb-0">
+          ข้อมูลสมาชิก
+        </h5>
       </div>
 
       <div class="card-body">
         <div class="row g-3">
 
           <div class="col-md-6">
-            <small class="text-muted d-block">ชื่อสมาชิก</small>
-            <span>{{ $customer->name }}</span>
+            <small class="text-muted d-block">
+              รหัสสมาชิก
+            </small>
+
+            <span>
+              {{ $customer->member_code ?: '-' }}
+            </span>
           </div>
 
           <div class="col-md-6">
-            <small class="text-muted d-block">เบอร์โทรศัพท์</small>
-            <span>{{ $customer->phone ?: '-' }}</span>
+            <small class="text-muted d-block">
+              ชื่อสมาชิก
+            </small>
+
+            <span>
+              {{ $customer->name ?: '-' }}
+            </span>
           </div>
 
           <div class="col-md-6">
-            <small class="text-muted d-block">อีเมล</small>
-            <span>{{ $customer->email ?: '-' }}</span>
+            <small class="text-muted d-block">
+              เบอร์โทรศัพท์
+            </small>
+
+            <span>
+              {{ $customer->phone ?: '-' }}
+            </span>
           </div>
 
           <div class="col-md-6">
-            <small class="text-muted d-block">ใช้งานล่าสุด</small>
+            <small class="text-muted d-block">
+              อีเมล
+            </small>
+
+            <span>
+              {{ $customer->email ?: '-' }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              LINE ID
+            </small>
+
+            <span>
+              {{ $customer->line_id ?: '-' }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              สาขาตู้
+            </small>
+
+            <span>
+              {{ optional($customer->branch)->name
+                  ?? $customer->branch_name
+                  ?? '-' }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              วันที่สมัคร
+            </small>
+
+            <span>
+              {{ $customer->registered_at
+                  ? $customer->registered_at->format('d/m/Y H:i')
+                  : ($customer->created_at
+                      ? $customer->created_at->format('d/m/Y H:i')
+                      : '-') }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              ใช้งานล่าสุด
+            </small>
+
             <span>
               {{ $customer->last_used_at
                   ? $customer->last_used_at->format('d/m/Y H:i')
@@ -96,9 +187,36 @@
             </span>
           </div>
 
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              ยอดเติมสะสม
+            </small>
+
+            <span>
+              {{ number_format((float) ($customer->total_topup ?? 0), 2) }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">
+              สถานะสมาชิกใหม่
+            </small>
+
+            <span>
+              {{ $customer->is_new_member_discount_used
+                  ? 'ใช้สิทธิ์สมาชิกใหม่แล้ว'
+                  : 'ยังไม่ใช้สิทธิ์สมาชิกใหม่' }}
+            </span>
+          </div>
+
           <div class="col-12">
-            <small class="text-muted d-block">หมายเหตุ</small>
-            <span>{{ $customer->remark ?: '-' }}</span>
+            <small class="text-muted d-block">
+              หมายเหตุ
+            </small>
+
+            <span>
+              {{ $customer->remark ?: '-' }}
+            </span>
           </div>
 
         </div>
@@ -106,94 +224,33 @@
     </div>
   </div>
 
-  <div class="col-lg-4">
+  <div class="col-12">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-1">ปรับแต้มสมาชิก</h5>
-        <p class="text-muted mb-0">
-          ใช้สำหรับกรณีแอดมินเพิ่มหรือลดแต้ม
-        </p>
-      </div>
+      <div class="card-header d-flex align-items-center justify-content-between gap-3">
+        <div>
+          <h5 class="mb-1">
+            ประวัติแต้ม
+          </h5>
 
-      <div class="card-body">
-        <form
-          action="{{ route('customers.adjust-points', $customer) }}"
-          method="POST"
-        >
-          @csrf
+          <p class="text-muted mb-0">
+            แสดงรายการแต้มที่เกิดจากการใช้งานและโปรโมชั่นของระบบ
+          </p>
+        </div>
 
-          <div class="mb-3">
-            <label class="form-label">ประเภทการปรับแต้ม</label>
-
-            <select
-              name="adjustment_type"
-              class="form-select @error('adjustment_type') is-invalid @enderror"
-              required
-            >
-              <option value="add">เพิ่มแต้ม</option>
-              <option value="deduct">ลดแต้ม</option>
-            </select>
-
-            @error('adjustment_type')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">จำนวนแต้ม</label>
-
-            <input
-              type="number"
-              name="points"
-              min="1"
-              value="{{ old('points') }}"
-              class="form-control @error('points') is-invalid @enderror"
-              required
-            >
-
-            @error('points')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">เหตุผล</label>
-
-            <textarea
-              name="description"
-              rows="3"
-              class="form-control @error('description') is-invalid @enderror"
-              required
-            >{{ old('description') }}</textarea>
-
-            @error('description')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100">
-            บันทึกการปรับแต้ม
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-8">
-    <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">ประวัติแต้ม</h5>
+        <span class="badge bg-label-secondary">
+          {{ number_format($customer->pointTransactions->count()) }} รายการ
+        </span>
       </div>
 
       <div class="table-responsive">
-        <table class="table table-hover">
+        <table class="table table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>วันที่</th>
-              <th>ประเภท</th>
-              <th>รายละเอียด</th>
-              <th class="text-end">แต้ม</th>
-              <th class="text-end">คงเหลือ</th>
+              <th style="min-width: 150px;">วันที่</th>
+              <th style="min-width: 120px;">ประเภท</th>
+              <th style="min-width: 220px;">รายละเอียด</th>
+              <th class="text-end" style="min-width: 100px;">แต้ม</th>
+              <th class="text-end" style="min-width: 110px;">คงเหลือ</th>
             </tr>
           </thead>
 
@@ -201,7 +258,9 @@
             @forelse ($customer->pointTransactions as $transaction)
               <tr>
                 <td>
-                  {{ $transaction->created_at->format('d/m/Y H:i') }}
+                  {{ $transaction->created_at
+                      ? $transaction->created_at->format('d/m/Y H:i')
+                      : '-' }}
                 </td>
 
                 <td>
@@ -211,7 +270,9 @@
                 </td>
 
                 <td>
-                  <div>{{ $transaction->description ?: '-' }}</div>
+                  <div>
+                    {{ $transaction->description ?: '-' }}
+                  </div>
 
                   @if ($transaction->reference_no)
                     <small class="text-muted">
@@ -221,9 +282,10 @@
                 </td>
 
                 <td class="text-end">
-                  <span class="{{ $transaction->points >= 0
-                      ? 'text-success'
-                      : 'text-danger' }} fw-medium"
+                  <span
+                    class="{{ $transaction->points >= 0
+                        ? 'text-success'
+                        : 'text-danger' }} fw-medium"
                   >
                     {{ $transaction->points >= 0 ? '+' : '' }}
                     {{ number_format((int) $transaction->points) }}
@@ -236,8 +298,18 @@
               </tr>
             @empty
               <tr>
-                <td colspan="5" class="text-center py-4 text-muted">
-                  ยังไม่มีประวัติแต้ม
+                <td
+                  colspan="5"
+                  class="text-center py-5 text-muted"
+                >
+                  <i
+                    class="icon-base ti tabler-history-off mb-2"
+                    style="font-size: 42px;"
+                  ></i>
+
+                  <div>
+                    ยังไม่มีประวัติแต้ม
+                  </div>
                 </td>
               </tr>
             @endforelse
@@ -248,4 +320,5 @@
   </div>
 
 </div>
+
 @endsection

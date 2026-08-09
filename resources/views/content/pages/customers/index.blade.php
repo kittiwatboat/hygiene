@@ -15,6 +15,24 @@
 
     <div class="d-flex flex-column flex-sm-row gap-2">
       <a
+        href="{{ route('customers.import-template') }}"
+        class="btn btn-label-secondary"
+      >
+        <i class="icon-base ti tabler-file-download me-1"></i>
+        ดาวน์โหลด Template
+      </a>
+
+      <button
+        type="button"
+        class="btn btn-label-info"
+        data-bs-toggle="modal"
+        data-bs-target="#importCustomerModal"
+      >
+        <i class="icon-base ti tabler-file-upload me-1"></i>
+        Import Excel
+      </button>
+
+      <a
         href="{{ route('customers.export', request()->query()) }}"
         class="btn btn-label-success"
       >
@@ -38,6 +56,21 @@
   @if (session('error'))
     <div class="alert alert-danger mx-4">
       {{ session('error') }}
+    </div>
+  @endif
+
+
+  @if (session('import_errors') && count(session('import_errors')))
+    <div class="alert alert-warning mx-4">
+      <div class="fw-semibold mb-2">
+        รายการที่ Import ไม่สำเร็จ
+      </div>
+
+      <ul class="mb-0 ps-3">
+        @foreach (session('import_errors') as $importError)
+          <li>{{ $importError }}</li>
+        @endforeach
+      </ul>
     </div>
   @endif
 
@@ -312,4 +345,120 @@
   @endif
 
 </div>
+
+<div
+  class="modal fade"
+  id="importCustomerModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form
+        action="{{ route('customers.import') }}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        @csrf
+
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title mb-1">
+              Import สมาชิกผ่าน Excel
+            </h5>
+            <p class="text-muted small mb-0">
+              เพิ่มสมาชิกหลายรายการจากไฟล์ Excel หรือ CSV
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <div class="fw-semibold mb-1">
+              เงื่อนไขการ Import
+            </div>
+
+            <ul class="mb-0 ps-3">
+              <li>รองรับไฟล์ .xlsx, .xls และ .csv</li>
+              <li>ข้อมูลสมาชิกซ้ำจะถูกข้ามอัตโนมัติ</li>
+              <li>ไม่สามารถกำหนดหรือแก้ไขแต้มผ่านไฟล์ Import</li>
+              <li>สมาชิกใหม่จะได้รับแต้มเริ่มต้นจากระบบอัตโนมัติ</li>
+            </ul>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              ไฟล์ Import
+              <span class="text-danger">*</span>
+            </label>
+
+            <input
+              type="file"
+              name="import_file"
+              class="form-control @error('import_file') is-invalid @enderror"
+              accept=".xlsx,.xls,.csv"
+              required
+            >
+
+            @error('import_file')
+              <div class="invalid-feedback">
+                {{ $message }}
+              </div>
+            @enderror
+          </div>
+
+          <div class="d-flex align-items-start gap-2">
+            <i class="icon-base ti tabler-info-circle text-primary mt-1"></i>
+
+            <div class="small text-muted">
+              แนะนำให้ดาวน์โหลด Template ก่อนกรอกข้อมูล
+              เพื่อให้ชื่อคอลัมน์ตรงกับระบบ
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-label-secondary"
+            data-bs-dismiss="modal"
+          >
+            ยกเลิก
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            <i class="icon-base ti tabler-upload me-1"></i>
+            เริ่ม Import
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@if ($errors->has('import_file'))
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modalElement = document.getElementById('importCustomerModal');
+
+      if (!modalElement) {
+        return;
+      }
+
+      const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    });
+  </script>
+@endif
+
 @endsection
