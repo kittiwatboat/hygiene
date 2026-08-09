@@ -17,6 +17,12 @@
       "slug": "equipment",
       "submenu": [
         {
+  "url": "/machine-groups",
+  "name": "กลุ่มตู้",
+  "icon": "menu-icon icon-base ti tabler-category",
+  "slug": "machine-groups"
+},
+        {
           "url": "/machines",
           "name": "ตู้กดน้ำยา",
           "icon": "menu-icon icon-base ti tabler-wash-machine",

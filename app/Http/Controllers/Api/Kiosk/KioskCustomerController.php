@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Throwable;
+use Illuminate\Support\Facades\Http;
 
 class KioskCustomerController extends Controller
 {
@@ -18,211 +19,146 @@ class KioskCustomerController extends Controller
      *
      * POST /api/kiosk/customers/check
      */
-    public function check(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate(
-                [
-                    'phone' => [
-                        'required',
-                        'string',
-                        'max:30',
-                    ],
-                ],
-                [
-                    'phone.required' =>
-                        'กรุณากรอกหมายเลขโทรศัพท์',
+public function check(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'phone' => [
+            'required',
+            'string',
+            'max:30',
+        ],
+    ]);
 
-                    'phone.string' =>
-                        'หมายเลขโทรศัพท์ไม่ถูกต้อง',
+    $phone = $this->normalizePhone(
+        $validated['phone']
+    );
 
-                    'phone.max' =>
-                        'หมายเลขโทรศัพท์ยาวเกินไป',
+    try {
+        $response = Http::timeout(15)
+            ->acceptJson()
+            ->withToken(
+                config('services.member_api.token')
+            )
+            ->post(
+                config('services.member_api.url')
+                . '/members/check',
+                [
+                    'phone' => $phone,
                 ]
             );
 
-            $phone = $this->normalizePhone(
-                $validated['phone']
-            );
-
-            if (!$this->isValidPhone($phone)) {
-                return response()->json([
-                    'success' => false,
-                    'message' =>
-                        'รูปแบบหมายเลขโทรศัพท์ไม่ถูกต้อง',
-                    'errors' => [
-                        'phone' => [
-                            'กรุณากรอกหมายเลขโทรศัพท์ให้ถูกต้อง',
-                        ],
-                    ],
-                ], 422);
-            }
-
-            $customerQuery = Customer::query()
-                ->where(function ($query) use ($phone) {
-                    $query->where('phone', $phone);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | รองรับข้อมูลเก่าที่อาจเก็บเป็น +66
-                    |--------------------------------------------------------------------------
-                    */
-                    $internationalPhone =
-                        $this->toInternationalPhone($phone);
-
-                    if ($internationalPhone) {
-                        $query->orWhere(
-                            'phone',
-                            $internationalPhone
-                        );
-                    }
-                });
-
-            /*
-            |--------------------------------------------------------------------------
-            | เช็กสถานะเฉพาะเมื่อมีคอลัมน์จริง
-            |--------------------------------------------------------------------------
-            */
-            if (
-                Schema::hasColumn(
-                    'customers',
-                    'is_active'
-                )
-            ) {
-                $customerQuery->where(
-                    'is_active',
-                    true
-                );
-            }
-
-            if (
-                Schema::hasColumn(
-                    'customers',
-                    'status'
-                )
-            ) {
-                $customerQuery->where(function ($query) {
-                    $query
-                        ->whereNull('status')
-                        ->orWhereIn('status', [
-                            1,
-                            '1',
-                            'active',
-                        ]);
-                });
-            }
-
-            $customer = $customerQuery->first();
-
-            /*
-            |--------------------------------------------------------------------------
-            | ไม่พบสมาชิก ให้หน้าตู้ดำเนินการแบบ Guest
-            |--------------------------------------------------------------------------
-            */
-            if (!$customer) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'ไม่พบข้อมูลสมาชิก',
-                    'data' => [
-                        'customer_type' => 'guest',
-                        'is_member' => false,
-                        'customer' => null,
-
-                        'guest' => [
-                            'phone' => $phone,
-                            'name' => null,
-                            'points_balance' => 0,
-                            'can_use_points' => false,
-                        ],
-
-                        'next_action' =>
-                            'continue_as_guest',
-                    ],
-                ]);
-            }
-
-            $pointsBalance = (int) (
-                $customer->points_balance
-                ?? $customer->points
-                ?? 0
-            );
-
-            return response()->json([
-                'success' => true,
-                'message' => 'พบข้อมูลสมาชิก',
-                'data' => [
-                    'customer_type' => 'member',
-                    'is_member' => true,
-
-                    'customer' => [
-                        'id' => $customer->id,
-
-                        'member_code' =>
-                            $customer->member_code
-                            ?? null,
-
-                        'name' =>
-                            $customer->name
-                            ?? $customer->full_name
-                            ?? null,
-
-                        'first_name' =>
-                            $customer->first_name
-                            ?? null,
-
-                        'last_name' =>
-                            $customer->last_name
-                            ?? null,
-
-                        'phone' =>
-                            $customer->phone
-                            ?? $phone,
-
-                        'member_type' =>
-                            $customer->member_type
-                            ?? 'member',
-
-                        'points_balance' =>
-                            $pointsBalance,
-
-                        'can_use_points' =>
-                            $pointsBalance > 0,
-
-                        'is_active' =>
-                            isset($customer->is_active)
-                                ? (bool) $customer->is_active
-                                : true,
-                    ],
-
-                    'next_action' =>
-                        'display_member_information',
-                ],
-            ]);
-        } catch (ValidationException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ข้อมูลที่ส่งมาไม่ถูกต้อง',
-                'errors' => $exception->errors(),
-            ], 422);
-        } catch (Throwable $exception) {
-            Log::error('Kiosk customer check error', [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'phone' => $request->input('phone'),
+        if (!$response->successful()) {
+            Log::error('Member API request failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'phone' => $phone,
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'ไม่สามารถตรวจสอบข้อมูลสมาชิกได้',
-
-                'error' => config('app.debug')
-                    ? $exception->getMessage()
-                    : null,
-            ], 500);
+                    'ไม่สามารถเชื่อมต่อระบบสมาชิกได้',
+            ], 502);
         }
+
+        $memberData = $response->json();
+
+        /*
+        |--------------------------------------------------------------------------
+        | ปรับตรงนี้ให้ตรงกับ Response จริงของ API สมาชิก
+        |--------------------------------------------------------------------------
+        */
+        $isMember = (bool) (
+            data_get($memberData, 'data.is_member')
+            ?? false
+        );
+
+        if (!$isMember) {
+            return response()->json([
+                'success' => true,
+                'message' => 'ไม่พบข้อมูลสมาชิก',
+                'data' => [
+                    'customer_type' => 'guest',
+                    'is_member' => false,
+                    'customer' => null,
+                    'guest' => [
+                        'phone' => $phone,
+                        'points_balance' => 0,
+                        'can_use_points' => false,
+                    ],
+                    'next_action' =>
+                        'continue_as_guest',
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'พบข้อมูลสมาชิก',
+            'data' => [
+                'customer_type' => 'member',
+                'is_member' => true,
+
+                'customer' => [
+                    'external_id' =>
+                        data_get(
+                            $memberData,
+                            'data.member.id'
+                        ),
+
+                    'member_code' =>
+                        data_get(
+                            $memberData,
+                            'data.member.member_code'
+                        ),
+
+                    'name' =>
+                        data_get(
+                            $memberData,
+                            'data.member.name'
+                        ),
+
+                    'phone' =>
+                        data_get(
+                            $memberData,
+                            'data.member.phone',
+                            $phone
+                        ),
+
+                    'points_balance' => (int) (
+                        data_get(
+                            $memberData,
+                            'data.member.points'
+                        )
+                        ?? 0
+                    ),
+
+                    'can_use_points' => (int) (
+                        data_get(
+                            $memberData,
+                            'data.member.points'
+                        )
+                        ?? 0
+                    ) > 0,
+                ],
+
+                'next_action' =>
+                    'display_member_information',
+            ],
+        ]);
+    } catch (Throwable $exception) {
+        Log::error('Member API exception', [
+            'message' => $exception->getMessage(),
+            'phone' => $phone,
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'ระบบสมาชิกไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้ง',
+        ], 503);
     }
+}
 
     /**
      * ลบช่องว่าง ขีด และอักขระที่ไม่จำเป็น

@@ -26,6 +26,7 @@ use App\Http\Controllers\frontend_theme\FrontendThemeController;
 use App\Http\Controllers\FrontendPageController;
 use App\Http\Controllers\FrontendPaymentMethodController;
 use App\Http\Controllers\frontend_theme\FrontendTranslationController;
+use App\Http\Controllers\MachineGroupController;
 
 
 Route::get('/cookie-test', function () {
@@ -405,6 +406,7 @@ Route::prefix('promotions')
             FrontendThemeController::class
         );
     });
+Route::resource('machine-groups',MachineGroupController::class)->except('show');
 
     Route::prefix('frontend')
     ->name('frontend.')
