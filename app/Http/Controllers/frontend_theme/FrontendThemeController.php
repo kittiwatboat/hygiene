@@ -37,6 +37,11 @@ class FrontendThemeController extends Controller
         $logoPath = null;
         $backgroundImagePath = null;
         $backgroundVideoPath = null;
+        $headerBackgroundImagePath = null;
+        $headerBackgroundVideoPath = null;
+        $headerLogoMainPath = null;
+        $headerLogoRight1Path = null;
+        $headerLogoRight2Path = null;
 
         if ($request->hasFile('logo')) {
             $logoPath = $this->uploadLogo(
@@ -53,6 +58,36 @@ class FrontendThemeController extends Controller
         if ($request->hasFile('background_video')) {
             $backgroundVideoPath = $this->uploadThemeVideo(
                 $request->file('background_video')
+            );
+        }
+
+        if ($request->hasFile('header_background_image')) {
+            $headerBackgroundImagePath = $this->uploadThemeImage(
+                $request->file('header_background_image')
+            );
+        }
+
+        if ($request->hasFile('header_background_video')) {
+            $headerBackgroundVideoPath = $this->uploadThemeVideo(
+                $request->file('header_background_video')
+            );
+        }
+
+        if ($request->hasFile('header_logo_main')) {
+            $headerLogoMainPath = $this->uploadThemeImage(
+                $request->file('header_logo_main')
+            );
+        }
+
+        if ($request->hasFile('header_logo_right_1')) {
+            $headerLogoRight1Path = $this->uploadThemeImage(
+                $request->file('header_logo_right_1')
+            );
+        }
+
+        if ($request->hasFile('header_logo_right_2')) {
+            $headerLogoRight2Path = $this->uploadThemeImage(
+                $request->file('header_logo_right_2')
             );
         }
 
@@ -73,8 +108,14 @@ class FrontendThemeController extends Controller
             $logoPath,
             $backgroundImagePath,
             $backgroundVideoPath,
+            $headerBackgroundImagePath,
+            $headerBackgroundVideoPath,
+            $headerLogoMainPath,
+            $headerLogoRight1Path,
+            $headerLogoRight2Path,
             $isDefault,
-            $isActive
+            $isActive,
+            $request
         ) {
             if ($isDefault) {
                 FrontendTheme::query()->update([
@@ -100,6 +141,20 @@ class FrontendThemeController extends Controller
 
                 'background_image' => $backgroundImagePath,
                 'background_video' => $backgroundVideoPath,
+
+                'header_type' => $validated['header_type'] ?? 'none',
+                'header_height' => $validated['header_height'] ?? 82,
+                'header_background_color' =>
+                    $validated['header_background_color'] ?? '#1EB5F0',
+                'header_background_image' => $headerBackgroundImagePath,
+                'header_background_video' => $headerBackgroundVideoPath,
+                'header_logo_main' => $headerLogoMainPath,
+                'header_logo_right_1' => $headerLogoRight1Path,
+                'header_logo_right_2' => $headerLogoRight2Path,
+
+                'show_home_button' => $request->boolean('show_home_button'),
+                'home_button_text' =>
+                    $validated['home_button_text'] ?? 'หน้าหลัก',
 
                 'button_color' =>
                     $validated['button_color'],
@@ -202,6 +257,11 @@ class FrontendThemeController extends Controller
 
         $backgroundImagePath = $theme->background_image;
         $backgroundVideoPath = $theme->background_video;
+        $headerBackgroundImagePath = $theme->header_background_image;
+        $headerBackgroundVideoPath = $theme->header_background_video;
+        $headerLogoMainPath = $theme->header_logo_main;
+        $headerLogoRight1Path = $theme->header_logo_right_1;
+        $headerLogoRight2Path = $theme->header_logo_right_2;
 
         if (
             $request->boolean('remove_background_image')
@@ -249,14 +309,75 @@ class FrontendThemeController extends Controller
             $backgroundVideoPath = $newVideo;
         }
 
+        if ($request->boolean('remove_header_background_image') && !$request->hasFile('header_background_image')) {
+            $this->deleteThemeImage($theme->header_background_image);
+            $headerBackgroundImagePath = null;
+        }
+
+        if ($request->boolean('remove_header_background_video') && !$request->hasFile('header_background_video')) {
+            $this->deleteThemeVideo($theme->header_background_video);
+            $headerBackgroundVideoPath = null;
+        }
+
+        if ($request->boolean('remove_header_logo_main') && !$request->hasFile('header_logo_main')) {
+            $this->deleteThemeImage($theme->header_logo_main);
+            $headerLogoMainPath = null;
+        }
+
+        if ($request->boolean('remove_header_logo_right_1') && !$request->hasFile('header_logo_right_1')) {
+            $this->deleteThemeImage($theme->header_logo_right_1);
+            $headerLogoRight1Path = null;
+        }
+
+        if ($request->boolean('remove_header_logo_right_2') && !$request->hasFile('header_logo_right_2')) {
+            $this->deleteThemeImage($theme->header_logo_right_2);
+            $headerLogoRight2Path = null;
+        }
+
+        if ($request->hasFile('header_background_image')) {
+            $newHeaderImage = $this->uploadThemeImage($request->file('header_background_image'));
+            $this->deleteThemeImage($theme->header_background_image);
+            $headerBackgroundImagePath = $newHeaderImage;
+        }
+
+        if ($request->hasFile('header_background_video')) {
+            $newHeaderVideo = $this->uploadThemeVideo($request->file('header_background_video'));
+            $this->deleteThemeVideo($theme->header_background_video);
+            $headerBackgroundVideoPath = $newHeaderVideo;
+        }
+
+        if ($request->hasFile('header_logo_main')) {
+            $newLogo = $this->uploadThemeImage($request->file('header_logo_main'));
+            $this->deleteThemeImage($theme->header_logo_main);
+            $headerLogoMainPath = $newLogo;
+        }
+
+        if ($request->hasFile('header_logo_right_1')) {
+            $newLogo = $this->uploadThemeImage($request->file('header_logo_right_1'));
+            $this->deleteThemeImage($theme->header_logo_right_1);
+            $headerLogoRight1Path = $newLogo;
+        }
+
+        if ($request->hasFile('header_logo_right_2')) {
+            $newLogo = $this->uploadThemeImage($request->file('header_logo_right_2'));
+            $this->deleteThemeImage($theme->header_logo_right_2);
+            $headerLogoRight2Path = $newLogo;
+        }
+
         DB::transaction(function () use (
             $validated,
             $theme,
             $logoPath,
             $backgroundImagePath,
             $backgroundVideoPath,
+            $headerBackgroundImagePath,
+            $headerBackgroundVideoPath,
+            $headerLogoMainPath,
+            $headerLogoRight1Path,
+            $headerLogoRight2Path,
             $isDefault,
-            $isActive
+            $isActive,
+            $request
         ) {
             if ($isDefault) {
                 FrontendTheme::query()
@@ -289,6 +410,36 @@ class FrontendThemeController extends Controller
 
                 'background_video' =>
                     $backgroundVideoPath,
+
+                'header_type' =>
+                    $validated['header_type'] ?? 'none',
+
+                'header_height' =>
+                    $validated['header_height'] ?? 82,
+
+                'header_background_color' =>
+                    $validated['header_background_color'] ?? '#1EB5F0',
+
+                'header_background_image' =>
+                    $headerBackgroundImagePath,
+
+                'header_background_video' =>
+                    $headerBackgroundVideoPath,
+
+                'header_logo_main' =>
+                    $headerLogoMainPath,
+
+                'header_logo_right_1' =>
+                    $headerLogoRight1Path,
+
+                'header_logo_right_2' =>
+                    $headerLogoRight2Path,
+
+                'show_home_button' =>
+                    $request->boolean('show_home_button'),
+
+                'home_button_text' =>
+                    $validated['home_button_text'] ?? 'หน้าหลัก',
 
                 'button_color' =>
                     $validated['button_color'],
@@ -351,24 +502,29 @@ class FrontendThemeController extends Controller
     }
 
     public function destroy(FrontendTheme $theme)
-{
-    if ($theme->is_default) {
-        return back()->with(
-            'error',
-            'ไม่สามารถลบ Theme ที่กำลังใช้งานอยู่ได้'
-        );
+    {
+        if ($theme->is_default) {
+            return back()->with(
+                'error',
+                'ไม่สามารถลบ Theme ที่กำลังใช้งานอยู่ได้'
+            );
+        }
+
+        $this->deleteLogo($theme->logo);
+        $this->deleteThemeImage($theme->background_image);
+        $this->deleteThemeVideo($theme->background_video);
+        $this->deleteThemeImage($theme->header_background_image);
+        $this->deleteThemeVideo($theme->header_background_video);
+        $this->deleteThemeImage($theme->header_logo_main);
+        $this->deleteThemeImage($theme->header_logo_right_1);
+        $this->deleteThemeImage($theme->header_logo_right_2);
+
+        $theme->delete();
+
+        return redirect()
+            ->route('frontend.themes.index')
+            ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
     }
-
-    $this->deleteLogo($theme->logo);
-    $this->deleteThemeImage($theme->background_image);
-    $this->deleteThemeVideo($theme->background_video);
-
-    $theme->delete();
-
-    return redirect()
-        ->route('frontend.themes.index')
-        ->with('success', 'ลบธีมหน้าตู้สำเร็จ');
-}
 
     private function validateTheme(
         Request $request,
@@ -466,6 +622,17 @@ class FrontendThemeController extends Controller
                     'required',
                     'string',
                     'max:50',
+                ],
+
+                'show_home_button' => [
+                    'nullable',
+                    'boolean',
+                ],
+
+                'home_button_text' => [
+                    'nullable',
+                    'string',
+                    'max:100',
                 ],
 
                 'is_default' => [

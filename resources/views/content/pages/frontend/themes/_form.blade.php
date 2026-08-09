@@ -421,10 +421,22 @@
                                     id="previewHeaderVideo" class="kiosk-header-video d-none" autoplay muted loop
                                     playsinline></video>
                                 <div class="kiosk-header-inner">
-                                    <div><button type="button" id="previewHomeButton"
-                                            class="btn btn-light btn-sm rounded-pill"><i
-                                                class="icon-base ti tabler-home me-1"></i><span
-                                                id="previewHomeText">{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}</span></button>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <button type="button" id="previewHomeButton"
+                                            class="btn btn-light btn-sm rounded-pill">
+                                            <i class="icon-base ti tabler-home me-1"></i>
+                                            <span
+                                                id="previewHomeText">{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}</span>
+                                        </button>
+
+                                        <div id="previewLanguageButtons" class="d-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
+                                                style="width:34px;height:34px;" title="ไทย">🇹🇭</button>
+                                            <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
+                                                style="width:34px;height:34px;" title="English">🇬🇧</button>
+                                            <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
+                                                style="width:34px;height:34px;" title="中文">🇨🇳</button>
+                                        </div>
                                     </div>
                                     <div class="text-center"><img id="previewLogoMain" src="{{ $logoMain }}"
                                             class="kiosk-logo-main {{ $logoMain ? '' : 'd-none' }}">
