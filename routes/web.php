@@ -317,35 +317,55 @@ Route::prefix('promotions')
     Route::prefix('customers')
     ->name('customers.')
     ->group(function () {
-        Route::get('/', [CustomerController::class, 'index'])
-            ->name('index');
+        Route::get(
+            '/import-template',
+            [CustomerController::class, 'downloadImportTemplate']
+        )->name('import-template');
 
-        Route::get('/create', [CustomerController::class, 'create'])
-            ->name('create');
+        Route::post(
+            '/import',
+            [CustomerController::class, 'import']
+        )->name('import');
 
-        Route::post('/', [CustomerController::class, 'store'])
-            ->name('store');
+        Route::get(
+            '/export',
+            [CustomerController::class, 'export']
+        )->name('export');
 
-        Route::get('/{customer}', [CustomerController::class, 'show'])
-            ->name('show');
+        Route::get(
+            '/',
+            [CustomerController::class, 'index']
+        )->name('index');
 
-        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])
-            ->name('edit');
+        Route::get(
+            '/create',
+            [CustomerController::class, 'create']
+        )->name('create');
 
-        Route::put('/{customer}', [CustomerController::class, 'update'])
-            ->name('update');
+        Route::post(
+            '/',
+            [CustomerController::class, 'store']
+        )->name('store');
 
-        Route::post('/{customer}/adjust-points', [
-            CustomerController::class,
-            'adjustPoints',
-        ])->name('adjust-points');
+        Route::get(
+            '/{customer}',
+            [CustomerController::class, 'show']
+        )->name('show');
 
-        Route::get('/export', [CustomerController::class, 'export'])->name('export');
+        Route::get(
+            '/{customer}/edit',
+            [CustomerController::class, 'edit']
+        )->name('edit');
 
-        Route::delete('/{customer}', [
-            CustomerController::class,
-            'destroy',
-        ])->name('destroy');
+        Route::put(
+            '/{customer}',
+            [CustomerController::class, 'update']
+        )->name('update');
+
+        Route::delete(
+            '/{customer}',
+            [CustomerController::class, 'destroy']
+        )->name('destroy');
     });
 
     Route::prefix('frontend/languages')
