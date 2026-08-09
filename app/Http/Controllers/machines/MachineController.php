@@ -58,6 +58,7 @@ $machineGroups = MachineGroup::query()
                 'name' => ['required', 'string', 'max:255'],
                 'code' => ['required', 'string', 'max:100', 'unique:machines,code'],
                 'location_id' => ['nullable', 'exists:locations,id'],
+                'machine_group_id' => ['nullable', 'integer', 'exists:machine_groups,id'],
                 'serial_number' => ['nullable', 'string', 'max:255'],
                 'model' => ['nullable', 'string', 'max:255'],
                 'status' => ['required', 'in:active,maintenance,inactive,offline,error'],
@@ -88,7 +89,7 @@ $machineGroups = MachineGroup::query()
             ]
         );
         $this->validateMachineLanguages($request);
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $validated) {
             $machine = Machine::create([
                 'name' => $request->name,
                 'code' => $request->code,
@@ -98,7 +99,7 @@ $machineGroups = MachineGroup::query()
                 'status' => $request->status,
                 'remark' => $request->remark,
                 'is_active' => $request->boolean('is_active'),
-                'machine_group_id' =>$validated['machine_group_id'] ?? null,
+                'machine_group_id' => $validated['machine_group_id'] ?? null,
             ]);
 
            $tanksInput = collect($request->input('tanks', []))
@@ -180,6 +181,7 @@ $machineGroups = MachineGroup::query()
                 'name' => ['required', 'string', 'max:255'],
                 'code' => ['required', 'string', 'max:100', 'unique:machines,code,' . $machine->id],
                 'location_id' => ['nullable', 'exists:locations,id'],
+                'machine_group_id' => ['nullable', 'integer', 'exists:machine_groups,id'],
                 'serial_number' => ['nullable', 'string', 'max:255'],
                 'model' => ['nullable', 'string', 'max:255'],
                 'status' => ['required', 'in:active,maintenance,inactive,offline,error'],
@@ -211,7 +213,7 @@ $machineGroups = MachineGroup::query()
             ]
         );
 $this->validateMachineLanguages($request);
-        DB::transaction(function () use ($request, $machine) {
+        DB::transaction(function () use ($request, $machine, $validated) {
             $machine->update([
                 'name' => $request->name,
                 'code' => $request->code,
@@ -221,7 +223,7 @@ $this->validateMachineLanguages($request);
                 'status' => $request->status,
                 'remark' => $request->remark,
                 'is_active' => $request->boolean('is_active'),
-                'machine_group_id' =>$validated['machine_group_id'] ?? null,
+                'machine_group_id' => $validated['machine_group_id'] ?? null,
             ]);
 
             $tanksInput = collect($request->input('tanks', []))
