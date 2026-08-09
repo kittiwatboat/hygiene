@@ -35,6 +35,45 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
+  <div class="mb-3">
+    <label class="form-label">
+        กลุ่มตู้
+    </label>
+
+    <select
+        name="machine_group_id"
+        class="form-select @error('machine_group_id') is-invalid @enderror"
+    >
+        <option value="">
+            -- เลือกกลุ่มตู้ --
+        </option>
+
+        @foreach ($machineGroups as $group)
+            <option
+                value="{{ $group->id }}"
+                {{ (string) old(
+                    'machine_group_id',
+                    $machine->machine_group_id ?? ''
+                ) === (string) $group->id
+                    ? 'selected'
+                    : '' }}
+            >
+                {{ $group->name }}
+                ({{ $group->code }})
+            </option>
+        @endforeach
+    </select>
+
+    <div class="form-text">
+        Theme ของหน้าตู้จะอ้างอิงจากกลุ่มตู้ที่เลือก
+    </div>
+
+    @error('machine_group_id')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
 
   <div class="col-md-6">
     <label class="form-label">สถานที่ติดตั้ง</label>

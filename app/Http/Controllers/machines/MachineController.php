@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\DB;
 use App\Models\FrontendLanguage;
 use App\Models\FrontendMachineLanguageSetting;
 use Illuminate\Validation\ValidationException;
+use App\Models\MachineGroup;
 
 class MachineController extends Controller
 {
     public function index()
     {
-        $machines = Machine::with(['location', 'tanks.product'])
+        $machines = Machine::query()
+            ->with(['location', 'tanks.product', 'group.theme'])
             ->latest()
             ->get();
 
@@ -26,7 +28,10 @@ class MachineController extends Controller
     public function create()
 {
     $locations = Location::orderBy('name')->get();
-
+$machineGroups = MachineGroup::query()
+    ->where('is_active', true)
+    ->orderBy('name')
+    ->get();
     $products = Product::where('is_active', 1)
         ->orderBy('name')
         ->get();
@@ -42,7 +47,7 @@ class MachineController extends Controller
 
     return view(
         'content.pages.machines.create',
-        compact('locations', 'products', 'frontendLanguages')
+        compact('locations', 'products', 'frontendLanguages', 'machineGroups')
     );
 }
 
@@ -93,6 +98,7 @@ class MachineController extends Controller
                 'status' => $request->status,
                 'remark' => $request->remark,
                 'is_active' => $request->boolean('is_active'),
+                'machine_group_id' =>$validated['machine_group_id'] ?? null,
             ]);
 
            $tanksInput = collect($request->input('tanks', []))
@@ -137,6 +143,14 @@ $this->syncMachineLanguages($request, $machine);
     'tanks.product',
     'frontendMachineLanguageSettings.language',
 ]);
+$machineGroups = MachineGroup::query()
+    ->where('is_active', true)
+    ->orWhere(
+        'id',
+        $machine->machine_group_id
+    )
+    ->orderBy('name')
+    ->get();
 
     $locations = Location::orderBy('name')->get();
 
@@ -155,7 +169,7 @@ $this->syncMachineLanguages($request, $machine);
 
     return view(
         'content.pages.machines.edit',
-        compact('machine', 'locations', 'products', 'frontendLanguages')
+        compact('machine', 'locations', 'products', 'frontendLanguages', 'machineGroups')
     );
 }
 
@@ -207,6 +221,7 @@ $this->validateMachineLanguages($request);
                 'status' => $request->status,
                 'remark' => $request->remark,
                 'is_active' => $request->boolean('is_active'),
+                'machine_group_id' =>$validated['machine_group_id'] ?? null,
             ]);
 
             $tanksInput = collect($request->input('tanks', []))

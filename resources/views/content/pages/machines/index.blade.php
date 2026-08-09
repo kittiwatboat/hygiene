@@ -146,6 +146,8 @@
               <tr>
                 <th style="width: 70px;">#</th>
                 <th>รหัสตู้</th>
+                <th>กลุ่มตู้</th>
+                <th>Theme</th>
                 <th>ชื่อตู้ / สถานที่</th>
                 <th>ช่องน้ำยา / Stock</th>
                 <th>สถานะ</th>
@@ -189,7 +191,47 @@
                       </div>
                     </div>
                   </td>
+                  <td>
+    @if ($machine->group)
+        <div class="fw-semibold">
+            {{ $machine->group->name }}
+        </div>
 
+        <small class="text-muted">
+            {{ $machine->group->code }}
+        </small>
+    @else
+        <span class="text-muted">
+            ไม่ได้กำหนด
+        </span>
+    @endif
+</td>
+
+<td>
+    @if ($machine->group?->theme)
+        <div class="d-flex align-items-center gap-2">
+            <span
+                class="rounded-circle border"
+                style="
+                    width: 20px;
+                    height: 20px;
+                    display: inline-block;
+                    background:
+                        {{ $machine->group->theme->background_color
+                            ?? '#ffffff' }};
+                "
+            ></span>
+
+            <span>
+                {{ $machine->group->theme->name }}
+            </span>
+        </div>
+    @else
+        <span class="text-muted">
+            Default Theme
+        </span>
+    @endif
+</td>
                   <td>
                     <div class="fw-medium">{{ $machine->name }}</div>
 

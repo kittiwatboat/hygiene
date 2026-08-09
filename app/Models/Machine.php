@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Machine extends Model
 {
@@ -19,6 +20,7 @@ class Machine extends Model
     'is_active',
     'remark',
     'last_seen_at',
+    'machine_group_id',
 ];
 
     protected $casts = [
@@ -81,6 +83,13 @@ public function frontendMachineLanguageSettings()
     return $this->hasMany(
         \App\Models\FrontendMachineLanguageSetting::class,
         'machine_id'
+    );
+}
+public function group(): BelongsTo
+{
+    return $this->belongsTo(
+        MachineGroup::class,
+        'machine_group_id'
     );
 }
 }
