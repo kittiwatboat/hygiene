@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -25,20 +24,7 @@ class Customer extends Model
         'line_id',
         'member_type',
         'registered_at',
-        'branch_id',
-
-        /*
-        |--------------------------------------------------------------------------
-        | points_balance
-        |--------------------------------------------------------------------------
-        | ยังคงไว้ใน fillable เพราะระบบต้องสามารถกำหนดแต้มเริ่มต้น
-        | และปรับยอดจาก business flow ภายในระบบได้
-        |
-        | การห้ามแก้แต้มจากหน้าจัดการสมาชิก ถูกควบคุมที่ Controller/Form
-        | โดยไม่รับ points_balance จาก request ของ create/edit/import
-        */
         'points_balance',
-
         'total_topup',
         'status',
         'is_active',
@@ -61,14 +47,6 @@ class Customer extends Model
         return $this->hasMany(
             PointTransaction::class,
             'customer_id'
-        );
-    }
-
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(
-            Branch::class,
-            'branch_id'
         );
     }
 
