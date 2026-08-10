@@ -35,9 +35,16 @@
         top: 90px
     }
 
+    .preview-scale-wrap {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+    }
+
     .kiosk-preview {
         position: relative;
-        min-height: 700px;
+        width: 100%;
+        aspect-ratio: 1920 / 1080;
         border: 10px solid #20242b;
         border-radius: 24px;
         overflow: hidden;
@@ -64,7 +71,8 @@
     .kiosk-content {
         position: relative;
         z-index: 2;
-        min-height: 700px;
+        min-height: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column
     }
@@ -189,9 +197,8 @@
             position: static
         }
 
-        .kiosk-preview,
-        .kiosk-content {
-            min-height: 600px
+        .preview-scale-wrap {
+            max-width: 100%;
         }
     }
 </style>
@@ -545,6 +552,7 @@
                     </div><span class="badge bg-label-primary">Live Preview</span>
                 </div>
                 <div class="card-body">
+                    <div class="preview-scale-wrap">
                     <div id="kioskPreview" class="kiosk-preview">
                         <img id="previewBgImage" class="kiosk-bg-img d-none" alt=""><video
                             id="previewBgVideo" class="kiosk-bg-video d-none" autoplay muted loop playsinline></video>
@@ -615,6 +623,7 @@
                                         id="previewPrimaryButton" class="kiosk-btn">ยืนยัน</button></div>
                             </div>
                         </div>
+                    </div>
                     </div>
                     <div class="form-text mt-3">Preview นี้ใช้ดูภาพรวม Theme เท่านั้น ข้อมูลสินค้าเป็นข้อมูลตัวอย่าง
                     </div>
