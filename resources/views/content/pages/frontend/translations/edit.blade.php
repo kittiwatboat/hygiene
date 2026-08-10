@@ -4,56 +4,22 @@
 
 @section('content')
 @php
-    /*
-    |--------------------------------------------------------------------------
-    | HOME Translation Keys
-    |--------------------------------------------------------------------------
-    | หน้า HOME ตอนนี้ให้แก้เฉพาะ:
-    | 1. ข้อความบน Header
-    | 2. ข้อความบนปุ่ม
-    |
-    | รองรับทั้งกรณี group เป็น HOME / home
-    | และกรณี key ขึ้นต้นด้วย home.
-    */
+    $homeKeyNames = [
+        'home.header_title',
+        'home.select_button',
+    ];
+
     $homeKeys = $translationKeys
-        ->filter(function ($item) {
-            $group = strtoupper(trim((string) ($item->group ?? '')));
-            $key = strtolower(trim((string) ($item->key ?? '')));
-
-            return $group === 'HOME'
-                || str_starts_with($key, 'home.');
-        })
-        ->filter(function ($item) {
-            $key = strtolower((string) ($item->key ?? ''));
-            $description = strtolower((string) ($item->description ?? ''));
-
-            return str_contains($key, 'header')
-                || str_contains($key, 'button')
-                || str_contains($description, 'header')
-                || str_contains($description, 'ปุ่ม');
+        ->whereIn('key', $homeKeyNames)
+        ->sortBy(function ($item) use ($homeKeyNames) {
+            return array_search($item->key, $homeKeyNames, true);
         })
         ->values();
 
-    $getFieldLabel = function ($translationKey) {
-        $key = strtolower((string) ($translationKey->key ?? ''));
-        $description = strtolower((string) ($translationKey->description ?? ''));
-
-        if (
-            str_contains($key, 'header')
-            || str_contains($description, 'header')
-        ) {
-            return 'ข้อความบน Header';
-        }
-
-        if (
-            str_contains($key, 'button')
-            || str_contains($description, 'ปุ่ม')
-        ) {
-            return 'ข้อความบนปุ่ม';
-        }
-
-        return $translationKey->description ?: $translationKey->key;
-    };
+    $labels = [
+        'home.header_title' => 'ข้อความบน Header',
+        'home.select_button' => 'ข้อความบนปุ่ม',
+    ];
 @endphp
 
 <div class="row g-4">
@@ -71,9 +37,7 @@
 
                     <p class="text-muted mb-0">
                         ภาษา:
-                        <strong>
-                            {{ $language->native_name ?? $language->name }}
-                        </strong>
+                        <strong>{{ $language->native_name ?? $language->name }}</strong>
 
                         <span class="mx-2">•</span>
 
@@ -149,12 +113,25 @@
                     </h5>
 
                     <p class="text-muted mb-0">
-                        กำหนดข้อความที่ใช้บนหน้าแรกของตู้
+                        หน้า HOME มีข้อความแปล 2 จุด: Header และปุ่มเลือกเติมน้ำยา
                     </p>
                 </div>
 
                 <div class="card-body">
-                    @forelse ($homeKeys as $translationKey)
+                    @foreach ($homeKeyNames as $keyName)
+                        @php
+                            $translationKey = $homeKeys->firstWhere('key', $keyName);
+                        @endphp
+
+                        @if (!$translationKey)
+                            <div class="alert alert-warning">
+                                ยังไม่พบ Key:
+                                <code>{{ $keyName }}</code>
+                            </div>
+
+                            @continue
+                        @endif
+
                         @php
                             $translation = $translations->get($translationKey->id);
 
@@ -166,25 +143,21 @@
                                 $fieldName,
                                 $translation?->value
                             );
-
-                            $fieldLabel = $getFieldLabel($translationKey);
                         @endphp
 
                         <div class="border rounded p-4 mb-4">
-                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                            <div class="d-flex flex-wrap justify-content-between gap-3 mb-3">
                                 <div>
                                     <h6 class="mb-1">
-                                        {{ $fieldLabel }}
+                                        {{ $labels[$keyName] ?? $translationKey->description }}
                                     </h6>
 
                                     <code>{{ $translationKey->key }}</code>
                                 </div>
 
-                                @if (filled($translationKey->default_value))
-                                    <span class="badge bg-label-secondary">
-                                        มีค่าเริ่มต้น
-                                    </span>
-                                @endif
+                                <span class="badge bg-label-secondary">
+                                    HOME
+                                </span>
                             </div>
 
                             <div class="row g-3">
@@ -194,7 +167,7 @@
                                     </label>
 
                                     <textarea
-                                        rows="3"
+                                        rows="2"
                                         class="form-control bg-light"
                                         readonly
                                     >{{ $translationKey->default_value }}</textarea>
@@ -208,7 +181,7 @@
 
                                     <textarea
                                         name="translations[{{ $translationKey->id }}]"
-                                        rows="3"
+                                        rows="2"
                                         class="form-control @error($fieldName) is-invalid @enderror"
                                         placeholder="{{ $translationKey->default_value }}"
                                     >{{ $currentValue }}</textarea>
@@ -227,25 +200,14 @@
                                 </div>
                             </div>
                         </div>
-                    @empty
-                        <div class="alert alert-warning mb-0">
-                            <div class="fw-semibold mb-1">
-                                ยังไม่พบ Translation Key สำหรับหน้า HOME
-                            </div>
-
-                            <div>
-                                หน้า HOME ต้องมีอย่างน้อย 2 รายการ:
-                                ข้อความบน Header และข้อความบนปุ่ม
-                            </div>
-                        </div>
-                    @endforelse
+                    @endforeach
                 </div>
             </div>
 
-            @if ($homeKeys->isNotEmpty())
+            @if ($homeKeys->count() === 2)
                 <div
                     class="position-sticky bottom-0 bg-body py-3"
-                    style="z-index: 10;"
+                    style="z-index:10;"
                 >
                     <div class="card border-primary shadow">
                         <div class="card-body d-flex align-items-center justify-content-between gap-3">
@@ -255,9 +217,7 @@
                                 </div>
 
                                 <small class="text-muted">
-                                    ทั้งหมด
-                                    {{ number_format($homeKeys->count()) }}
-                                    รายการ
+                                    2 รายการ
                                 </small>
                             </div>
 
