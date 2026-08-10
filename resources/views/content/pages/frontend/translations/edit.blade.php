@@ -86,38 +86,38 @@
             border: 1px solid #e9ecef;
             border-radius: 12px;
             background: #fff;
-            padding: 20px 18px;
+            padding: 18px 16px;
             height: 100%;
-            font-size: 13px;
-            line-height: 1.45;
+            font-size: 11px;
+            line-height: 1.4;
         }
 
         .home-legend-box h5 {
-            font-size: 16px;
-            line-height: 1.3;
-            margin-bottom: 14px !important;
+            font-size: 14px;
+            line-height: 1.25;
+            margin-bottom: 12px !important;
         }
 
         .home-legend-box p {
-            font-size: 12px;
-            line-height: 1.5;
-            margin-bottom: 16px !important;
+            font-size: 10px;
+            line-height: 1.45;
+            margin-bottom: 14px !important;
         }
 
         .home-legend-box .fw-semibold {
-            font-size: 13px;
-            line-height: 1.35;
+            font-size: 11px;
+            line-height: 1.3;
         }
 
         .home-legend-box .text-muted {
-            font-size: 11px;
-            line-height: 1.35;
+            font-size: 10px;
+            line-height: 1.3;
         }
 
         .legend-number {
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
             border-radius: 999px;
             background: #ff3b30;
             color: #fff;
@@ -125,8 +125,8 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 16px;
-            margin-right: 8px;
+            font-size: 14px;
+            margin-right: 7px;
         }
 
         .translation-number-badge {
