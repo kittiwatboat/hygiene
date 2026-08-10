@@ -264,7 +264,7 @@
     $selectRows = $buildRows($keyMap['SELECT_PRODUCT']);
 
     $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
-    $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview-6-items.png');
+    $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
 @endphp
 
 <div class="row g-4">
