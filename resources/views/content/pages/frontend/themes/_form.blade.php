@@ -99,12 +99,14 @@
     .kiosk-right {
         display: flex;
         justify-content: flex-end;
-        gap: 8px
+        align-items: center;
+        gap: 10px;
+        min-width: 150px
     }
 
     .kiosk-right img {
-        max-width: 74px;
-        max-height: 42px;
+        width: 68px;
+        height: 46px;
         object-fit: contain
     }
 
@@ -349,15 +351,92 @@
                     <div class="col-12 header-video-field"><label class="form-label">วิดีโอ Header</label><input
                             type="file" name="header_background_video" id="headerBackgroundVideoInput"
                             class="form-control" accept=".mp4,.webm,.mov"></div>
-                    <div class="col-md-4"><label class="form-label">โลโก้หลัก</label><input type="file"
-                            name="header_logo_main" id="headerLogoMainInput" class="form-control"
-                            accept=".jpg,.jpeg,.png,.webp,.svg"></div>
-                    <div class="col-md-4"><label class="form-label">โลโก้ขวา 1</label><input type="file"
-                            name="header_logo_right_1" id="headerLogoRight1Input" class="form-control"
-                            accept=".jpg,.jpeg,.png,.webp,.svg"></div>
-                    <div class="col-md-4"><label class="form-label">โลโก้ขวา 2</label><input type="file"
-                            name="header_logo_right_2" id="headerLogoRight2Input" class="form-control"
-                            accept=".jpg,.jpeg,.png,.webp,.svg"></div>
+                    <div class="col-md-4">
+                        <label class="form-label">โลโก้หลัก</label>
+                        <input
+                            type="file"
+                            name="header_logo_main"
+                            id="headerLogoMainInput"
+                            class="form-control"
+                            accept=".jpg,.jpeg,.png,.webp,.svg"
+                        >
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            โลโก้ด้านขวา 1
+                        </label>
+
+                        <input
+                            type="file"
+                            name="header_logo_right_1"
+                            id="headerLogoRight1Input"
+                            class="form-control @error('header_logo_right_1') is-invalid @enderror"
+                            accept="image/png,.png"
+                        >
+
+                        @error('header_logo_right_1')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+
+                        <div class="form-text">
+                            รองรับเฉพาะไฟล์ PNG
+                        </div>
+
+                        @if ($logoRight1)
+                            <div class="mt-2">
+                                <img
+                                    src="{{ $logoRight1 }}"
+                                    alt="โลโก้ด้านขวา 1"
+                                    class="rounded border p-2"
+                                    style="
+                                        width: 120px;
+                                        height: 70px;
+                                        object-fit: contain;
+                                        background: #f8f9fa;
+                                    "
+                                >
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            โลโก้ด้านขวา 2
+                        </label>
+
+                        <input
+                            type="file"
+                            name="header_logo_right_2"
+                            id="headerLogoRight2Input"
+                            class="form-control @error('header_logo_right_2') is-invalid @enderror"
+                            accept="image/png,.png"
+                        >
+
+                        @error('header_logo_right_2')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+
+                        <div class="form-text">
+                            รองรับเฉพาะไฟล์ PNG
+                        </div>
+
+                        @if ($logoRight2)
+                            <div class="mt-2">
+                                <img
+                                    src="{{ $logoRight2 }}"
+                                    alt="โลโก้ด้านขวา 2"
+                                    class="rounded border p-2"
+                                    style="
+                                        width: 120px;
+                                        height: 70px;
+                                        object-fit: contain;
+                                        background: #f8f9fa;
+                                    "
+                                >
+                            </div>
+                        @endif
+                    </div>
 
                     <div class="col-12">
                         <hr class="my-1">
@@ -369,10 +448,11 @@
                                 id="show_home_button" class="form-check-input"
                                 {{ old('show_home_button', isset($theme) ? (int) $theme->show_home_button : 1) ? 'checked' : '' }}><label
                                 class="form-check-label" for="show_home_button">แสดงปุ่มกลับหน้าแรก</label></div>
-                        <label class="form-label">ข้อความปุ่มหน้าแรก</label><input type="text"
+                        {{-- <label class="form-label">ข้อความปุ่มหน้าแรก</label>
+                        <input type="text"
                             name="home_button_text" id="home_button_text"
                             value="{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}"
-                            class="form-control">
+                            class="form-control"> --}}
                     </div>
 
                     <div class="col-12">
@@ -608,9 +688,36 @@
             preview()
         });
         $('show_home_button')?.addEventListener('change', preview);
+        function bindPngLogo(inputId, imageId) {
+            const input = $(inputId);
+
+            input?.addEventListener('change', () => {
+                const file = input.files?.[0];
+
+                if (!file) return;
+
+                const isPng =
+                    file.type === 'image/png'
+                    || file.name.toLowerCase().endsWith('.png');
+
+                if (!isPng) {
+                    input.value = '';
+                    alert('โลโก้ด้านขวารองรับเฉพาะไฟล์ PNG เท่านั้น');
+                    return;
+                }
+
+                const image = $(imageId);
+
+                if (image) {
+                    image.src = URL.createObjectURL(file);
+                    image.classList.remove('d-none');
+                }
+            });
+        }
+
         bindLogo('headerLogoMainInput', 'previewLogoMain', 'previewLogoText');
-        bindLogo('headerLogoRight1Input', 'previewLogoRight1');
-        bindLogo('headerLogoRight2Input', 'previewLogoRight2');
+        bindPngLogo('headerLogoRight1Input', 'previewLogoRight1');
+        bindPngLogo('headerLogoRight2Input', 'previewLogoRight2');
         toggleFields();
         preview();
     });
