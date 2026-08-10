@@ -35,10 +35,17 @@
         top: 90px
     }
 
+    .kiosk-preview-wrap {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
     .kiosk-preview {
         position: relative;
-        width: 100%;
-        aspect-ratio: 16 / 9;
+        width: min(100%, 1120px);
+        margin: 0 auto;
+        aspect-ratio: 1920 / 1080;
         min-height: 0;
         border: 10px solid #20242b;
         border-radius: 24px;
@@ -191,7 +198,16 @@
         }
 
         .kiosk-preview {
-            aspect-ratio: 16 / 9
+            width: 100%;
+            aspect-ratio: 1920 / 1080
+        }
+
+        .kiosk-left {
+            flex-wrap: wrap
+        }
+
+        .kiosk-langs {
+            flex-wrap: wrap
         }
     }
 </style>
@@ -494,20 +510,21 @@
                                                 id="previewHomeText">{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}</span>
                                         </button>
 
-
+                                        <div id="previewLanguageButtons" class="d-flex align-items-center gap-1">
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="ไทย">🇹🇭</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="English">🇬🇧</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="中文">🇨🇳</button>
+                                        </div>
                                     </div>
                                     <div class="text-center">
                                         <div
                                             id="previewHeaderTitle"
                                             class="fw-bold"
                                             style="
-                                                font-size: clamp(18px, 2vw, 20px);
+                                                font-size: clamp(18px, 2vw, 30px);
                                                 line-height: 1.15;
                                                 color: {{ old('text_color', $theme->text_color ?? '#111827') }};
                                                 text-shadow: 0 1px 2px rgba(255,255,255,.22);
