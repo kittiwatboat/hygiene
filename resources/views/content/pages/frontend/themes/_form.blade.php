@@ -842,3 +842,4 @@
         toggleFields();
         preview();
     });
+</script>
