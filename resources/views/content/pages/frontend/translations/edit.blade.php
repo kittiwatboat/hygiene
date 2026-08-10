@@ -276,7 +276,7 @@
                         <div class="col-lg-10">
                             <div class="home-preview-wrap">
                                 <img
-                                    src="{{ $previewImage }}"
+                                    src="{{ asset('assets/img/frontend/home/home-translation-preview.png') }}"
                                     alt="ตัวอย่างหน้า HOME"
                                     class="home-preview-image"
                                 >
