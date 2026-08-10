@@ -87,20 +87,21 @@
             border-radius: 12px;
             background: #fff;
             padding: 20px 18px;
-            min-height: 100%;
+            height: 100%;
             font-size: 13px;
             line-height: 1.45;
         }
 
         .home-legend-box h5 {
             font-size: 16px;
+            line-height: 1.3;
             margin-bottom: 14px !important;
         }
 
         .home-legend-box p {
             font-size: 12px;
             line-height: 1.5;
-            margin-bottom: 18px !important;
+            margin-bottom: 16px !important;
         }
 
         .home-legend-box .fw-semibold {
@@ -324,7 +325,7 @@
                                         เลขกำกับในภาพ คือข้อความที่คุณสามารถแก้ไขได้
                                     </p>
 
-                                    <div class="mb-3">
+                                    <div class="mb-4">
                                         <div class="d-flex align-items-start">
                                             <span class="legend-number">1</span>
                                             <div>
