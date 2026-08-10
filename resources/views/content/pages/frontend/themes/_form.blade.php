@@ -30,14 +30,16 @@
 @endphp
 
 <style>
-    .theme-preview-sticky {
-        position: sticky;
-        top: 90px
+    .preview-modal-stage {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 8px;
     }
 
     .preview-scale-wrap {
         width: 100%;
-        max-width: 980px;
+        max-width: 1100px;
         margin: 0 auto;
     }
 
@@ -193,35 +195,33 @@
     }
 
     @media(max-width:1199.98px) {
-        .theme-preview-sticky {
-            position: static
-        }
-
         .preview-scale-wrap {
             max-width: 100%;
         }
     }
-
-    .editor-landscape .card-body .row > [class*="col-"] {
-        align-self: start;
-    }
-
-    .editor-landscape .card-body .row .w-100 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-
 </style>
 
-<div class="row row-cols-1 row-cols-md-2 g-4">
-    <div class="col-12 order-2 order-xl-2">
+<div class="row g-4">
+    <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-1">ตั้งค่า Theme หน้าตู้</h5>
-                <p class="text-muted mb-0">ปรับค่าด้านซ้ายและดูภาพรวมทั้งหมดจาก Live Preview ด้านขวา</p>
+            <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h5 class="mb-1">ตั้งค่า Theme หน้าตู้</h5>
+                    <p class="text-muted mb-0">ตั้งค่า Theme แล้วกดดู Preview เพื่อดูภาพรวมหน้าตู้</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-label-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#themePreviewModal"
+                >
+                    <i class="icon-base ti tabler-device-desktop me-1"></i>
+                    ดู Preview
+                </button>
             </div>
             <div class="card-body">
-                <div class="row g-4 editor-landscape">
+                <div class="row g-4">
                     <div class="col-md-6">
                         <label class="form-label">ชื่อธีม <span class="text-danger">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $theme->name ?? '') }}"
@@ -552,16 +552,36 @@
         </div>
     </div>
 
-    <div class="col-12 order-1 order-xl-1">
-        <div class="theme-preview-sticky">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center gap-3">
-                    <div>
-                        <h5 class="mb-1">Preview ภาพรวมหน้าตู้</h5>
-                        <p class="text-muted mb-0">ดู Header, พื้นหลัง, สีข้อความ และปุ่มพร้อมกันในภาพเดียว</p>
-                    </div><span class="badge bg-label-primary">Live Preview</span>
+    <div class="col-12 d-flex justify-content-end gap-2"><a href="{{ route('frontend.themes.index') }}"
+            class="btn btn-label-secondary">ยกเลิก</a><button type="submit" class="btn btn-primary"><i
+                class="icon-base ti tabler-device-floppy me-1"></i>บันทึก</button></div>
+</div>
+
+
+<div
+    class="modal fade"
+    id="themePreviewModal"
+    tabindex="-1"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">Preview ภาพรวมหน้าตู้</h5>
+                    <p class="text-muted mb-0 small">ตัวอย่างสัดส่วนหน้าจอ 1920 × 1080</p>
                 </div>
-                <div class="card-body">
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+
+            <div class="modal-body bg-light">
+                <div class="preview-modal-stage">
                     <div class="preview-scale-wrap">
                     <div id="kioskPreview" class="kiosk-preview">
                         <img id="previewBgImage" class="kiosk-bg-img d-none" alt=""><video
@@ -635,16 +655,24 @@
                         </div>
                     </div>
                     </div>
-                    <div class="form-text mt-3">Preview นี้ใช้ดูภาพรวม Theme เท่านั้น ข้อมูลสินค้าเป็นข้อมูลตัวอย่าง
-                    </div>
                 </div>
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <small class="text-muted">
+                    Preview ใช้สำหรับดูภาพรวม Theme ก่อนบันทึก
+                </small>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                >
+                    ปิด Preview
+                </button>
             </div>
         </div>
     </div>
-
-    <div class="col-12 d-flex justify-content-end gap-2"><a href="{{ route('frontend.themes.index') }}"
-            class="btn btn-label-secondary">ยกเลิก</a><button type="submit" class="btn btn-primary"><i
-                class="icon-base ti tabler-device-floppy me-1"></i>บันทึก</button></div>
 </div>
 
 <script>
@@ -806,7 +834,11 @@
 
         bindPngLogo('headerLogoRight1Input', 'previewLogoRight1');
         bindPngLogo('headerLogoRight2Input', 'previewLogoRight2');
+
+        const previewModal = $('themePreviewModal');
+        previewModal?.addEventListener('shown.bs.modal', () => {
+            preview();
+        });
         toggleFields();
         preview();
     });
-</script>
