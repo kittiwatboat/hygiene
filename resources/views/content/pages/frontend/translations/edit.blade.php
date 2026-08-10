@@ -59,28 +59,27 @@
 
         /* ปรับตำแหน่งใหม่ให้พอดีกับภาพย่อ */
         .pin-header {
-            top: 1.8%;
-            left: 38.5%;
+            top: 4%;
+            left: 24.5%;
         }
 
         .highlight-header {
-            top: 1.2%;
-            left: 42%;
-            width: 35%;
-            height: 9%;
+                top: 3%;
+    left: 29.58%;
+    width: 41%;
+    height: 9.8%;
         }
 
         .pin-button {
-            bottom: 8.5%;
-            left: 36.5%;
-        }
-
+                bottom: 8.5%;
+    left: 25%;
+}
         .highlight-button {
-            bottom: 4.8%;
-            left: 40.5%;
-            width: 28.5%;
-            height: 13.5%;
-            border-radius: 10px;
+           bottom: 3%;
+    left: 35%;
+    width: 28.5%;
+    height: 13.5%;
+    border-radius: 10px;
         }
 
         .home-legend-box {
@@ -299,7 +298,7 @@
 
                             <div class="col-lg-2">
                                 <div class="home-legend-box">
-                                    <h5 class="fw-bold mb-4">หมายเหตุ</h5>
+                                    <h5 class="fw-bold mb-6">หมายเหตุ</h5>
                                     <p class="text-muted mb-4">
                                         เลขกำกับในภาพ คือข้อความที่คุณสามารถแก้ไขได้
                                     </p>
