@@ -86,14 +86,37 @@
             border: 1px solid #e9ecef;
             border-radius: 12px;
             background: #fff;
-            padding: 24px 20px;
-            height: 100%;
+            padding: 20px 18px;
+            min-height: 100%;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .home-legend-box h5 {
+            font-size: 16px;
+            margin-bottom: 14px !important;
+        }
+
+        .home-legend-box p {
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 18px !important;
+        }
+
+        .home-legend-box .fw-semibold {
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .home-legend-box .text-muted {
+            font-size: 11px;
+            line-height: 1.35;
         }
 
         .legend-number {
-            width: 38px;
-            height: 38px;
-            min-width: 38px;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
             border-radius: 999px;
             background: #ff3b30;
             color: #fff;
@@ -101,8 +124,8 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 22px;
-            margin-right: 10px;
+            font-size: 16px;
+            margin-right: 8px;
         }
 
         .translation-number-badge {
@@ -279,9 +302,8 @@
 
                     <div class="card-body">
                         <div class="row g-4">
-                            <div class="col-lg-10">
-                                <div class="col-lg-10">
-                                    <div class="home-preview-stage">
+                            <div class="col-lg-9">
+                                <div class="home-preview-stage">
                                         <div class="home-preview-wrap">
                                             <img src="{{ $previewImage }}" alt="ตัวอย่างหน้า HOME"
                                                 class="home-preview-image">
@@ -292,18 +314,17 @@
                                             <div class="home-preview-pin pin-button">2</div>
                                             <div class="home-preview-highlight highlight-button"></div>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-lg-3">
                                 <div class="home-legend-box">
-                                    <h5 class="fw-bold mb-6">หมายเหตุ</h5>
+                                    <h5 class="fw-bold mb-3">หมายเหตุ</h5>
                                     <p class="text-muted mb-4">
                                         เลขกำกับในภาพ คือข้อความที่คุณสามารถแก้ไขได้
                                     </p>
 
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <div class="d-flex align-items-start">
                                             <span class="legend-number">1</span>
                                             <div>
