@@ -19,6 +19,10 @@
         isset($theme) && $theme->header_background_video
             ? asset('assets/videos/frontend/themes/' . $theme->header_background_video)
             : null;
+    $logoMain =
+        isset($theme) && $theme->header_logo_main
+            ? asset('assets/img/frontend/themes/' . $theme->header_logo_main)
+            : null;
     $logoRight1 =
         isset($theme) && $theme->header_logo_right_1
             ? asset('assets/img/frontend/themes/' . $theme->header_logo_right_1)
@@ -84,6 +88,12 @@
         align-items: center;
         gap: 12px;
         padding: 10px 18px
+    }
+
+    .kiosk-logo-main {
+        max-width: 150px;
+        max-height: 52px;
+        object-fit: contain
     }
 
     .kiosk-right {
@@ -341,7 +351,18 @@
                     <div class="col-12 header-video-field"><label class="form-label">วิดีโอ Header</label><input
                             type="file" name="header_background_video" id="headerBackgroundVideoInput"
                             class="form-control" accept=".mp4,.webm,.mov"></div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="form-label">โลโก้หลัก</label>
+                        <input
+                            type="file"
+                            name="header_logo_main"
+                            id="headerLogoMainInput"
+                            class="form-control"
+                            accept=".jpg,.jpeg,.png,.webp,.svg"
+                        >
+                    </div>
+
+                    <div class="col-md-4">
                         <label class="form-label">
                             โลโก้ด้านขวา 1
                         </label>
@@ -379,7 +400,7 @@
                         @endif
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">
                             โลโก้ด้านขวา 2
                         </label>
@@ -497,18 +518,10 @@
                                                 style="width:34px;height:34px;" title="中文">🇨🇳</button>
                                         </div>
                                     </div>
-                                    <div class="text-center">
-                                        <div
-                                            id="previewHeaderTitle"
-                                            class="fw-bold text-white"
-                                            style="
-                                                font-size: clamp(16px, 1.8vw, 28px);
-                                                line-height: 1.2;
-                                                text-shadow: 0 2px 6px rgba(0,0,0,.25);
-                                            "
-                                        >
-                                            ผู้เชี่ยวชาญการดูแลผ้าครบวงจร
-                                        </div>
+                                    <div class="text-center"><img id="previewLogoMain" src="{{ $logoMain }}"
+                                            class="kiosk-logo-main {{ $logoMain ? '' : 'd-none' }}">
+                                        <div id="previewLogoText"
+                                            class="fw-bold text-white {{ $logoMain ? 'd-none' : '' }}">HYGIENE</div>
                                     </div>
                                     <div class="kiosk-right"><img id="previewLogoRight1" src="{{ $logoRight1 }}"
                                             class="{{ $logoRight1 ? '' : 'd-none' }}"><img id="previewLogoRight2"
@@ -646,6 +659,15 @@
             $('previewHomeText').textContent = $('home_button_text')?.value?.trim() || 'หน้าหลัก'
         }
 
+        function bindLogo(input, img, text) {
+            $(input)?.addEventListener('change', () => {
+                const f = $(input).files?.[0];
+                if (!f) return;
+                $(img).src = URL.createObjectURL(f);
+                $(img).classList.remove('d-none');
+                if (text) $(text).classList.add('d-none')
+            })
+        }
         document.querySelectorAll('.theme-color-picker').forEach(p => p.addEventListener('input', () => {
             const t = $(p.dataset.target);
             if (t) t.value = p.value;
@@ -693,6 +715,7 @@
             });
         }
 
+        bindLogo('headerLogoMainInput', 'previewLogoMain', 'previewLogoText');
         bindPngLogo('headerLogoRight1Input', 'previewLogoRight1');
         bindPngLogo('headerLogoRight2Input', 'previewLogoRight2');
         toggleFields();
