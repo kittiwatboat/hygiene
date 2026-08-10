@@ -37,7 +37,9 @@
 
     .kiosk-preview {
         position: relative;
-        min-height: 700px;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        min-height: 0;
         border: 10px solid #20242b;
         border-radius: 24px;
         overflow: hidden;
@@ -64,7 +66,8 @@
     .kiosk-content {
         position: relative;
         z-index: 2;
-        min-height: 700px;
+        height: 100%;
+        min-height: 0;
         display: flex;
         flex-direction: column
     }
@@ -102,21 +105,23 @@
 
     .kiosk-body {
         flex: 1;
-        padding: 34px;
+        min-height: 0;
+        padding: 22px 30px 24px;
         display: flex;
         flex-direction: column
     }
 
     .kiosk-title {
         text-align: center;
-        font-size: 30px;
+        font-size: clamp(20px, 2vw, 30px);
         font-weight: 800
     }
 
     .kiosk-subtitle {
         text-align: center;
         opacity: .7;
-        margin-bottom: 28px
+        margin-bottom: 16px;
+        font-size: 13px
     }
 
     .kiosk-card {
@@ -152,7 +157,7 @@
 
     .kiosk-actions {
         margin-top: auto;
-        padding-top: 28px;
+        padding-top: 16px;
         display: flex;
         justify-content: center;
         gap: 14px
@@ -183,9 +188,8 @@
             position: static
         }
 
-        .kiosk-preview,
-        .kiosk-content {
-            min-height: 600px
+        .kiosk-preview {
+            aspect-ratio: 16 / 9
         }
     }
 </style>
@@ -500,11 +504,12 @@
                                     <div class="text-center">
                                         <div
                                             id="previewHeaderTitle"
-                                            class="fw-bold text-white"
+                                            class="fw-bold"
                                             style="
-                                                font-size: clamp(16px, 1.8vw, 28px);
-                                                line-height: 1.2;
-                                                text-shadow: 0 2px 6px rgba(0,0,0,.25);
+                                                font-size: clamp(18px, 2vw, 30px);
+                                                line-height: 1.15;
+                                                color: {{ old('text_color', $theme->text_color ?? '#111827') }};
+                                                text-shadow: 0 1px 2px rgba(255,255,255,.22);
                                             "
                                         >
                                             ผู้เชี่ยวชาญการดูแลผ้าครบวงจร
@@ -593,6 +598,12 @@
                 btnText = $('button_text_color')?.value || '#fff',
                 hover = $('button_hover_border_color')?.value || '#00AEEF';
             content.style.color = text;
+
+            const headerTitle = $('previewHeaderTitle');
+            if (headerTitle) {
+                headerTitle.style.color = text;
+            }
+
             frame.style.background = bg;
             pbtn.style.background = btn;
             pbtn.style.color = btnText;
