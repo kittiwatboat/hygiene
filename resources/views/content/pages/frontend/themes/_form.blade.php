@@ -19,10 +19,6 @@
         isset($theme) && $theme->header_background_video
             ? asset('assets/videos/frontend/themes/' . $theme->header_background_video)
             : null;
-    $logoMain =
-        isset($theme) && $theme->header_logo_main
-            ? asset('assets/img/frontend/themes/' . $theme->header_logo_main)
-            : null;
     $logoRight1 =
         isset($theme) && $theme->header_logo_right_1
             ? asset('assets/img/frontend/themes/' . $theme->header_logo_right_1)
@@ -336,6 +332,75 @@
                             name="header_height" id="header_height"
                             value="{{ old('header_height', $theme->header_height ?? 82) }}" class="form-control"
                             min="40" max="300"></div>
+
+                    <div class="col-12">
+                        <label class="form-label">
+                            ข้อความตรงกลาง Header
+                        </label>
+
+                        <input
+                            type="text"
+                            name="header_title"
+                            id="header_title"
+                            value="{{ old('header_title', $theme->header_title ?? 'ผู้เชี่ยวชาญการดูแลผ้าครบวงจร') }}"
+                            class="form-control @error('header_title') is-invalid @enderror"
+                            maxlength="150"
+                            placeholder="เช่น ผู้เชี่ยวชาญการดูแลผ้าครบวงจร"
+                        >
+
+                        @error('header_title')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            สีข้อความ Header
+                        </label>
+
+                        <div class="input-group">
+                            <input
+                                type="color"
+                                value="{{ old('header_title_color', $theme->header_title_color ?? '#FFFFFF') }}"
+                                class="form-control form-control-color theme-color-picker"
+                                data-target="header_title_color"
+                                style="max-width:64px"
+                            >
+
+                            <input
+                                type="text"
+                                name="header_title_color"
+                                id="header_title_color"
+                                value="{{ old('header_title_color', $theme->header_title_color ?? '#FFFFFF') }}"
+                                class="form-control @error('header_title_color') is-invalid @enderror"
+                                placeholder="#FFFFFF"
+                            >
+                        </div>
+
+                        @error('header_title_color')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            ขนาดข้อความ Header (px)
+                        </label>
+
+                        <input
+                            type="number"
+                            name="header_title_size"
+                            id="header_title_size"
+                            value="{{ old('header_title_size', $theme->header_title_size ?? 32) }}"
+                            class="form-control @error('header_title_size') is-invalid @enderror"
+                            min="14"
+                            max="96"
+                        >
+
+                        @error('header_title_size')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="col-12 header-color-field"><label class="form-label">สีพื้นหลัง Header</label>
                         <div class="input-group"><input type="color"
                                 value="{{ old('header_background_color', $theme->header_background_color ?? '#1EB5F0') }}"
@@ -351,18 +416,7 @@
                     <div class="col-12 header-video-field"><label class="form-label">วิดีโอ Header</label><input
                             type="file" name="header_background_video" id="headerBackgroundVideoInput"
                             class="form-control" accept=".mp4,.webm,.mov"></div>
-                    <div class="col-md-4">
-                        <label class="form-label">โลโก้หลัก</label>
-                        <input
-                            type="file"
-                            name="header_logo_main"
-                            id="headerLogoMainInput"
-                            class="form-control"
-                            accept=".jpg,.jpeg,.png,.webp,.svg"
-                        >
-                    </div>
-
-                    <div class="col-md-4">
+<div class="col-md-6">
                         <label class="form-label">
                             โลโก้ด้านขวา 1
                         </label>
@@ -400,7 +454,7 @@
                         @endif
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label">
                             โลโก้ด้านขวา 2
                         </label>
@@ -518,10 +572,20 @@
                                                 style="width:34px;height:34px;" title="中文">🇨🇳</button>
                                         </div>
                                     </div>
-                                    <div class="text-center"><img id="previewLogoMain" src="{{ $logoMain }}"
-                                            class="kiosk-logo-main {{ $logoMain ? '' : 'd-none' }}">
-                                        <div id="previewLogoText"
-                                            class="fw-bold text-white {{ $logoMain ? 'd-none' : '' }}">HYGIENE</div>
+                                    <div class="text-center px-2">
+                                        <div
+                                            id="previewHeaderTitle"
+                                            class="fw-bold"
+                                            style="
+                                                color: {{ old('header_title_color', $theme->header_title_color ?? '#FFFFFF') }};
+                                                font-size: {{ old('header_title_size', $theme->header_title_size ?? 32) }}px;
+                                                line-height: 1.1;
+                                                text-shadow: 0 2px 5px rgba(0,0,0,.25);
+                                                white-space: nowrap;
+                                            "
+                                        >
+                                            {{ old('header_title', $theme->header_title ?? 'ผู้เชี่ยวชาญการดูแลผ้าครบวงจร') }}
+                                        </div>
                                     </div>
                                     <div class="kiosk-right"><img id="previewLogoRight1" src="{{ $logoRight1 }}"
                                             class="{{ $logoRight1 ? '' : 'd-none' }}"><img id="previewLogoRight2"
@@ -606,6 +670,21 @@
                 btnText = $('button_text_color')?.value || '#fff',
                 hover = $('button_hover_border_color')?.value || '#00AEEF';
             content.style.color = text;
+
+            const headerTitle = $('previewHeaderTitle');
+            if (headerTitle) {
+                headerTitle.textContent =
+                    $('header_title')?.value?.trim()
+                    || 'ผู้เชี่ยวชาญการดูแลผ้าครบวงจร';
+
+                headerTitle.style.color =
+                    $('header_title_color')?.value
+                    || '#FFFFFF';
+
+                headerTitle.style.fontSize =
+                    ($('header_title_size')?.value || 32) + 'px';
+            }
+
             frame.style.background = bg;
             pbtn.style.background = btn;
             pbtn.style.color = btnText;
@@ -658,23 +737,14 @@
             $('previewHomeButton').classList.toggle('d-none', !$('show_home_button')?.checked);
             $('previewHomeText').textContent = $('home_button_text')?.value?.trim() || 'หน้าหลัก'
         }
-
-        function bindLogo(input, img, text) {
-            $(input)?.addEventListener('change', () => {
-                const f = $(input).files?.[0];
-                if (!f) return;
-                $(img).src = URL.createObjectURL(f);
-                $(img).classList.remove('d-none');
-                if (text) $(text).classList.add('d-none')
-            })
-        }
         document.querySelectorAll('.theme-color-picker').forEach(p => p.addEventListener('input', () => {
             const t = $(p.dataset.target);
             if (t) t.value = p.value;
             preview()
         }));
         ['text_color', 'background_color', 'button_color', 'button_text_color', 'button_hover_border_color',
-            'header_background_color', 'header_height', 'home_button_text'
+            'header_background_color', 'header_height', 'home_button_text',
+            'header_title', 'header_title_color', 'header_title_size'
         ].forEach(id => $(id)?.addEventListener('input', preview));
         ['backgroundImageInput', 'backgroundVideoInput', 'headerBackgroundImageInput',
             'headerBackgroundVideoInput'
@@ -715,7 +785,6 @@
             });
         }
 
-        bindLogo('headerLogoMainInput', 'previewLogoMain', 'previewLogoText');
         bindPngLogo('headerLogoRight1Input', 'previewLogoRight1');
         bindPngLogo('headerLogoRight2Input', 'previewLogoRight2');
         toggleFields();
