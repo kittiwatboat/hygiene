@@ -361,7 +361,7 @@
 
                     <hr class="my-4">
 
-                    @include('frontend.translations.partials.translation-table', [
+                    @include('content.pages.frontend.translations.partials.translation-table', [
                         'rows' => $homeRows,
                     ])
                 </div>
