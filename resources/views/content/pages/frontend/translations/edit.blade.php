@@ -58,17 +58,7 @@
         }
 
         /* ปรับตำแหน่งใหม่ให้พอดีกับภาพย่อ */
-        .pin-header {
-            top: 4%;
-            left: 24.5%;
-        }
 
-        .highlight-header {
-                top: 3%;
-    left: 29.58%;
-    width: 41%;
-    height: 9.8%;
-        }
 
         .pin-button {
                 bottom: 8.5%;
@@ -193,11 +183,6 @@
     @php
         $keyMap = [
             1 => [
-                'key' => 'home.header_title',
-                'title' => 'ข้อความบน Header',
-                'description' => 'Header Title',
-            ],
-            2 => [
                 'key' => 'home.select_button',
                 'title' => 'ข้อความบนปุ่ม "เลือกเติมน้ำยา"',
                 'description' => 'Select Refill Button',
@@ -297,7 +282,7 @@
                             <h4 class="mb-0">ตัวอย่างหน้า HOME</h4>
                         </div>
                         <div class="text-muted mt-2">
-                            คลิกที่หมายเลขเพื่อดูคำอธิบายรายการแก้ไข
+                            หมายเลขในภาพระบุตำแหน่งปุ่มที่สามารถแก้ไขข้อความได้
                         </div>
                     </div>
 
@@ -309,10 +294,7 @@
                                             <img src="{{ $previewImage }}" alt="ตัวอย่างหน้า HOME"
                                                 class="home-preview-image">
 
-                                            <div class="home-preview-pin pin-header">1</div>
-                                            <div class="home-preview-highlight highlight-header"></div>
-
-                                            <div class="home-preview-pin pin-button">2</div>
+                                            <div class="home-preview-pin pin-button">1</div>
                                             <div class="home-preview-highlight highlight-button"></div>
                                         </div>
                                 </div>
@@ -321,23 +303,13 @@
                             <div class="col-lg-3">
                                 <div class="home-legend-box">
                                     <h5 class="fw-bold mb-3">หมายเหตุ</h5>
-                                    <p class="text-muted mb-4">
-                                        เลขกำกับในภาพ คือข้อความที่คุณสามารถแก้ไขได้
+                                    <p class="text-muted mb-3">
+                                        เลขกำกับในภาพ คือข้อความบนปุ่มที่สามารถแก้ไขได้
                                     </p>
-
-                                    <div class="mb-4">
-                                        <div class="d-flex align-items-start">
-                                            <span class="legend-number">1</span>
-                                            <div>
-                                                <div class="fw-semibold">ข้อความบน Header</div>
-                                                <div class="text-muted mt-1">(home.header_title)</div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div>
                                         <div class="d-flex align-items-start">
-                                            <span class="legend-number">2</span>
+                                            <span class="legend-number">1</span>
                                             <div>
                                                 <div class="fw-semibold">ข้อความบนปุ่ม</div>
                                                 <div class="text-muted mt-1">(home.select_button)</div>
@@ -351,7 +323,7 @@
                         <hr class="my-4">
 
                         <div class="mb-3">
-                            <h4 class="mb-2">รายการข้อความที่สามารถแก้ไขได้ (HOME)</h4>
+                            <h4 class="mb-2">ข้อความที่สามารถแก้ไขได้ (HOME)</h4>
                             <div class="text-muted">
                                 แก้ไขด้านล่างแล้วกดบันทึกด้านล่าง
                             </div>
