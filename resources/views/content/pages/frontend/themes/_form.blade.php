@@ -508,7 +508,7 @@
                                             id="previewHeaderTitle"
                                             class="fw-bold"
                                             style="
-                                                font-size: clamp(18px, 2vw, 30px);
+                                                font-size: clamp(18px, 2vw, 20px);
                                                 line-height: 1.15;
                                                 color: {{ old('text_color', $theme->text_color ?? '#111827') }};
                                                 text-shadow: 0 1px 2px rgba(255,255,255,.22);
