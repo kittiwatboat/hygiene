@@ -69,29 +69,23 @@
     }
 
     /* SELECT PRODUCT */
-    .select-pin-back {
-        bottom: 14.5%;
-        left: 1.5%;
-    }
+    .select-pin-detergent { top: 19%; left: 31%; }
+    .select-highlight-detergent { top: 18%; left: 2.5%; width: 31%; height: 15%; }
 
-    .select-highlight-back {
-        bottom: 11.5%;
-        left: .3%;
-        width: 14%;
-        height: 13%;
-    }
+    .select-pin-softener { top: 34%; left: 31%; }
+    .select-highlight-softener { top: 33%; left: 2.5%; width: 31%; height: 15%; }
 
-    .select-pin-confirm {
-        bottom: 14.5%;
-        right: 12.5%;
-    }
+    .select-pin-volume { top: 20%; right: 1.5%; }
+    .select-highlight-volume { top: 18%; right: 2.2%; width: 26%; height: 15%; }
 
-    .select-highlight-confirm {
-        bottom: 11.5%;
-        right: .6%;
-        width: 16%;
-        height: 13%;
-    }
+    .select-pin-currency { top: 35%; right: 1.5%; }
+    .select-highlight-currency { top: 33%; right: 2.2%; width: 26%; height: 15%; }
+
+    .select-pin-back { bottom: 10%; left: 15%; }
+    .select-highlight-back { bottom: 2%; left: 1%; width: 17%; height: 11%; }
+
+    .select-pin-confirm { bottom: 10%; right: 15%; }
+    .select-highlight-confirm { bottom: 2%; right: 1%; width: 17%; height: 11%; }
 
     .translation-legend-box {
         border: 1px solid #e9ecef;
@@ -207,12 +201,36 @@
         'SELECT_PRODUCT' => [
             [
                 'number' => 1,
+                'key' => 'select_product_page.detergent_option',
+                'title' => 'ตัวเลือกน้ำยาซักผ้า',
+                'description' => 'Detergent Option',
+            ],
+            [
+                'number' => 2,
+                'key' => 'select_product_page.softener_option',
+                'title' => 'ตัวเลือกน้ำยาปรับผ้านุ่ม',
+                'description' => 'Softener Option',
+            ],
+            [
+                'number' => 3,
+                'key' => 'select_product_page.volume_unit',
+                'title' => 'หน่วยปริมาตร',
+                'description' => 'Volume Unit',
+            ],
+            [
+                'number' => 4,
+                'key' => 'select_product_page.currency_unit',
+                'title' => 'หน่วยราคา',
+                'description' => 'Currency Unit',
+            ],
+            [
+                'number' => 5,
                 'key' => 'select_product_page.home_button',
                 'title' => 'ข้อความปุ่มย้อนกลับ',
                 'description' => 'Back Button',
             ],
             [
-                'number' => 2,
+                'number' => 6,
                 'key' => 'select_product_page.confirm_button',
                 'title' => 'ข้อความปุ่มตกลง',
                 'description' => 'Confirm Button',
@@ -246,7 +264,7 @@
     $selectRows = $buildRows($keyMap['SELECT_PRODUCT']);
 
     $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
-    $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
+    $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview-6-items.png');
 @endphp
 
 <div class="row g-4">
@@ -361,7 +379,7 @@
 
                     <hr class="my-4">
 
-                    @include('content.pages.frontend.translations.partials.translation-table', [
+                    @include('frontend.translations.partials.translation-table', [
                         'rows' => $homeRows,
                     ])
                 </div>
@@ -378,7 +396,7 @@
                     </div>
 
                     <div class="text-muted mt-2">
-                        แก้ไขข้อความปุ่มย้อนกลับและปุ่มตกลง
+                        แก้ไขตัวเลือกน้ำยา หน่วยปริมาตร หน่วยราคา และข้อความปุ่ม
                     </div>
                 </div>
 
@@ -393,10 +411,22 @@
                                         class="translation-preview-image"
                                     >
 
-                                    <div class="translation-preview-pin select-pin-back">1</div>
+                                    <div class="translation-preview-pin select-pin-detergent">1</div>
+                                    <div class="translation-preview-highlight select-highlight-detergent"></div>
+
+                                    <div class="translation-preview-pin select-pin-softener">2</div>
+                                    <div class="translation-preview-highlight select-highlight-softener"></div>
+
+                                    <div class="translation-preview-pin select-pin-volume">3</div>
+                                    <div class="translation-preview-highlight select-highlight-volume"></div>
+
+                                    <div class="translation-preview-pin select-pin-currency">4</div>
+                                    <div class="translation-preview-highlight select-highlight-currency"></div>
+
+                                    <div class="translation-preview-pin select-pin-back">5</div>
                                     <div class="translation-preview-highlight select-highlight-back"></div>
 
-                                    <div class="translation-preview-pin select-pin-confirm">2</div>
+                                    <div class="translation-preview-pin select-pin-confirm">6</div>
                                     <div class="translation-preview-highlight select-highlight-confirm"></div>
                                 </div>
                             </div>
@@ -414,20 +444,48 @@
                                     <div class="d-flex align-items-start">
                                         <span class="legend-number">1</span>
                                         <div>
-                                            <div class="fw-semibold">ปุ่มย้อนกลับ</div>
-                                            <div class="text-muted mt-1">
-                                                (select_product_page.home_button)
-                                            </div>
+                                            <div class="fw-semibold">น้ำยาซักผ้า</div>
+                                            <div class="text-muted mt-1">(select_product_page.detergent_option)</div>
                                         </div>
                                     </div>
 
                                     <div class="d-flex align-items-start">
                                         <span class="legend-number">2</span>
                                         <div>
+                                            <div class="fw-semibold">น้ำยาปรับผ้านุ่ม</div>
+                                            <div class="text-muted mt-1">(select_product_page.softener_option)</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-start">
+                                        <span class="legend-number">3</span>
+                                        <div>
+                                            <div class="fw-semibold">หน่วย มล.</div>
+                                            <div class="text-muted mt-1">(select_product_page.volume_unit)</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-start">
+                                        <span class="legend-number">4</span>
+                                        <div>
+                                            <div class="fw-semibold">หน่วย บาท</div>
+                                            <div class="text-muted mt-1">(select_product_page.currency_unit)</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-start">
+                                        <span class="legend-number">5</span>
+                                        <div>
+                                            <div class="fw-semibold">ปุ่มย้อนกลับ</div>
+                                            <div class="text-muted mt-1">(select_product_page.home_button)</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-start">
+                                        <span class="legend-number">6</span>
+                                        <div>
                                             <div class="fw-semibold">ปุ่มตกลง</div>
-                                            <div class="text-muted mt-1">
-                                                (select_product_page.confirm_button)
-                                            </div>
+                                            <div class="text-muted mt-1">(select_product_page.confirm_button)</div>
                                         </div>
                                     </div>
                                 </div>
@@ -437,7 +495,7 @@
 
                     <hr class="my-4">
 
-                    @include('content.pages.frontend.translations.partials.translation-table', [
+                    @include('frontend.translations.partials.translation-table', [
                         'rows' => $selectRows,
                     ])
                 </div>
