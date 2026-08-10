@@ -37,7 +37,7 @@
 
     .preview-scale-wrap {
         width: 100%;
-        max-width: 820px;
+        max-width: 980px;
         margin: 0 auto;
     }
 
@@ -201,17 +201,27 @@
             max-width: 100%;
         }
     }
+
+    .editor-landscape .card-body .row > [class*="col-"] {
+        align-self: start;
+    }
+
+    .editor-landscape .card-body .row .w-100 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
 </style>
 
-<div class="row g-4">
-    <div class="col-xl-5">
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col-12 order-2 order-xl-2">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-1">ตั้งค่า Theme หน้าตู้</h5>
                 <p class="text-muted mb-0">ปรับค่าด้านซ้ายและดูภาพรวมทั้งหมดจาก Live Preview ด้านขวา</p>
             </div>
             <div class="card-body">
-                <div class="row g-4">
+                <div class="row g-4 editor-landscape">
                     <div class="col-md-6">
                         <label class="form-label">ชื่อธีม <span class="text-danger">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $theme->name ?? '') }}"
@@ -542,7 +552,7 @@
         </div>
     </div>
 
-    <div class="col-xl-7">
+    <div class="col-12 order-1 order-xl-1">
         <div class="theme-preview-sticky">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center gap-3">
