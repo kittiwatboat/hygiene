@@ -37,21 +37,24 @@
 
     .kiosk-preview-wrap {
         width: 100%;
-        overflow-x: auto;
-        padding-bottom: 8px;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        padding: 4px 0 8px;
     }
 
     .kiosk-preview {
         position: relative;
-        width: min(100%, 1120px);
+        width: 100%;
+        max-width: 900px;
         margin: 0 auto;
         aspect-ratio: 1920 / 1080;
         min-height: 0;
-        border: 10px solid #20242b;
-        border-radius: 24px;
+        border: 8px solid #20242b;
+        border-radius: 20px;
         overflow: hidden;
         background: #fff;
-        box-shadow: 0 18px 50px rgba(0, 0, 0, .16)
+        box-shadow: 0 14px 36px rgba(0, 0, 0, .14)
     }
 
     .kiosk-bg-img,
@@ -92,8 +95,8 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 12px;
-        padding: 10px 18px
+        gap: 10px;
+        padding: 8px 14px
     }
 
     .kiosk-right {
@@ -145,7 +148,7 @@
     }
 
     .kiosk-copy-headline {
-        font-size: clamp(28px, 2.8vw, 50px);
+        font-size: clamp(20px, 2.2vw, 38px);
         line-height: 1.05;
         font-weight: 800;
         margin-bottom: 8px;
@@ -153,7 +156,7 @@
     }
 
     .kiosk-copy-sub {
-        font-size: clamp(18px, 1.6vw, 30px);
+        font-size: clamp(14px, 1.35vw, 24px);
         line-height: 1.2;
         font-weight: 700;
         color: #c58a12
@@ -163,13 +166,13 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 52px;
-        height: 52px;
+        width: 42px;
+        height: 42px;
         margin: 0 6px;
         border-radius: 50%;
         background: radial-gradient(circle at 30% 30%, #fff6d0, #f4c542 65%, #cd9516);
         color: #fff;
-        font-size: 22px;
+        font-size: 16px;
         font-weight: 800;
         box-shadow: 0 4px 12px rgba(197,138,18,.28)
     }
@@ -317,8 +320,8 @@
     .kiosk-btn {
         border: 2px solid transparent;
         border-radius: 999px;
-        min-width: 340px;
-        min-height: 64px;
+        min-width: 280px;
+        min-height: 54px;
         padding: 10px 28px;
         font-weight: 800;
         font-size: 18px;
@@ -343,6 +346,7 @@
 
         .kiosk-preview {
             width: 100%;
+            max-width: 820px;
             aspect-ratio: 1920 / 1080
         }
 
