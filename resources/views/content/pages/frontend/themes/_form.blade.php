@@ -106,9 +106,10 @@
     .kiosk-body {
         flex: 1;
         min-height: 0;
-        padding: 22px 30px 24px;
+        padding: 14px 24px 16px;
         display: flex;
-        flex-direction: column
+        flex-direction: column;
+        overflow: hidden
     }
 
     .kiosk-title {
@@ -120,56 +121,57 @@
     .kiosk-subtitle {
         text-align: center;
         opacity: .7;
-        margin-bottom: 16px;
-        font-size: 13px
+        margin-bottom: 10px;
+        font-size: 12px
     }
 
     .kiosk-card {
-        width: min(520px, 100%);
+        width: min(500px, 88%);
         margin: 0 auto;
         background: rgba(255, 255, 255, .9);
         border-radius: 18px;
-        padding: 20px;
+        padding: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, .08)
     }
 
     .kiosk-product {
         display: grid;
-        grid-template-columns: 84px 1fr;
-        gap: 14px;
+        grid-template-columns: 58px 1fr;
+        gap: 12px;
         align-items: center;
         background: #f8fafc;
         border-radius: 14px;
-        padding: 14px
+        padding: 10px
     }
 
     .kiosk-product-icon {
-        width: 84px;
-        height: 104px;
+        width: 58px;
+        height: 68px;
         border-radius: 12px;
         background: white;
         border: 1px solid rgba(0, 0, 0, .07);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 36px
+        font-size: 28px
     }
 
     .kiosk-actions {
-        margin-top: auto;
-        padding-top: 16px;
+        margin-top: 12px;
         display: flex;
         justify-content: center;
-        gap: 14px
+        gap: 12px;
+        flex-shrink: 0
     }
 
     .kiosk-btn {
         border: 2px solid transparent;
         border-radius: 999px;
-        min-width: 150px;
-        min-height: 48px;
-        padding: 10px 22px;
-        font-weight: 700
+        min-width: 140px;
+        min-height: 42px;
+        padding: 8px 20px;
+        font-weight: 700;
+        box-shadow: 0 5px 14px rgba(0,0,0,.10)
     }
 
     .section-help {
