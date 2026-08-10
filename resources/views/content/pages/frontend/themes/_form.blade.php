@@ -494,14 +494,13 @@
                                                 id="previewHomeText">{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}</span>
                                         </button>
 
-                                        <div id="previewLanguageButtons" class="d-flex align-items-center gap-1">
+
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="ไทย">🇹🇭</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="English">🇬🇧</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
                                                 style="width:34px;height:34px;" title="中文">🇨🇳</button>
-                                        </div>
                                     </div>
                                     <div class="text-center">
                                         <div
