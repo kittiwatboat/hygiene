@@ -35,26 +35,14 @@
         top: 90px
     }
 
-    .kiosk-preview-wrap {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        overflow: hidden;
-        padding: 4px 0 8px;
-    }
-
     .kiosk-preview {
         position: relative;
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-        aspect-ratio: 1920 / 1080;
-        min-height: 0;
-        border: 8px solid #20242b;
-        border-radius: 20px;
+        min-height: 700px;
+        border: 10px solid #20242b;
+        border-radius: 24px;
         overflow: hidden;
         background: #fff;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, .14)
+        box-shadow: 0 18px 50px rgba(0, 0, 0, .16)
     }
 
     .kiosk-bg-img,
@@ -76,8 +64,7 @@
     .kiosk-content {
         position: relative;
         z-index: 2;
-        height: 100%;
-        min-height: 0;
+        min-height: 700px;
         display: flex;
         flex-direction: column
     }
@@ -95,8 +82,8 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 10px;
-        padding: 8px 14px
+        gap: 12px;
+        padding: 10px 18px
     }
 
     .kiosk-right {
@@ -109,223 +96,75 @@
 
     .kiosk-right img {
         width: 68px;
-        height: 52px;
+        height: 46px;
         object-fit: contain
     }
 
     .kiosk-body {
         flex: 1;
-        min-height: 0;
-        padding: 0;
+        padding: 34px;
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.16))
+        flex-direction: column
     }
 
-    .kiosk-scene {
-        position: relative;
-        flex: 1;
-        min-height: 0;
-        padding: 14px 18px 0;
-        display: grid;
-        grid-template-rows: 1fr auto;
-        gap: 10px
+    .kiosk-title {
+        text-align: center;
+        font-size: 30px;
+        font-weight: 800
     }
 
-    .kiosk-hero {
-        position: relative;
-        min-height: 0;
+    .kiosk-subtitle {
+        text-align: center;
+        opacity: .7;
+        margin-bottom: 28px
+    }
+
+    .kiosk-card {
+        width: min(520px, 100%);
+        margin: 0 auto;
+        background: rgba(255, 255, 255, .9);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .08)
+    }
+
+    .kiosk-product {
         display: grid;
-        grid-template-columns: 1.15fr 1.1fr .8fr;
+        grid-template-columns: 84px 1fr;
         gap: 14px;
-        align-items: stretch
+        align-items: center;
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 14px
     }
 
-    .kiosk-copy {
-        padding: 12px 6px 0 6px;
-        color: inherit
-    }
-
-    .kiosk-copy-headline {
-        font-size: clamp(20px, 2.2vw, 38px);
-        line-height: 1.05;
-        font-weight: 800;
-        margin-bottom: 8px;
-        letter-spacing: -.02em
-    }
-
-    .kiosk-copy-sub {
-        font-size: clamp(14px, 1.35vw, 24px);
-        line-height: 1.2;
-        font-weight: 700;
-        color: #c58a12
-    }
-
-    .kiosk-copy-sub .badge15 {
-        display: inline-flex;
+    .kiosk-product-icon {
+        width: 84px;
+        height: 104px;
+        border-radius: 12px;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, .07);
+        display: flex;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
-        margin: 0 6px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #fff6d0, #f4c542 65%, #cd9516);
-        color: #fff;
-        font-size: 16px;
-        font-weight: 800;
-        box-shadow: 0 4px 12px rgba(197,138,18,.28)
-    }
-
-    .kiosk-stage {
-        position: relative;
-        min-height: 0;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center
-    }
-
-    .kiosk-stage::before {
-        content: '';
-        position: absolute;
-        inset: 6% 12% 14%;
-        background: linear-gradient(180deg, rgba(43,168,216,.16), rgba(43,168,216,.02));
-        border-radius: 18px
-    }
-
-    .kiosk-splash {
-        position: absolute;
-        left: 5%;
-        right: 18%;
-        bottom: 10%;
-        height: 44%;
-        border-radius: 55% 45% 18% 80% / 60% 35% 65% 30%;
-        background: linear-gradient(90deg, rgba(43,168,216,.50), rgba(57,196,240,.15));
-        filter: blur(1px)
-    }
-
-    .kiosk-model {
-        position: relative;
-        width: 56%;
-        height: 82%;
-        border-radius: 40% 40% 26% 26% / 18% 18% 16% 16%;
-        background: linear-gradient(180deg, #7fd4f7 0%, #43b8e9 48%, #84d7f6 100%);
-        clip-path: polygon(46% 0%, 58% 0%, 65% 8%, 69% 18%, 78% 35%, 90% 60%, 77% 70%, 65% 100%, 35% 100%, 26% 74%, 18% 62%, 5% 46%, 22% 26%, 30% 12%, 38% 4%);
-        box-shadow: 0 20px 30px rgba(0,0,0,.10)
-    }
-
-    .kiosk-products {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        gap: 12px;
-        padding: 18px 6px 0 0
-    }
-
-    .kiosk-pack {
-        width: 48%;
-        min-width: 96px;
-        border-radius: 16px;
-        background: linear-gradient(180deg, #3daee5 0%, #1180c4 100%);
-        border: 4px solid rgba(255,255,255,.65);
-        box-shadow: 0 16px 24px rgba(0,0,0,.12);
-        position: relative;
-        padding: 14px 10px 10px;
-        color: #fff;
-        text-align: center
-    }
-
-    .kiosk-pack.softener {
-        background: linear-gradient(180deg, #55bce8 0%, #146fb2 100%)
-    }
-
-    .kiosk-pack.large { height: 72%; }
-    .kiosk-pack.small { height: 64%; }
-
-    .kiosk-pack-brand {
-        font-size: clamp(18px, 1.5vw, 28px);
-        font-weight: 800;
-        line-height: 1
-    }
-
-    .kiosk-pack-sub {
-        font-size: 11px;
-        opacity: .92;
-        margin-bottom: 10px
-    }
-
-    .kiosk-pack-bubble {
-        width: 62%;
-        aspect-ratio: 1;
-        margin: 6px auto 12px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.12) 65%);
-        border: 3px solid rgba(255,255,255,.60)
-    }
-
-    .kiosk-pack-tag {
-        position: absolute;
-        left: 50%;
-        bottom: -12px;
-        transform: translateX(-50%);
-        padding: 5px 14px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 700;
-        background: rgba(240,236,221,.95);
-        color: #242424;
-        box-shadow: 0 5px 10px rgba(0,0,0,.10)
-    }
-
-    .kiosk-footer {
-        position: relative;
-        min-height: 108px;
-        padding: 14px 0 18px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        overflow: hidden
-    }
-
-    .kiosk-footer::before,
-    .kiosk-footer::after {
-        content: '';
-        position: absolute;
-        left: -5%;
-        right: -5%;
-        border-radius: 50%;
-        background: rgba(87,181,231,.26)
-    }
-
-    .kiosk-footer::before {
-        top: 18px;
-        height: 120px
-    }
-
-    .kiosk-footer::after {
-        top: 34px;
-        height: 120px;
-        background: rgba(87,181,231,.38)
+        font-size: 36px
     }
 
     .kiosk-actions {
-        position: relative;
-        z-index: 2;
+        margin-top: auto;
+        padding-top: 28px;
         display: flex;
         justify-content: center;
-        gap: 0;
-        flex-shrink: 0
+        gap: 14px
     }
 
     .kiosk-btn {
         border: 2px solid transparent;
         border-radius: 999px;
-        min-width: 280px;
-        min-height: 54px;
-        padding: 10px 28px;
-        font-weight: 800;
-        font-size: 18px;
-        box-shadow: 0 8px 18px rgba(0,0,0,.14)
+        min-width: 150px;
+        min-height: 48px;
+        padding: 10px 22px;
+        font-weight: 700
     }
 
     .section-help {
@@ -344,28 +183,9 @@
             position: static
         }
 
-        .kiosk-preview {
-            width: 100%;
-            max-width: 820px;
-            aspect-ratio: 1920 / 1080
-        }
-
-        .kiosk-hero {
-            grid-template-columns: 1fr;
-        }
-
-        .kiosk-copy {
-            text-align: center;
-        }
-
-        .kiosk-products {
-            padding-top: 0;
-        }
-
-        .kiosk-btn {
-            min-width: 240px;
-            min-height: 52px;
-            font-size: 16px;
+        .kiosk-preview,
+        .kiosk-content {
+            min-height: 600px
         }
     }
 </style>
@@ -646,7 +466,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center gap-3">
                     <div>
                         <h5 class="mb-1">Preview ภาพรวมหน้าตู้</h5>
-                        <p class="text-muted mb-0">ดูตัวอย่าง Theme แบบภาพรวมตามหน้าจอตู้จริงให้ใกล้เคียงหน้าใช้งาน</p>
+                        <p class="text-muted mb-0">ดู Header, พื้นหลัง, สีข้อความ และปุ่มพร้อมกันในภาพเดียว</p>
                     </div><span class="badge bg-label-primary">Live Preview</span>
                 </div>
                 <div class="card-body">
@@ -660,32 +480,31 @@
                                     id="previewHeaderVideo" class="kiosk-header-video d-none" autoplay muted loop
                                     playsinline></video>
                                 <div class="kiosk-header-inner">
-                                    <div class="d-flex align-items-center gap-1 flex-nowrap">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <button type="button" id="previewHomeButton"
-                                            class="btn btn-light btn-sm rounded-pill px-2 {{ old('show_home_button', $theme->show_home_button ?? true) ? '' : 'd-none' }}">
-                                            <i class="icon-base ti tabler-home"></i>
-                                            <span class="ms-1"
+                                            class="btn btn-light btn-sm rounded-pill">
+                                            <i class="icon-base ti tabler-home me-1"></i>
+                                            <span
                                                 id="previewHomeText">{{ old('home_button_text', $theme->home_button_text ?? 'หน้าหลัก') }}</span>
                                         </button>
 
-                                        <div id="previewLanguageButtons" class="d-flex align-items-center gap-1 {{ old('show_language_selector', $theme->show_language_selector ?? true) ? '' : 'd-none' }}">
+                                        <div id="previewLanguageButtons" class="d-flex align-items-center gap-1">
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
-                                                style="width:32px;height:32px;" title="ไทย">🇹🇭</button>
+                                                style="width:34px;height:34px;" title="ไทย">🇹🇭</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
-                                                style="width:32px;height:32px;" title="English">🇬🇧</button>
+                                                style="width:34px;height:34px;" title="English">🇬🇧</button>
                                             <button type="button" class="btn btn-light btn-sm rounded-circle p-0"
-                                                style="width:32px;height:32px;" title="中文">🇨🇳</button>
+                                                style="width:34px;height:34px;" title="中文">🇨🇳</button>
                                         </div>
                                     </div>
                                     <div class="text-center">
                                         <div
                                             id="previewHeaderTitle"
-                                            class="fw-bold"
+                                            class="fw-bold text-white"
                                             style="
-                                                font-size: clamp(18px, 2vw, 30px);
-                                                line-height: 1.15;
-                                                color: {{ old('text_color', $theme->text_color ?? '#111827') }};
-                                                text-shadow: 0 1px 2px rgba(255,255,255,.22);
+                                                font-size: clamp(16px, 1.8vw, 28px);
+                                                line-height: 1.2;
+                                                text-shadow: 0 2px 6px rgba(0,0,0,.25);
                                             "
                                         >
                                             ผู้เชี่ยวชาญการดูแลผ้าครบวงจร
@@ -698,44 +517,25 @@
                                 </div>
                             </div>
                             <div class="kiosk-body">
-                                <div class="kiosk-scene">
-                                    <div class="kiosk-hero">
-                                        <div class="kiosk-copy">
-                                            <div class="kiosk-copy-headline">ดับเบิ้ลพลังซัก คืนชีวิตผ้า</div>
-                                            <div class="kiosk-copy-sub">สะอาด หอมนนาน <span class="badge15">15</span> สัปดาห์</div>
+                                <div class="kiosk-title">ตัวอย่างหน้าตู้</div>
+                                <div class="kiosk-subtitle">Preview สำหรับตรวจภาพรวม Theme ก่อนนำไปใช้กับกลุ่มตู้</div>
+                                <div class="kiosk-card">
+                                    <div class="fw-bold mb-3">ตัวอย่างข้อมูลบนหน้าตู้</div>
+                                    <div class="kiosk-product">
+                                        <div class="kiosk-product-icon"><i class="icon-base ti tabler-bottle"></i>
                                         </div>
-
-                                        <div class="kiosk-stage">
-                                            <div class="kiosk-splash"></div>
-                                            <div class="kiosk-model"></div>
-                                        </div>
-
-                                        <div class="kiosk-products">
-                                            <div class="kiosk-pack large">
-                                                <div class="kiosk-pack-brand">Hygiene</div>
-                                                <div class="kiosk-pack-sub">Expert Care</div>
-                                                <div class="kiosk-pack-bubble"></div>
-                                                <div class="kiosk-pack-tag">ซักผ้า</div>
-                                            </div>
-                                            <div class="kiosk-pack softener small">
-                                                <div class="kiosk-pack-brand">Hygiene</div>
-                                                <div class="kiosk-pack-sub">Easy Care</div>
-                                                <div class="kiosk-pack-bubble"></div>
-                                                <div class="kiosk-pack-tag">ปรับผ้านุ่ม</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="kiosk-footer">
-                                        <div class="kiosk-actions">
-                                            <button type="button" id="previewPrimaryButton" class="kiosk-btn">
-                                                <i class="icon-base ti tabler-bottle me-2"></i>
-                                                เลือกเติมน้ำยา
-                                                <i class="icon-base ti tabler-chevron-right ms-2"></i>
-                                            </button>
+                                        <div>
+                                            <div class="fw-bold mb-1">Hygiene Expert Care</div>
+                                            <div class="small opacity-75 mb-3">ตัวอย่างสินค้าและข้อความสำหรับดู Theme
+                                                โดยรวม</div>
+                                            <div class="d-flex justify-content-between"><span>จำนวน 1</span><strong>115
+                                                    บาท</strong></div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="kiosk-actions"><button type="button" id="previewSecondaryButton"
+                                        class="kiosk-btn">ย้อนกลับ</button><button type="button"
+                                        id="previewPrimaryButton" class="kiosk-btn">ยืนยัน</button></div>
                             </div>
                         </div>
                     </div>
@@ -793,12 +593,6 @@
                 btnText = $('button_text_color')?.value || '#fff',
                 hover = $('button_hover_border_color')?.value || '#00AEEF';
             content.style.color = text;
-
-            const headerTitle = $('previewHeaderTitle');
-            if (headerTitle) {
-                headerTitle.style.color = text;
-            }
-
             frame.style.background = bg;
             pbtn.style.background = btn;
             pbtn.style.color = btnText;
