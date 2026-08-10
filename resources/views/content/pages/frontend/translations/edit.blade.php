@@ -70,10 +70,10 @@
 
     /* SELECT PRODUCT */
     .select-pin-detergent { top: 19%; left: 31%; }
-    .select-highlight-detergent { top: 18%; left: 2.5%; width: 31%; height: 15%; }
+    .select-highlight-detergent { top: 23%; left: 2.5%; width: 31%; height: 15%; }
 
     .select-pin-softener { top: 34%; left: 31%; }
-    .select-highlight-softener { top: 33%; left: 2.5%; width: 31%; height: 15%; }
+    .select-highlight-softener { top: 43%; left: 2.5%; width: 31%; height: 15%; }
 
     .select-pin-volume { top: 20%; right: 1.5%; }
     .select-highlight-volume { top: 18%; right: 2.2%; width: 26%; height: 15%; }
