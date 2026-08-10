@@ -437,7 +437,7 @@
 
                     <hr class="my-4">
 
-                    @include('content.pages.frontend.translations.partials.translation-table', [
+                    @include('content.pages.frontend.translations.partials.translation-table.blade.php', [
                         'rows' => $selectRows,
                     ])
                 </div>
