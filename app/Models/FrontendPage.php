@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class FrontendPage extends Model
 {
@@ -49,4 +50,15 @@ class FrontendPage extends Model
             ? 'bg-label-success'
             : 'bg-label-secondary';
     }
+    public function machineGroups(): BelongsToMany
+{
+    return $this->belongsToMany(
+        \App\Models\MachineGroup::class,
+        'frontend_machine_group_pages',
+        'frontend_page_id',
+        'machine_group_id'
+    )
+        ->withPivot(['is_active', 'sort_order'])
+        ->withTimestamps();
+}
 }

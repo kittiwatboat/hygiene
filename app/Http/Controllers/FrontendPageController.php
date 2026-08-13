@@ -9,17 +9,97 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\FrontendLanguage;
 use App\Models\FrontendPaymentMethod;
+use APP\Models\MachineGroup;
 
 class FrontendPageController extends Controller
 {
-    public function index()
-    {
-        $pages = FrontendPage::withCount('media')
-            ->orderBy('sort_order')
-            ->get();
+   public function index(Request $request)
+{
+    $machineGroups = MachineGroup::query()
+        ->with('theme')
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get();
 
-        return view('content.pages.frontend.pages.index', compact('pages'));
+    $selectedGroupId = $request->integer('machine_group_id');
+
+    if (! $selectedGroupId && $machineGroups->isNotEmpty()) {
+        $selectedGroupId = (int) $machineGroups->first()->id;
     }
+
+    $selectedGroup = $machineGroups->firstWhere('id', $selectedGroupId);
+
+    $pages = FrontendPage::query()
+        ->withCount('media')
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get();
+
+    $groupPageSettings = collect();
+
+    if ($selectedGroup) {
+        $groupPageSettings = DB::table('frontend_machine_group_pages')
+            ->where('machine_group_id', $selectedGroup->id)
+            ->get()
+            ->keyBy('frontend_page_id');
+    }
+
+    return view(
+        'content.pages.frontend.pages.index',
+        compact(
+            'pages',
+            'machineGroups',
+            'selectedGroup',
+            'selectedGroupId',
+            'groupPageSettings'
+        )
+    );
+}
+
+public function updateGroupPages(Request $request, MachineGroup $machineGroup)
+{
+    $validated = $request->validate([
+        'page_ids' => ['nullable', 'array'],
+        'page_ids.*' => ['integer', 'exists:frontend_pages,id'],
+    ]);
+
+    $selectedPageIds = collect($validated['page_ids'] ?? [])
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    DB::transaction(function () use ($machineGroup, $selectedPageIds) {
+        DB::table('frontend_machine_group_pages')
+            ->where('machine_group_id', $machineGroup->id)
+            ->delete();
+
+        if ($selectedPageIds->isEmpty()) {
+            return;
+        }
+
+        $now = now();
+
+        $rows = $selectedPageIds
+            ->values()
+            ->map(fn ($pageId, $index) => [
+                'machine_group_id' => $machineGroup->id,
+                'frontend_page_id' => $pageId,
+                'is_active' => 1,
+                'sort_order' => $index + 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])
+            ->all();
+
+        DB::table('frontend_machine_group_pages')->insert($rows);
+    });
+
+    return redirect()
+        ->route('frontend.pages.index', [
+            'machine_group_id' => $machineGroup->id,
+        ])
+        ->with('success', 'บันทึกหน้าที่ใช้งานสำหรับกลุ่มตู้เรียบร้อยแล้ว');
+}
 
     public function edit(FrontendPage $page)
     {

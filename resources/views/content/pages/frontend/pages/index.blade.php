@@ -1,125 +1,179 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'จัดการหน้าบ้าน')
+@section('title', 'จัดการหน้าตู้')
 
 @section('content')
-<div class="card">
+<div class="row g-4">
+    @if (session('success'))
+        <div class="col-12">
+            <div class="alert alert-success mb-0">{{ session('success') }}</div>
+        </div>
+    @endif
 
-  <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-3">
-    <div>
-      <h5 class="mb-1">จัดการหน้าบ้าน</h5>
-      <p class="text-muted mb-0">
-        จัดการหน้าแรก หน้าเลือกภาษา หน้าเลือกสินค้า และหน้าต่าง ๆ ของหน้าจอตู้
-      </p>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">จัดการหน้าตู้ตามกลุ่มตู้</h5>
+                <p class="text-muted mb-0">
+                    เลือกกลุ่มตู้ก่อน แล้วกำหนดว่ากลุ่มนี้ใช้หน้าใดบ้าง
+                </p>
+            </div>
+
+            <div class="card-body">
+                <form method="GET" action="{{ route('frontend.pages.index') }}" class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label">กลุ่มตู้</label>
+                        <select
+                            name="machine_group_id"
+                            class="form-select"
+                            onchange="this.form.submit()"
+                        >
+                            @forelse ($machineGroups as $group)
+                                <option
+                                    value="{{ $group->id }}"
+                                    {{ (string) $selectedGroupId === (string) $group->id ? 'selected' : '' }}
+                                >
+                                    {{ $group->name }}
+                                    @if ($group->code)
+                                        ({{ $group->code }})
+                                    @endif
+                                </option>
+                            @empty
+                                <option value="">-- ยังไม่มีกลุ่มตู้ --</option>
+                            @endforelse
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        @if ($selectedGroup)
+                            <div class="border rounded p-3 bg-light">
+                                <div class="small text-muted">Theme ของกลุ่ม</div>
+                                <div class="fw-semibold mt-1">
+                                    {{ optional($selectedGroup->theme)->name ?? 'ยังไม่ได้กำหนด Theme' }}
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 
-  @if (session('success'))
-    <div class="alert alert-success mx-4">
-      {{ session('success') }}
-    </div>
-  @endif
+    @if ($selectedGroup)
+        <div class="col-12">
+            <form
+                method="POST"
+                action="{{ route('frontend.pages.groups.update', $selectedGroup) }}"
+            >
+                @csrf
+                @method('PUT')
 
-  @if (session('error'))
-    <div class="alert alert-danger mx-4">
-      {{ session('error') }}
-    </div>
-  @endif
+                <div class="card">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <h5 class="mb-1">
+                                หน้าที่ใช้กับกลุ่ม: {{ $selectedGroup->name }}
+                            </h5>
+                            <p class="text-muted mb-0">
+                                เปิดเฉพาะหน้าที่ต้องการให้ตู้ในกลุ่มนี้ใช้งาน
+                            </p>
+                        </div>
 
-  <div class="table-responsive">
-    <table class="table table-hover">
-      <thead class="table-light">
-        <tr>
-          <th style="width: 70px;">#</th>
-          <th>หน้า</th>
-          <th style="width: 220px;">ประเภทหน้า</th>
-          <th style="width: 130px;">สถานะ</th>
-          <th style="width: 120px;" class="text-center">จัดการ</th>
-        </tr>
-      </thead>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-base ti tabler-device-floppy me-1"></i>
+                            บันทึกหน้าของกลุ่ม
+                        </button>
+                    </div>
 
-      <tbody>
-        @forelse ($pages as $index => $page)
-          @php
-  $screenKey = $page->screen_key ?? $page->page_key ?? null;
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:70px;">#</th>
+                                    <th>หน้า</th>
+                                    <th style="width:210px;">ประเภทหน้า</th>
+                                    <th style="width:150px;" class="text-center">
+                                        ใช้กับกลุ่มนี้
+                                    </th>
+                                    <th style="width:120px;">สถานะหน้า</th>
+                                    <th style="width:120px;" class="text-center">จัดการ</th>
+                                </tr>
+                            </thead>
 
-  $pageTypeLabels = [
-      'first_page' => 'หน้าแรก / Banner',
-      'language_page' => 'หน้าเลือกภาษา',
-      'phone_verify_page' => 'หน้ากรอกเบอร์โทร',
-      'select_product_page' => 'หน้าเลือกสินค้า',
-      'select_amount_page' => 'หน้าเลือกปริมาณ',
-      'payment_page' => 'หน้าชำระเงิน',
-      'thank_you_page' => 'หน้าขอบคุณ',
-      'error_page' => 'หน้าแจ้งปัญหา',
-  ];
+                            <tbody>
+                                @forelse ($pages as $page)
+                                    @php
+                                        $setting = $groupPageSettings->get($page->id);
+                                        $isUsed = $setting && (bool) $setting->is_active;
+                                        $screenKey = $page->screen_key ?? $page->page_key ?? '';
+                                    @endphp
 
-  $pageTypeLabel = $pageTypeLabels[$screenKey] ?? 'หน้าทั่วไป';
-@endphp
-          <tr>
-            <td>{{ $index + 1 }}</td>
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
 
-            <td>
-              <div class="fw-medium">
-                {{ $page->name }}
-              </div>
+                                        <td>
+                                            <div class="fw-semibold">{{ $page->name }}</div>
 
-              @if ($page->title)
-                <small class="text-muted d-block">
-                  {{ $page->title }}
-                </small>
-              @endif
+                                            @if ($page->subtitle)
+                                                <small class="text-muted d-block">
+                                                    {{ $page->subtitle }}
+                                                </small>
+                                            @endif
 
-              @if ($page->subtitle)
-                <small class="text-muted d-block">
-                  {{ $page->subtitle }}
-                </small>
-              @endif
-            </td>
+                                            @if ($screenKey)
+                                                <code>{{ $screenKey }}</code>
+                                            @endif
+                                        </td>
 
-            <td>
-              <span class="badge bg-label-primary">
-                {{ $pageTypeLabel }}
-              </span>
-            </td>
+                                        <td>
+                                            <span class="badge bg-label-primary">
+                                                {{ $page->page_type ?? $page->type ?? 'หน้าทั่วไป' }}
+                                            </span>
+                                        </td>
 
-            <td>
-              <span class="badge {{ $page->status_class }}">
-                {{ $page->status_text }}
-              </span>
-            </td>
+                                        <td class="text-center">
+                                            <div class="form-check form-switch d-inline-block">
+                                                <input
+                                                    type="checkbox"
+                                                    name="page_ids[]"
+                                                    value="{{ $page->id }}"
+                                                    class="form-check-input"
+                                                    {{ $isUsed ? 'checked' : '' }}
+                                                >
+                                            </div>
+                                        </td>
 
-            <td class="text-center">
-              <a
-                href="{{ route('frontend.pages.edit', $page) }}"
-                class="btn btn-sm btn-primary"
-              >
-                <i class="icon-base ti tabler-pencil me-1"></i>
-                แก้ไข
-              </a>
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="5" class="text-center py-5">
-              <div class="mb-2">
-                <i
-                  class="icon-base ti tabler-device-desktop-off text-muted"
-                  style="font-size: 48px;"
-                ></i>
-              </div>
+                                        <td>
+                                            @if ((bool) ($page->is_active ?? true))
+                                                <span class="badge bg-label-success">เปิดใช้งาน</span>
+                                            @else
+                                                <span class="badge bg-label-secondary">ปิดใช้งาน</span>
+                                            @endif
+                                        </td>
 
-              <h6 class="mb-1">ยังไม่มีหน้า</h6>
-
-              <p class="text-muted mb-0">
-                กรุณารัน seeder เพื่อสร้างหน้าเริ่มต้น
-              </p>
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
-
+                                        <td class="text-center">
+                                            <a
+                                                href="{{ route('frontend.pages.edit', $page) }}"
+                                                class="btn btn-sm btn-primary"
+                                            >
+                                                <i class="icon-base ti tabler-pencil me-1"></i>
+                                                แก้ไข
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-5">
+                                            ยังไม่มีข้อมูลหน้าตู้
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @endif
 </div>
 @endsection
