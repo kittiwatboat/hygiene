@@ -82,33 +82,33 @@
         }
 
         .select-pin-softener {
-            top: 42.7%;
-            left: 0%;
+            top: 34%;
+            left: 31%;
         }
 
         .select-highlight-softener {
-            top: 40%;
+            top: 39%;
             left: 2.5%;
             width: 31%;
             height: 15%;
         }
 
         .select-pin-volume {
-    top: 22%;
-    right: 12%;
-}
+            top: 23%;
+            right: 5%;
+        }
 
         .select-highlight-volume {
-    top: 29.6%;
-    right: 9%;
-    width: 5%;
-    height: 7%;
-}
+            top: 28%;
+            right: 8%;
+            width: 6%;
+            height: 9.5%;
+        }
 
         .select-pin-currency {
-    top: 35%;
-    right: 14.9%;
-}
+            top: 55%;
+            right: 4.5%;
+        }
 
         .select-highlight-currency {
             top: 61.5%;
@@ -290,6 +290,57 @@
                     'description' => 'Confirm Button',
                 ],
             ],
+
+            'ORDER_SUMMARY' => [
+                [
+                    'number' => 1,
+                    'key' => 'order_summary_page.title',
+                    'title' => 'หัวข้อหน้าสรุปรายการ',
+                    'description' => 'Summary Title',
+                ],
+                [
+                    'number' => 2,
+                    'key' => 'order_summary_page.product_list_title',
+                    'title' => 'หัวข้อรายการสินค้า',
+                    'description' => 'Product List Title',
+                ],
+                [
+                    'number' => 3,
+                    'key' => 'order_summary_page.quantity_label',
+                    'title' => 'ข้อความจำนวนสินค้า',
+                    'description' => 'Quantity Label',
+                ],
+                [
+                    'number' => 4,
+                    'key' => 'order_summary_page.promotion_discount_label',
+                    'title' => 'ข้อความส่วนลดโปรโมชั่น',
+                    'description' => 'Promotion Discount Label',
+                ],
+                [
+                    'number' => 5,
+                    'key' => 'order_summary_page.net_total_label',
+                    'title' => 'ข้อความยอดรวมสุทธิ',
+                    'description' => 'Net Total Label',
+                ],
+                [
+                    'number' => 6,
+                    'key' => 'order_summary_page.currency_unit',
+                    'title' => 'หน่วยราคา',
+                    'description' => 'Currency Unit',
+                ],
+                [
+                    'number' => 7,
+                    'key' => 'order_summary_page.back_button',
+                    'title' => 'ข้อความปุ่มย้อนกลับ',
+                    'description' => 'Back Button',
+                ],
+                [
+                    'number' => 8,
+                    'key' => 'order_summary_page.confirm_button',
+                    'title' => 'ข้อความปุ่มตกลง',
+                    'description' => 'Confirm Button',
+                ],
+            ],
         ];
 
         $translationKeysByKey = collect($translationKeys)->keyBy('key');
@@ -314,9 +365,11 @@
 
         $homeRows = $buildRows($keyMap['HOME']);
         $selectRows = $buildRows($keyMap['SELECT_PRODUCT']);
+        $summaryRows = $buildRows($keyMap['ORDER_SUMMARY']);
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
+        $summaryPreviewImage = asset('assets/img/frontend/summary/order-summary-translation-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -547,10 +600,69 @@
                     </div>
                 </div>
 
+
+                {{-- =========================================================
+                ORDER SUMMARY
+                ========================================================== --}}
+                <div class="card translation-page-card mt-4">
+                    <div class="card-header">
+                        <div class="page-section-title">
+                            <span class="badge bg-label-warning">ORDER SUMMARY</span>
+                            <h4 class="mb-0">หน้าสรุปรายการ</h4>
+                        </div>
+
+                        <div class="text-muted mt-2">
+                            แก้ไขหัวข้อ รายการสินค้า จำนวน ส่วนลด ยอดรวม หน่วยราคา และข้อความปุ่ม
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-lg-9">
+                                <div class="translation-preview-stage">
+                                    <div class="translation-preview-wrap">
+                                        <img src="{{ $summaryPreviewImage }}"
+                                            alt="ตัวอย่างหน้าสรุปรายการ"
+                                            class="translation-preview-image">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="translation-legend-box">
+                                    <h5 class="fw-bold">หมายเหตุ</h5>
+
+                                    <p class="text-muted">
+                                        เลขกำกับในภาพ คือข้อความที่สามารถแก้ไขได้
+                                    </p>
+
+                                    <div class="d-flex flex-column gap-3">
+                                        @foreach ($summaryRows as $row)
+                                            <div class="d-flex align-items-start">
+                                                <span class="legend-number">{{ $row['number'] }}</span>
+                                                <div>
+                                                    <div class="fw-semibold">{{ $row['title'] }}</div>
+                                                    <div class="text-muted mt-1">({{ $row['key'] }})</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        @include('content.pages.frontend.translations.partials.translation-table', [
+                            'rows' => $summaryRows,
+                        ])
+                    </div>
+                </div>
+
                 <div class="translation-footer-bar">
                     <div class="d-flex justify-content-between align-items-center gap-3">
                         <div class="text-muted">
-                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() }} รายการ
+                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() }} รายการ
                         </div>
 
                         <div class="d-flex gap-2">
