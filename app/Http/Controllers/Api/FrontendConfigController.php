@@ -9,6 +9,8 @@ use App\Models\FrontendTheme;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use App\Models\Machine;
+use Illuminate\Http\Request;
 use App\Models\FrontendTranslation;
 
 class FrontendConfigController extends Controller
@@ -48,22 +50,182 @@ class FrontendConfigController extends Controller
         }
     }
 
-    public function theme(): JsonResponse
-    {
-        try {
+    public function theme(Request $request): JsonResponse
+{
+    try {
+        $validated = $request->validate([
+            'serial_number' => ['required', 'string', 'max:255'],
+            'model' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:100'],
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | หาเครื่องจากข้อมูลที่ตู้ส่งมา
+        |--------------------------------------------------------------------------
+        | ต้องตรงทั้ง Serial Number + รุ่นตู้ + รหัสตู้
+        |--------------------------------------------------------------------------
+        */
+        $machine = Machine::query()
+            ->with([
+                'group.theme',
+            ])
+            ->where('serial_number', $validated['serial_number'])
+            ->where('model', $validated['model'])
+            ->where('code', $validated['code'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$machine) {
             return response()->json([
-                'success' => true,
-                'message' => 'ดึงข้อมูล Theme สำเร็จ',
-                'data' => $this->getThemeWithLanguages(),
-            ]);
-        } catch (Throwable $exception) {
-            return $this->errorResponse(
-                'Frontend theme API error',
-                'ไม่สามารถดึงข้อมูล Theme ได้',
-                $exception
-            );
+                'success' => false,
+                'message' => 'ไม่พบข้อมูลเครื่องที่ตรงกับ Serial Number, รุ่นตู้ และรหัสตู้',
+                'data' => null,
+            ], 404);
         }
+
+        $group = $machine->group;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Theme ลำดับแรก: Theme ของกลุ่มเครื่อง
+        |--------------------------------------------------------------------------
+        */
+        $theme = null;
+        $themeSource = null;
+
+        if (
+            $group &&
+            (bool) $group->is_active &&
+            $group->theme &&
+            (bool) $group->theme->is_active
+        ) {
+            $theme = $group->theme;
+            $themeSource = 'machine_group';
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fallback: Theme สำรอง
+        |--------------------------------------------------------------------------
+        */
+        if (!$theme) {
+            $theme = FrontendTheme::query()
+                ->where('is_active', true)
+                ->where('is_default', true)
+                ->first();
+
+            $themeSource = $theme
+                ? 'default_theme'
+                : null;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fallback สุดท้าย: Theme active ล่าสุด
+        |--------------------------------------------------------------------------
+        */
+        if (!$theme) {
+            $theme = FrontendTheme::query()
+                ->where('is_active', true)
+                ->orderByDesc('updated_at')
+                ->orderByDesc('id')
+                ->first();
+
+            $themeSource = $theme
+                ? 'latest_active_theme'
+                : null;
+        }
+
+        if (!$theme) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบ Theme ที่สามารถใช้งานได้',
+                'data' => [
+                    'machine' => [
+                        'id' => $machine->id,
+                        'code' => $machine->code,
+                        'serial_number' => $machine->serial_number,
+                        'model' => $machine->model,
+                    ],
+                    'machine_group' => $group ? [
+                        'id' => $group->id,
+                        'name' => $group->name,
+                        'code' => $group->code,
+                    ] : null,
+                    'theme' => null,
+                ],
+            ], 404);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | ภาษา
+        |--------------------------------------------------------------------------
+        | ใช้ logic เดิมของ API เพื่อไม่ให้ frontend ที่ใช้งานอยู่พัง
+        |--------------------------------------------------------------------------
+        */
+        $languages = FrontendLanguage::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $defaultLanguage = $languages->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ดึงข้อมูล Theme ของเครื่องสำเร็จ',
+            'data' => [
+                'machine' => [
+                    'id' => $machine->id,
+                    'name' => $machine->name,
+                    'code' => $machine->code,
+                    'serial_number' => $machine->serial_number,
+                    'model' => $machine->model,
+                    'machine_group_id' => $machine->machine_group_id,
+                ],
+
+                'machine_group' => $group ? [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'code' => $group->code,
+                    'frontend_theme_id' => $group->frontend_theme_id,
+                    'is_active' => (bool) $group->is_active,
+                ] : null,
+
+                'theme_source' => $themeSource,
+
+                'theme' => $this->formatTheme($theme),
+
+                'languages' => [
+                    'default' => $defaultLanguage
+                        ? $this->formatLanguage($defaultLanguage)
+                        : null,
+
+                    'items' => $languages
+                        ->map(
+                            fn (FrontendLanguage $language) =>
+                                $this->formatLanguage($language)
+                        )
+                        ->values(),
+                ],
+            ],
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $exception) {
+        return response()->json([
+            'success' => false,
+            'message' => 'ข้อมูลระบุเครื่องไม่ครบถ้วน',
+            'errors' => $exception->errors(),
+        ], 422);
+    } catch (Throwable $exception) {
+        return $this->errorResponse(
+            'Frontend machine theme API error',
+            'ไม่สามารถดึงข้อมูล Theme ของเครื่องได้',
+            $exception
+        );
     }
+}
 
     public function pages(): JsonResponse
     {

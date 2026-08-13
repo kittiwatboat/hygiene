@@ -6,6 +6,7 @@ use App\Models\FrontendTranslation;
 use App\Http\Controllers\Api\Kiosk\KioskCustomerController;
 use App\Http\Controllers\Api\Kiosk\KioskProductController;
 use App\Http\Controllers\Api\Kiosk\KioskQuoteController;
+use App\Http\Controllers\Api\Frontend\MachineThemeController;
 
 
 Route::prefix('frontend')->group(function () {
@@ -28,6 +29,11 @@ Route::prefix('frontend')->group(function () {
         '/pages/{screenKey}',
         [FrontendConfigController::class, 'page']
     );
+    Route::get(
+        '/machines/{machine}/theme',
+        [MachineThemeController::class, 'show']
+    );
+
 });
 Route::prefix('kiosk')->group(function () {
     Route::post(
