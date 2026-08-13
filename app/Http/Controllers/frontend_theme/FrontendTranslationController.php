@@ -38,73 +38,50 @@ class FrontendTranslationController extends Controller
     /**
      * หน้าแก้ข้อความแปลของภาษาที่เลือก
      */
-    public function edit(
-        Request $request,
-        FrontendLanguage $language
-    ) {
-        $keyword = trim(
-            (string) $request->get('keyword', '')
-        );
+    public function edit(Request $request, FrontendLanguage $language)
+{
+    $keyword = trim((string) $request->get('keyword', ''));
 
-        $group = trim(
-            (string) $request->get('group', '')
-        );
+    $translationKeys = FrontendTranslationKey::query()
+        ->where('is_active', 1)
+        ->when($keyword !== '', function ($query) use ($keyword) {
+            $query->where(function ($query) use ($keyword) {
+                $query
+                    ->where('key', 'like', "%{$keyword}%")
+                    ->orWhere('description', 'like', "%{$keyword}%")
+                    ->orWhere('default_value', 'like', "%{$keyword}%");
+            });
+        })
+        ->orderBy('group')
+        ->orderBy('id')
+        ->get();
 
-        $translationKeys = FrontendTranslationKey::query()
-            ->where('is_active', true)
-            ->when($keyword !== '', function ($query) use ($keyword) {
-                $query->where(function ($subQuery) use ($keyword) {
-                    $subQuery
-                        ->where('key', 'like', "%{$keyword}%")
-                        ->orWhere(
-                            'description',
-                            'like',
-                            "%{$keyword}%"
-                        )
-                        ->orWhere(
-                            'default_value',
-                            'like',
-                            "%{$keyword}%"
-                        );
-                });
-            })
-            ->when($group !== '', function ($query) use ($group) {
-                $query->where('group', $group);
-            })
-            ->orderBy('group')
-            ->orderBy('id')
-            ->get();
+    $translations = FrontendTranslation::query()
+        ->where('language_id', $language->id)
+        ->whereIn(
+            'translation_key_id',
+            $translationKeys->pluck('id')
+        )
+        ->get()
+        ->keyBy('translation_key_id');
 
-        $translations = FrontendTranslation::query()
-            ->where('language_id', $language->id)
-            ->whereIn(
-                'translation_key_id',
-                $translationKeys->pluck('id')
-            )
-            ->get()
-            ->keyBy('translation_key_id');
+    $groups = $translationKeys
+        ->pluck('group')
+        ->filter()
+        ->unique()
+        ->values();
 
-        $groups = FrontendTranslationKey::query()
-            ->where('is_active', true)
-            ->whereNotNull('group')
-            ->where('group', '!=', '')
-            ->distinct()
-            ->orderBy('group')
-            ->pluck('group');
-
-        return view(
-            'content.pages.frontend.translations.edit',
-            compact(
-                'language',
-                'translationKeys',
-                'translations',
-                'groups',
-                'keyword',
-                'group'
-            )
-        );
-    }
-
+    return view(
+        'content.pages.frontend.translations.edit',
+        compact(
+            'language',
+            'translationKeys',
+            'translations',
+            'groups',
+            'keyword'
+        )
+    );
+}
     /**
      * บันทึกข้อความแปล
      */
