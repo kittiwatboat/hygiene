@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\FrontendLanguage;
 use App\Models\FrontendPaymentMethod;
-use APP\Models\MachineGroup;
+use App\Models\MachineGroup;
 
 class FrontendPageController extends Controller
 {
-   public function index(Request $request)
-{
+    public function index(Request $request)
+    {
     $machineGroups = MachineGroup::query()
         ->with('theme')
         ->where('is_active', true)
@@ -56,8 +56,8 @@ class FrontendPageController extends Controller
     );
 }
 
-public function updateGroupPages(Request $request, MachineGroup $machineGroup)
-{
+    public function updateGroupPages(Request $request, MachineGroup $machineGroup)
+    {
     $validated = $request->validate([
         'page_ids' => ['nullable', 'array'],
         'page_ids.*' => ['integer', 'exists:frontend_pages,id'],
@@ -123,7 +123,6 @@ public function updateGroupPages(Request $request, MachineGroup $machineGroup)
         'page',
         'paymentMethods'
     ));
-        return view('content.pages.frontend.pages.edit', compact('page'));
     }
 
     public function update(Request $request, FrontendPage $page)
@@ -318,12 +317,10 @@ public function updateGroupPages(Request $request, MachineGroup $machineGroup)
 
     /*
     |--------------------------------------------------------------------------
-    | ตั้งค่าเฉพาะหน้าเลือกภาษา
+    | ตั้งค่าตามหน้าจอ
     |--------------------------------------------------------------------------
     */
-    $settings = $page->settings_json ?? [];
-
-$screenKey = $page->screen_key ?? $page->page_key ?? null;
+    $screenKey = $page->screen_key ?? $page->page_key ?? null;
 
 switch ($screenKey) {
    case 'first_page':
@@ -549,28 +546,6 @@ switch ($screenKey) {
         'confirm_button_action' => $request->input('confirm_button_action', 'waiting_payment_page'),
 
         'payment_methods' => $paymentMethods,
-    ]);
-    break;
-
-    case 'payment_page':
-    $settings = array_merge($settings, [
-        'step_icon' => $request->input('step_icon', 'tabler-credit-card'),
-
-        'order_summary_icon' => $request->input('order_summary_icon', 'tabler-shopping-cart'),
-        'net_total_icon' => $request->input('net_total_icon', 'tabler-wallet'),
-        'payment_section_icon' => $request->input('payment_section_icon', 'tabler-credit-card'),
-
-        'show_home_button' => $request->boolean('show_home_button', true),
-        'home_button_icon' => $request->input('home_button_icon', 'tabler-home'),
-        'home_button_action' => $request->input('home_button_action', 'first_page'),
-
-        'show_back_button' => $request->boolean('show_back_button', true),
-        'back_button_icon' => $request->input('back_button_icon', 'tabler-chevron-left'),
-        'back_button_action' => $request->input('back_button_action', 'promotion_page'),
-
-        'show_confirm_button' => $request->boolean('show_confirm_button', true),
-        'confirm_button_icon' => $request->input('confirm_button_icon', 'tabler-chevron-right'),
-        'confirm_button_action' => $request->input('confirm_button_action', 'processing_payment_page'),
     ]);
     break;
 
