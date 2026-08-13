@@ -462,11 +462,24 @@ Route::resource('machine-groups',MachineGroupController::class)->except('show');
 
     Route::prefix('frontend/pages')->name('frontend.pages.')->group(function () {
     Route::get('/', [FrontendPageController::class, 'index'])->name('index');
-    Route::get('/{page}/edit', [FrontendPageController::class, 'edit'])->name('edit');
-    Route::put('/{page}', [FrontendPageController::class, 'update'])->name('update');
 
-    Route::post('/{page}/media', [FrontendPageController::class, 'storeMedia'])->name('media.store');
-    Route::put('/media/{media}', [FrontendPageController::class, 'updateMedia'])->name('media.update');
-    Route::delete('/media/{media}', [FrontendPageController::class, 'destroyMedia'])->name('media.destroy');
-    Route::put('/groups/{machineGroup}',[FrontendPageController::class, 'updateGroupPages'])->name('groups.update');
+    Route::put(
+        '/groups/{machineGroup}',
+        [FrontendPageController::class, 'updateGroupPages']
+    )->name('groups.update');
+
+    Route::post('/{page}/media', [FrontendPageController::class, 'storeMedia'])
+        ->name('media.store');
+
+    Route::put('/media/{media}', [FrontendPageController::class, 'updateMedia'])
+        ->name('media.update');
+
+    Route::delete('/media/{media}', [FrontendPageController::class, 'destroyMedia'])
+        ->name('media.destroy');
+
+    Route::get('/{page}/edit', [FrontendPageController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/{page}', [FrontendPageController::class, 'update'])
+        ->name('update');
 });
