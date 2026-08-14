@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Products;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\MachineGroup;
+use App\Models\ProductGroupPrice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -21,10 +23,18 @@ class ProductController extends Controller
         return view('content.pages.products.index', compact('products'));
     }
 
-    public function create()
-    {
-        return view('content.pages.products.create');
-    }
+public function create()
+{
+    $machineGroups = MachineGroup::query()
+        ->where('is_active', 1)
+        ->orderBy('name')
+        ->get();
+
+    return view(
+        'content.pages.products.create',
+        compact('machineGroups')
+    );
+}
 
     public function store(Request $request)
     {
@@ -38,6 +48,31 @@ class ProductController extends Controller
                     'description' => ['nullable', 'string'],
                     'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
                     'is_active' => ['nullable', 'boolean'],
+                    'group_prices' => ['nullable', 'array'],
+'group_prices.*.machine_group_id' => [
+    'required_with:group_prices',
+    'integer',
+    'exists:machine_groups,id',
+],
+'group_prices.*.amount_ml' => [
+    'required_with:group_prices',
+    'integer',
+    'min:1',
+],
+'group_prices.*.price' => [
+    'required_with:group_prices',
+    'numeric',
+    'min:0',
+],
+'group_prices.*.special_price' => [
+    'nullable',
+    'numeric',
+    'min:0',
+],
+'group_prices.*.is_active' => [
+    'nullable',
+    'boolean',
+],
                 ],
                 [
                     'name.required' => 'กรุณากรอกชื่อสินค้า/น้ำยา',
@@ -63,15 +98,20 @@ class ProductController extends Controller
                 $imagePath = $fileName;
             }
 
-            Product::create([
-                'code' => $validated['code'] ?? null,
-                'name' => $validated['name'],
-                'type' => $validated['type'] ?? null,
-                'unit' => $validated['unit'],
-                'description' => $validated['description'] ?? null,
-                'image' => $imagePath,
-                'is_active' => $request->boolean('is_active'),
-            ]);
+            $product = Product::create([
+    'code' => $validated['code'] ?? null,
+    'name' => $validated['name'],
+    'type' => $validated['type'] ?? null,
+    'unit' => $validated['unit'],
+    'description' => $validated['description'] ?? null,
+    'image' => $imagePath,
+    'is_active' => $request->boolean('is_active'),
+]);
+
+$this->syncGroupPrices(
+    $product,
+    $validated['group_prices'] ?? []
+);
 
             return redirect()
                 ->route('products.index')
@@ -95,9 +135,26 @@ class ProductController extends Controller
     }
 
     public function edit(Product $product)
-    {
-        return view('content.pages.products.edit', compact('product'));
-    }
+{
+    $product->load([
+        'groupPrices' => function ($query) {
+            $query
+                ->orderBy('machine_group_id')
+                ->orderBy('sort_order')
+                ->orderBy('amount_ml');
+        },
+    ]);
+
+    $machineGroups = MachineGroup::query()
+        ->where('is_active', 1)
+        ->orderBy('name')
+        ->get();
+
+    return view(
+        'content.pages.products.edit',
+        compact('product', 'machineGroups')
+    );
+}
 
     public function update(Request $request, Product $product)
     {
@@ -115,6 +172,31 @@ class ProductController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
+            'group_prices' => ['nullable', 'array'],
+'group_prices.*.machine_group_id' => [
+    'required_with:group_prices',
+    'integer',
+    'exists:machine_groups,id',
+],
+'group_prices.*.amount_ml' => [
+    'required_with:group_prices',
+    'integer',
+    'min:1',
+],
+'group_prices.*.price' => [
+    'required_with:group_prices',
+    'numeric',
+    'min:0',
+],
+'group_prices.*.special_price' => [
+    'nullable',
+    'numeric',
+    'min:0',
+],
+'group_prices.*.is_active' => [
+    'nullable',
+    'boolean',
+],
         ]);
 
         $uploadPath = base_path('../public_html/assets/img/products');
@@ -162,6 +244,10 @@ class ProductController extends Controller
             'image' => $imagePath,
             'is_active' => $request->boolean('is_active'),
         ]);
+  $this->syncGroupPrices(
+    $product,
+    $validated['group_prices'] ?? []
+);
 
         return redirect()
             ->route('products.index')
@@ -429,4 +515,86 @@ class ProductController extends Controller
 
         return null;
     }
+    private function syncGroupPrices(
+    Product $product,
+    array $rows
+): void {
+    DB::transaction(function () use ($product, $rows) {
+        $normalized = collect($rows)
+            ->filter(function ($row) {
+                return !empty($row['machine_group_id'])
+                    && !empty($row['amount_ml'])
+                    && isset($row['price'])
+                    && $row['price'] !== '';
+            })
+            ->map(function ($row, $index) {
+                return [
+                    'machine_group_id' => (int) $row['machine_group_id'],
+                    'amount_ml' => (int) $row['amount_ml'],
+                    'price' => (float) $row['price'],
+                    'special_price' => (
+                        isset($row['special_price'])
+                        && $row['special_price'] !== ''
+                    )
+                        ? (float) $row['special_price']
+                        : null,
+                    'is_active' => !empty($row['is_active']),
+                    'sort_order' => $index + 1,
+                ];
+            })
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | ป้องกัน Group + ปริมาตร ซ้ำใน request เดียวกัน
+        |--------------------------------------------------------------------------
+        */
+        $duplicate = $normalized
+            ->groupBy(function ($row) {
+                return $row['machine_group_id']
+                    . ':'
+                    . $row['amount_ml'];
+            })
+            ->first(
+                fn ($items) => $items->count() > 1
+            );
+
+        if ($duplicate) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'group_prices' =>
+                    'พบกลุ่มตู้และปริมาตรซ้ำกัน กรุณาตรวจสอบข้อมูลราคา',
+            ]);
+        }
+
+        $keepIds = [];
+
+        foreach ($normalized as $row) {
+            $price = ProductGroupPrice::query()
+                ->updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'machine_group_id' => $row['machine_group_id'],
+                        'amount_ml' => $row['amount_ml'],
+                    ],
+                    [
+                        'price' => $row['price'],
+                        'special_price' => $row['special_price'],
+                        'is_active' => $row['is_active'],
+                        'sort_order' => $row['sort_order'],
+                    ]
+                );
+
+            $keepIds[] = $price->id;
+        }
+
+        $deleteQuery = ProductGroupPrice::query()
+            ->where('product_id', $product->id);
+
+        if (!empty($keepIds)) {
+            $deleteQuery->whereNotIn('id', $keepIds);
+        }
+
+        $deleteQuery->delete();
+    });
+}
 }

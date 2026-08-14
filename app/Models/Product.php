@@ -39,4 +39,12 @@ public function getImageUrlAttribute(): string
 
     return asset('assets/img/default-product.png');
 }
+public function groupPrices(): HasMany
+{
+    return $this->hasMany(
+        \App\Models\ProductGroupPrice::class,
+        'product_id'
+    );
+}
+
 }

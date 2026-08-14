@@ -18,4 +18,11 @@ class MachineGroup extends Model
   {
     return $this->hasMany(Machine::class, 'machine_group_id');
   }
+  public function productPrices(): HasMany
+{
+    return $this->hasMany(
+        \App\Models\ProductGroupPrice::class,
+        'machine_group_id'
+    );
+}
 }
