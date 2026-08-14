@@ -40,19 +40,19 @@ Route::prefix('frontend')->group(function () {
 );
 
 });
-Route::prefix('kiosk')->group(function () {
-    Route::post(
-        '/customers/check',
-        [KioskCustomerController::class, 'check']
-    );
+// Route::prefix('kiosk')->group(function () {
+//     Route::post(
+//         '/customers/check',
+//         [KioskCustomerController::class, 'check']
+//     );
 
-    Route::get(
-        '/machines/{machine}/products',
-        [KioskProductController::class, 'index']
-    );
+//     Route::get(
+//         '/machines/{machine}/products',
+//         [KioskProductController::class, 'index']
+//     );
 
-    Route::post(
-        '/quote',
-        [KioskQuoteController::class, 'calculate']
-    );
-});
+//     Route::post(
+//         '/quote',
+//         [KioskQuoteController::class, 'calculate']
+//     );
+// });
