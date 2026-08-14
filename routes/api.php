@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Kiosk\KioskCustomerController;
 use App\Http\Controllers\Api\Kiosk\KioskProductController;
 use App\Http\Controllers\Api\Kiosk\KioskQuoteController;
 use App\Http\Controllers\Api\Frontend\MachineThemeController;
+use App\Http\Controllers\Api\Frontend\MachineProductController;
 
 
 Route::prefix('frontend')->group(function () {
@@ -33,6 +34,10 @@ Route::prefix('frontend')->group(function () {
         '/machines/{machine}/theme',
         [MachineThemeController::class, 'show']
     );
+    Route::get(
+    '/machine-products',
+    [MachineProductController::class, 'index']
+);
 
 });
 Route::prefix('kiosk')->group(function () {
