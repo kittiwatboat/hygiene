@@ -6,7 +6,7 @@ use App\Models\FrontendTranslation;
 use App\Http\Controllers\Api\Kiosk\KioskCustomerController;
 use App\Http\Controllers\Api\Kiosk\KioskProductController;
 use App\Http\Controllers\Api\Kiosk\KioskQuoteController;
-use App\Http\Controllers\Api\Frontend\MachineThemeController;
+// use App\Http\Controllers\Api\Frontend\MachineThemeController;
 use App\Http\Controllers\Api\Frontend\MachineProductController;
 
 
@@ -30,10 +30,10 @@ Route::prefix('frontend')->group(function () {
         '/pages/{screenKey}',
         [FrontendConfigController::class, 'page']
     );
-    Route::get(
-        '/machines/{machine}/theme',
-        [MachineThemeController::class, 'show']
-    );
+    // Route::get(
+    //     '/machines/{machine}/theme',
+    //     [MachineThemeController::class, 'show']
+    // );
     Route::get(
     '/machine-products',
     [MachineProductController::class, 'index']
