@@ -55,8 +55,7 @@
             </p>
           </div>
 
-          <div>
-            <div class="d-flex flex-wrap gap-2">
+          <div class="d-flex flex-wrap gap-2">
     <a
         href="{{ route('products.import-template') }}"
         class="btn btn-label-info"
@@ -159,11 +158,6 @@
         });
     </script>
 @endif
-            <a href="{{ route('products.create') }}" class="btn btn-primary">
-              <i class="icon-base ti tabler-plus me-1"></i>
-              เพิ่มสินค้า / น้ำยา
-            </a>
-          </div>
         </div>
 
         @if (session('success'))
