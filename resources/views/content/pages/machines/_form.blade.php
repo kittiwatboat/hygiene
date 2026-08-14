@@ -165,6 +165,7 @@
     <h6 class="mb-1">ตั้งค่าน้ำยาในตู้</h6>
     <p class="text-muted mb-0">
       ตู้ 1 เครื่องสามารถตั้งค่าน้ำยาได้สูงสุด 4 ช่อง
+      โดยราคาและตัวเลือกปริมาตรจะอ้างอิงจากสินค้าและกลุ่มตู้
     </p>
   </div>
 
@@ -183,8 +184,6 @@
       $tankRemaining = $oldTanks[$i]['remaining_liters'] ?? ($tank->remaining_liters ?? '');
       $tankLowStock = $oldTanks[$i]['low_stock_liters'] ?? ($tank->low_stock_liters ?? '');
       $tankEmptyStock = $oldTanks[$i]['empty_stock_liters'] ?? ($tank->empty_stock_liters ?? '');
-      $tankVolume = $oldTanks[$i]['volume_per_press_ml'] ?? ($tank->volume_per_press_ml ?? '');
-      $tankPrice = $oldTanks[$i]['price_per_press'] ?? ($tank->price_per_press ?? '');
       $tankActive = $oldTanks[$i]['is_active'] ?? (isset($tank) ? (int) $tank->is_active : 1);
     @endphp
 
@@ -193,7 +192,7 @@
         <div class="card-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-3">
           <div>
             <h6 class="mb-0">ช่องน้ำยาที่ {{ $i }}</h6>
-            <small class="text-muted">เลือกน้ำยา กำหนดความจุ ปริมาณต่อครั้ง และราคา</small>
+            <small class="text-muted">เลือกน้ำยา กำหนดความจุ และระดับน้ำยาคงเหลือ</small>
           </div>
 
           <div class="form-check form-switch mb-0">
@@ -325,37 +324,6 @@
               @enderror
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">ปริมาณต่อการกด / ml</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                name="tanks[{{ $i }}][volume_per_press_ml]"
-                value="{{ $tankVolume }}"
-                class="form-control @error("tanks.$i.volume_per_press_ml") is-invalid @enderror"
-                placeholder="เช่น 30"
-              >
-              @error("tanks.$i.volume_per_press_ml")
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">ราคาต่อการกด / บาท</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                name="tanks[{{ $i }}][price_per_press]"
-                value="{{ $tankPrice }}"
-                class="form-control @error("tanks.$i.price_per_press") is-invalid @enderror"
-                placeholder="เช่น 10"
-              >
-              @error("tanks.$i.price_per_press")
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
           </div>
         </div>
       </div>
