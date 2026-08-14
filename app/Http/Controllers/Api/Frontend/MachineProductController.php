@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Machine;
+use App\Models\ProductGroupPrice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -23,9 +24,8 @@ class MachineProductController extends Controller
             $machine = Machine::query()
                 ->with([
                     'group',
-                    'tanks' => function ($query) {
-                        $query->where('is_active', 1)->orderBy('tank_no');
-                    },
+                    'tanks' => fn ($query) =>
+                        $query->where('is_active', 1)->orderBy('tank_no'),
                     'tanks.product',
                 ])
                 ->where('serial_number', $validated['serial_number'])
@@ -37,10 +37,30 @@ class MachineProductController extends Controller
             if (! $machine) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'ไม่พบข้อมูลเครื่องที่ตรงกับ Serial Number, รุ่นตู้ และรหัสตู้',
+                    'message' =>
+                        'ไม่พบข้อมูลเครื่องที่ตรงกับ Serial Number, รุ่นตู้ และรหัสตู้',
                     'data' => null,
                 ], 404);
             }
+
+            if (! $machine->machine_group_id || ! $machine->group) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'เครื่องนี้ยังไม่ได้กำหนดกลุ่มตู้',
+                    'data' => null,
+                ], 422);
+            }
+
+            $groupPrices = ProductGroupPrice::query()
+                ->where(
+                    'machine_group_id',
+                    $machine->machine_group_id
+                )
+                ->where('is_active', 1)
+                ->orderBy('sort_order')
+                ->orderBy('amount_ml')
+                ->get()
+                ->groupBy('product_id');
 
             $detergent = [];
             $softener = [];
@@ -53,17 +73,59 @@ class MachineProductController extends Controller
                     continue;
                 }
 
+                $prices = $groupPrices->get(
+                    $product->id,
+                    collect()
+                );
+
+                // กลุ่มไม่ได้กำหนดราคา = กลุ่มนี้ไม่ขายสินค้านี้
+                if ($prices->isEmpty()) {
+                    continue;
+                }
+
+                $priceOptions = $prices
+                    ->map(function ($price) {
+                        $normal = (float) $price->price;
+                        $special = $price->special_price !== null
+                            ? (float) $price->special_price
+                            : null;
+
+                        return [
+                            'id' => $price->id,
+                            'amount_ml' => (int) $price->amount_ml,
+                            'price' => $normal,
+                            'special_price' => $special,
+                            'selling_price' => (
+                                $special !== null
+                                && $special < $normal
+                            )
+                                ? $special
+                                : $normal,
+                        ];
+                    })
+                    ->values();
+
                 $item = [
                     'tank' => [
                         'id' => $tank->id,
                         'tank_no' => (int) $tank->tank_no,
                         'tank_name' => $tank->tank_name,
-                        'capacity_liters' => isset($tank->capacity_liters) ? (float) $tank->capacity_liters : null,
-                        'remaining_liters' => isset($tank->remaining_liters) ? (float) $tank->remaining_liters : null,
-                        'low_stock_liters' => isset($tank->low_stock_liters) ? (float) $tank->low_stock_liters : null,
-                        'empty_stock_liters' => isset($tank->empty_stock_liters) ? (float) $tank->empty_stock_liters : null,
-                        'volume_per_press_ml' => isset($tank->volume_per_press_ml) ? (float) $tank->volume_per_press_ml : null,
-                        'price_per_press' => isset($tank->price_per_press) ? (float) $tank->price_per_press : null,
+                        'capacity_liters' =>
+                            $tank->capacity_liters !== null
+                                ? (float) $tank->capacity_liters
+                                : null,
+                        'remaining_liters' =>
+                            $tank->remaining_liters !== null
+                                ? (float) $tank->remaining_liters
+                                : null,
+                        'low_stock_liters' =>
+                            $tank->low_stock_liters !== null
+                                ? (float) $tank->low_stock_liters
+                                : null,
+                        'empty_stock_liters' =>
+                            $tank->empty_stock_liters !== null
+                                ? (float) $tank->empty_stock_liters
+                                : null,
                     ],
                     'product' => [
                         'id' => $product->id,
@@ -73,29 +135,40 @@ class MachineProductController extends Controller
                         'unit' => $product->unit,
                         'description' => $product->description,
                         'image' => $product->image,
-                        'image_url' => $product->image ? asset('assets/img/products/' . $product->image) : null,
-                        'is_active' => (bool) $product->is_active,
+                        'image_url' => $product->image
+                            ? asset(
+                                'assets/img/products/' . $product->image
+                            )
+                            : null,
+                        'price_options' => $priceOptions,
                     ],
                 ];
 
-                $type = mb_strtolower(trim((string) $product->type));
+                $type = mb_strtolower(
+                    trim((string) $product->type)
+                );
 
-                if (in_array($type, ['น้ำยาซักผ้า', 'detergent', 'laundry detergent'], true)) {
+                if (in_array(
+                    $type,
+                    ['น้ำยาซักผ้า', 'detergent', 'laundry detergent'],
+                    true
+                )) {
                     $detergent[] = $item;
-                    continue;
-                }
-
-                if (in_array($type, ['น้ำยาปรับผ้านุ่ม', 'softener', 'fabric softener'], true)) {
+                } elseif (in_array(
+                    $type,
+                    ['น้ำยาปรับผ้านุ่ม', 'softener', 'fabric softener'],
+                    true
+                )) {
                     $softener[] = $item;
-                    continue;
+                } else {
+                    $other[] = $item;
                 }
-
-                $other[] = $item;
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'ดึงข้อมูลสินค้าของตู้สำเร็จ',
+                'message' =>
+                    'ดึงข้อมูลสินค้าพร้อมราคาตามกลุ่มตู้สำเร็จ',
                 'data' => [
                     'machine' => [
                         'id' => $machine->id,
@@ -103,13 +176,14 @@ class MachineProductController extends Controller
                         'code' => $machine->code,
                         'serial_number' => $machine->serial_number,
                         'model' => $machine->model,
-                        'machine_group_id' => $machine->machine_group_id,
+                        'machine_group_id' =>
+                            $machine->machine_group_id,
                     ],
-                    'machine_group' => $machine->group ? [
+                    'machine_group' => [
                         'id' => $machine->group->id,
                         'name' => $machine->group->name,
                         'code' => $machine->group->code,
-                    ] : null,
+                    ],
                     'products' => [
                         'detergent' => [
                             'label' => 'น้ำยาซักผ้า',
