@@ -122,6 +122,14 @@ Route::prefix('locations')->name('locations.')->group(function () {
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/create', [ProductController::class, 'create'])->name('create');
+
+    // ต้องวางก่อน /{product}
+    Route::get('/import-template', [ProductController::class, 'importTemplate'])
+        ->name('import-template');
+
+    Route::post('/import', [ProductController::class, 'import'])
+        ->name('import');
+
     Route::post('/', [ProductController::class, 'store'])->name('store');
     Route::get('/{product}', [ProductController::class, 'show'])->name('show');
     Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');

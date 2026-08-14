@@ -56,6 +56,109 @@
           </div>
 
           <div>
+            <div class="d-flex flex-wrap gap-2">
+    <a
+        href="{{ route('products.import-template') }}"
+        class="btn btn-label-info"
+    >
+        <i class="icon-base ti tabler-download me-1"></i>
+        ดาวน์โหลด Template
+    </a>
+
+    <button
+        type="button"
+        class="btn btn-label-success"
+        data-bs-toggle="modal"
+        data-bs-target="#importProductModal"
+    >
+        <i class="icon-base ti tabler-file-spreadsheet me-1"></i>
+        Import Excel
+    </button>
+
+    <a href="{{ route('products.create') }}" class="btn btn-primary">
+        <i class="icon-base ti tabler-plus me-1"></i>
+        เพิ่มสินค้า / น้ำยา
+    </a>
+</div>
+
+{{-- วางก่อน @endsection ของหน้า index --}}
+<div class="modal fade" id="importProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form
+                action="{{ route('products.import') }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+                @csrf
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Import สินค้า / น้ำยา</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        ใช้ไฟล์ Template ของระบบ และอย่าเปลี่ยนชื่อ Header
+                    </div>
+
+                    <label class="form-label">
+                        ไฟล์ Excel <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="file"
+                        name="file"
+                        class="form-control @error('file') is-invalid @enderror"
+                        accept=".xlsx,.xls,.csv"
+                        required
+                    >
+
+                    @error('file')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+
+                    <div class="form-text mt-2">
+                        ถ้า code มีอยู่แล้ว ระบบจะอัปเดตข้อมูลเดิม แต่จะไม่ลบ/เปลี่ยนรูปสินค้าเดิม
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-label-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        ยกเลิก
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="icon-base ti tabler-upload me-1"></i>
+                        Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- ถ้า validation ของ Import ผิด ให้เปิด Modal กลับมาอัตโนมัติ --}}
+@if ($errors->has('file'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalElement = document.getElementById('importProductModal');
+
+            if (modalElement) {
+                bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            }
+        });
+    </script>
+@endif
             <a href="{{ route('products.create') }}" class="btn btn-primary">
               <i class="icon-base ti tabler-plus me-1"></i>
               เพิ่มสินค้า / น้ำยา
