@@ -38,7 +38,12 @@ Route::prefix('frontend')->group(function () {
     '/machine-products',
     [MachineProductController::class, 'index']
 );
-
+Route::get('/test-product-api', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'API route works',
+    ]);
+});
 });
 // Route::prefix('kiosk')->group(function () {
 //     Route::post(
