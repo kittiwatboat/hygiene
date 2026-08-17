@@ -483,96 +483,78 @@
                 ],
                 [
                     'number' => 3,
+                    'key' => 'payment_page.payment_method_title',
+                    'title' => 'เลือกช่องทางการชำระเงิน',
+                    'description' => 'Payment Method Title',
+                ],
+                [
+                    'number' => 4,
                     'key' => 'payment_page.quantity_label',
                     'title' => 'จำนวน',
                     'description' => 'Quantity Label',
                 ],
                 [
-                    'number' => 4,
+                    'number' => 5,
                     'key' => 'payment_page.price_label',
                     'title' => 'ราคา',
                     'description' => 'Price Label',
                 ],
                 [
-                    'number' => 5,
+                    'number' => 6,
                     'key' => 'payment_page.promotion_discount_label',
                     'title' => 'ส่วนลดโปรโมชั่น',
                     'description' => 'Promotion Discount Label',
                 ],
                 [
-                    'number' => 6,
+                    'number' => 7,
                     'key' => 'payment_page.net_total_label',
                     'title' => 'ยอดรวมสุทธิ',
                     'description' => 'Net Total Label',
                 ],
                 [
-                    'number' => 7,
-                    'key' => 'payment_page.promptpay_label',
-                    'title' => 'พร้อมเพย์',
-                    'description' => 'PromptPay Label',
-                ],
-                [
                     'number' => 8,
-                    'key' => 'payment_page.credit_debit_label',
-                    'title' => 'บัตรเครดิต / เดบิต',
-                    'description' => 'Credit / Debit Label',
-                ],
-                [
-                    'number' => 9,
-                    'key' => 'payment_page.truemoney_label',
-                    'title' => 'ทรูมันนี่ วอลเล็ต',
-                    'description' => 'TrueMoney Wallet Label',
-                ],
-                [
-                    'number' => 10,
-                    'key' => 'payment_page.shopeepay_label',
-                    'title' => 'ShopeePay',
-                    'description' => 'ShopeePay Label',
-                ],
-                [
-                    'number' => 11,
                     'key' => 'payment_page.back_button',
                     'title' => 'ย้อนกลับ',
                     'description' => 'Back Button',
                 ],
                 [
-                    'number' => 12,
+                    'number' => 9,
                     'key' => 'payment_page.confirm_button',
                     'title' => 'ตกลง',
                     'description' => 'Confirm Button',
                 ],
                 [
-                    'number' => 13,
+                    'number' => 10,
                     'key' => 'payment_page.qr_instruction',
                     'title' => 'สแกน QR Code เพื่อชำระเงิน',
                     'description' => 'QR Payment Instruction',
                 ],
                 [
-                    'number' => 14,
+                    'number' => 11,
                     'key' => 'payment_page.expires_in_label',
                     'title' => 'หมดอายุใน',
                     'description' => 'Expires In Label',
                 ],
                 [
-                    'number' => 15,
+                    'number' => 12,
                     'key' => 'payment_page.minute_unit',
                     'title' => 'นาที',
                     'description' => 'Minute Unit',
                 ],
                 [
-                    'number' => 16,
+                    'number' => 13,
                     'key' => 'payment_page.success_message',
                     'title' => 'การชำระเงินสำเร็จ',
                     'description' => 'Payment Success Message',
                 ],
                 [
-                    'number' => 17,
+                    'number' => 14,
                     'key' => 'payment_page.failed_message',
                     'title' => 'การชำระเงินไม่สำเร็จ',
                     'description' => 'Payment Failed Message',
                 ],
                 [
-                    'number' => 18,
+                    'number' => 15,
                     'key' => 'payment_page.retry_message',
                     'title' => 'กรุณาทำรายการอีกครั้ง',
                     'description' => 'Retry Message',
@@ -1037,7 +1019,7 @@
                         </div>
 
                         <div class="text-muted mt-2">
-                            แก้ไขข้อความรายการสินค้า จำนวน ราคา ส่วนลด ยอดรวม ช่องทางชำระเงิน QR Payment และข้อความผลลัพธ์การชำระเงิน
+                            แก้ไขข้อความรายการสินค้า จำนวน ราคา ส่วนลด ยอดรวม หัวข้อช่องทางการชำระเงิน QR Payment และข้อความผลลัพธ์การชำระเงิน
                         </div>
                     </div>
 
