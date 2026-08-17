@@ -31,9 +31,25 @@ class MachineController extends Controller
         $locations = Location::orderBy('name')->get();
 
         $machineGroups = MachineGroup::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+    ->with([
+        'productPrices' => function ($query) {
+            $query
+                ->where('is_active', 1)
+                ->select([
+                    'id',
+                    'machine_group_id',
+                    'product_id',
+                    'amount_ml',
+                    'price',
+                    'special_price',
+                    'is_active',
+                    'sort_order',
+                ]);
+        },
+    ])
+    ->where('is_active', true)
+    ->orderBy('name')
+    ->get();
 
         $products = Product::query()
             ->where('is_active', 1)
@@ -104,11 +120,25 @@ class MachineController extends Controller
     }
 
     public function show(Machine $machine)
-    {
-        $machine->load(['location', 'tanks.product', 'group.theme']);
+{
+    $machine->load([
+        'location',
+        'tanks.product',
+        'group.theme',
+        'group.productPrices' => function ($query) {
+            $query
+                ->where('is_active', 1)
+                ->orderBy('product_id')
+                ->orderBy('sort_order')
+                ->orderBy('amount_ml');
+        },
+    ]);
 
-        return view('content.pages.machines.show', compact('machine'));
-    }
+    return view(
+        'content.pages.machines.show',
+        compact('machine')
+    );
+}
 
     public function edit(Machine $machine)
     {
@@ -118,13 +148,29 @@ class MachineController extends Controller
         ]);
 
         $machineGroups = MachineGroup::query()
-            ->where(function ($query) use ($machine) {
-                $query
-                    ->where('is_active', true)
-                    ->orWhere('id', $machine->machine_group_id);
-            })
-            ->orderBy('name')
-            ->get();
+    ->with([
+        'productPrices' => function ($query) {
+            $query
+                ->where('is_active', 1)
+                ->select([
+                    'id',
+                    'machine_group_id',
+                    'product_id',
+                    'amount_ml',
+                    'price',
+                    'special_price',
+                    'is_active',
+                    'sort_order',
+                ]);
+        },
+    ])
+    ->where(function ($query) use ($machine) {
+        $query
+            ->where('is_active', true)
+            ->orWhere('id', $machine->machine_group_id);
+    })
+    ->orderBy('name')
+    ->get();
 
         $locations = Location::orderBy('name')->get();
 

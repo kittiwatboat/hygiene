@@ -35,45 +35,41 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
-  <div class="mb-3">
-    <label class="form-label">
-        กลุ่มตู้
-    </label>
+
+  <div class="col-md-6">
+    <label class="form-label">กลุ่มตู้</label>
 
     <select
-        name="machine_group_id"
-        class="form-select @error('machine_group_id') is-invalid @enderror"
+      name="machine_group_id"
+      id="machine_group_id"
+      class="form-select @error('machine_group_id') is-invalid @enderror"
     >
-        <option value="">
-            -- เลือกกลุ่มตู้ --
-        </option>
+      <option value="">-- เลือกกลุ่มตู้ --</option>
 
-        @foreach ($machineGroups as $group)
-            <option
-                value="{{ $group->id }}"
-                {{ (string) old(
-                    'machine_group_id',
-                    $machine->machine_group_id ?? ''
-                ) === (string) $group->id
-                    ? 'selected'
-                    : '' }}
-            >
-                {{ $group->name }}
-                ({{ $group->code }})
-            </option>
-        @endforeach
+      @foreach ($machineGroups as $group)
+        <option
+          value="{{ $group->id }}"
+          {{ (string) old(
+              'machine_group_id',
+              $machine->machine_group_id ?? ''
+          ) === (string) $group->id ? 'selected' : '' }}
+        >
+          {{ $group->name }}
+          @if (!empty($group->code))
+            ({{ $group->code }})
+          @endif
+        </option>
+      @endforeach
     </select>
 
     <div class="form-text">
-        Theme ของหน้าตู้จะอ้างอิงจากกลุ่มตู้ที่เลือก
+      Theme และรายการสินค้าที่เลือกได้ใน Tank จะอ้างอิงจากกลุ่มตู้
     </div>
 
     @error('machine_group_id')
-        <div class="invalid-feedback">
-            {{ $message }}
-        </div>
+      <div class="invalid-feedback">{{ $message }}</div>
     @enderror
-</div>
+  </div>
 
   <div class="col-md-6">
     <label class="form-label">สถานที่ติดตั้ง</label>
@@ -165,26 +161,53 @@
     <h6 class="mb-1">ตั้งค่าน้ำยาในตู้</h6>
     <p class="text-muted mb-0">
       ตู้ 1 เครื่องสามารถตั้งค่าน้ำยาได้สูงสุด 4 ช่อง
-      โดยราคาและตัวเลือกปริมาตรจะอ้างอิงจากสินค้าและกลุ่มตู้
+      โดยสินค้าและราคาจะอ้างอิงจาก Machine Group ที่เลือก
     </p>
   </div>
 
   @php
     $oldTanks = old('tanks', []);
-    $machineTanks = isset($machine) ? $machine->tanks->keyBy('tank_no') : collect();
+    $machineTanks = isset($machine)
+        ? $machine->tanks->keyBy('tank_no')
+        : collect();
+
+    $machineGroupProductIds = $machineGroups->mapWithKeys(function ($group) {
+        return [
+            (string) $group->id => $group->productPrices
+                ->where('is_active', true)
+                ->pluck('product_id')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all(),
+        ];
+    });
   @endphp
 
   @for ($i = 1; $i <= 4; $i++)
     @php
       $tank = $machineTanks->get($i);
 
-      $tankProductId = $oldTanks[$i]['product_id'] ?? ($tank->product_id ?? '');
-      $tankName = $oldTanks[$i]['tank_name'] ?? ($tank->tank_name ?? 'ช่องน้ำยาที่ ' . $i);
-      $tankCapacity = $oldTanks[$i]['capacity_liters'] ?? ($tank->capacity_liters ?? '');
-      $tankRemaining = $oldTanks[$i]['remaining_liters'] ?? ($tank->remaining_liters ?? '');
-      $tankLowStock = $oldTanks[$i]['low_stock_liters'] ?? ($tank->low_stock_liters ?? '');
-      $tankEmptyStock = $oldTanks[$i]['empty_stock_liters'] ?? ($tank->empty_stock_liters ?? '');
-      $tankActive = $oldTanks[$i]['is_active'] ?? (isset($tank) ? (int) $tank->is_active : 1);
+      $tankProductId = $oldTanks[$i]['product_id']
+          ?? ($tank->product_id ?? '');
+
+      $tankName = $oldTanks[$i]['tank_name']
+          ?? ($tank->tank_name ?? 'ช่องน้ำยาที่ ' . $i);
+
+      $tankCapacity = $oldTanks[$i]['capacity_liters']
+          ?? ($tank->capacity_liters ?? '');
+
+      $tankRemaining = $oldTanks[$i]['remaining_liters']
+          ?? ($tank->remaining_liters ?? '');
+
+      $tankLowStock = $oldTanks[$i]['low_stock_liters']
+          ?? ($tank->low_stock_liters ?? '');
+
+      $tankEmptyStock = $oldTanks[$i]['empty_stock_liters']
+          ?? ($tank->empty_stock_liters ?? '');
+
+      $tankActive = $oldTanks[$i]['is_active']
+          ?? (isset($tank) ? (int) $tank->is_active : 1);
     @endphp
 
     <div class="col-12">
@@ -192,11 +215,17 @@
         <div class="card-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-3">
           <div>
             <h6 class="mb-0">ช่องน้ำยาที่ {{ $i }}</h6>
-            <small class="text-muted">เลือกน้ำยา กำหนดความจุ และระดับน้ำยาคงเหลือ</small>
+            <small class="text-muted">
+              เลือกได้เฉพาะสินค้าที่กำหนดราคาไว้ในกลุ่มตู้
+            </small>
           </div>
 
           <div class="form-check form-switch mb-0">
-            <input type="hidden" name="tanks[{{ $i }}][is_active]" value="0">
+            <input
+              type="hidden"
+              name="tanks[{{ $i }}][is_active]"
+              value="0"
+            >
 
             <input
               type="checkbox"
@@ -207,14 +236,21 @@
               {{ (int) $tankActive === 1 ? 'checked' : '' }}
             >
 
-            <label class="form-check-label" for="tank_active_{{ $i }}">
+            <label
+              class="form-check-label"
+              for="tank_active_{{ $i }}"
+            >
               เปิดใช้งาน
             </label>
           </div>
         </div>
 
         <div class="card-body">
-          <input type="hidden" name="tanks[{{ $i }}][tank_no]" value="{{ $i }}">
+          <input
+            type="hidden"
+            name="tanks[{{ $i }}][tank_no]"
+            value="{{ $i }}"
+          >
 
           <div class="row g-4">
             <div class="col-md-6">
@@ -232,19 +268,21 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">
-                น้ำยา / สินค้า
-              </label>
+              <label class="form-label">น้ำยา / สินค้า</label>
 
               <select
                 name="tanks[{{ $i }}][product_id]"
-                class="form-select @error("tanks.$i.product_id") is-invalid @enderror"
+                class="form-select machine-tank-product @error("tanks.$i.product_id") is-invalid @enderror"
+                data-current-product="{{ $tankProductId }}"
               >
-                <option value="">-- เลือกน้ำยา --</option>
+                <option value="">
+                  -- เลือกกลุ่มตู้ก่อน --
+                </option>
 
                 @foreach ($products as $product)
                   <option
                     value="{{ $product->id }}"
+                    data-product-option="1"
                     {{ (string) $tankProductId === (string) $product->id ? 'selected' : '' }}
                   >
                     {{ $product->name }}
@@ -254,6 +292,10 @@
                   </option>
                 @endforeach
               </select>
+
+              <div class="form-text tank-product-help">
+                ระบบจะแสดงเฉพาะสินค้าที่มีราคาเปิดใช้งานใน Machine Group
+              </div>
 
               @error("tanks.$i.product_id")
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -293,7 +335,9 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">แจ้งเตือนเมื่อต่ำกว่า / ลิตร</label>
+              <label class="form-label">
+                แจ้งเตือนเมื่อต่ำกว่า / ลิตร
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -309,7 +353,9 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">ถือว่าหมดเมื่อต่ำกว่า / ลิตร</label>
+              <label class="form-label">
+                ถือว่าหมดเมื่อต่ำกว่า / ลิตร
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -323,144 +369,164 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
-
           </div>
         </div>
       </div>
     </div>
   @endfor
-<div class="col-12">
-  <hr class="my-2">
 
-  <h6 class="mb-1">ตั้งค่าภาษาหน้าตู้</h6>
-  <p class="text-muted mb-0">
-    หากไม่กำหนดภาษาเฉพาะ ระบบจะใช้ค่าภาษากลางจากเมนูตั้งค่าภาษา
-  </p>
-</div>
+  <div class="col-12">
+    <hr class="my-2">
 
-@php
-  $machineLanguageSettings = collect();
-
-  if (isset($machine)) {
-      $machineLanguageSettings = $machine->frontendMachineLanguageSettings ?? collect();
-
-      if (! $machineLanguageSettings instanceof \Illuminate\Support\Collection) {
-          $machineLanguageSettings = collect($machineLanguageSettings);
-      }
-  }
-
-  $useCustomLanguages = old(
-      'use_custom_languages',
-      $machineLanguageSettings->count() > 0 ? 1 : 0
-  );
-
-  $selectedMachineLanguageIds = old(
-      'machine_language_ids',
-      $machineLanguageSettings
-          ->pluck('language_id')
-          ->map(fn ($id) => (string) $id)
-          ->toArray()
-  );
-
-  $defaultMachineLanguageId = old(
-      'default_machine_language_id',
-      optional($machineLanguageSettings->firstWhere('is_default', true))->language_id
-  );
-@endphp
-
-<div class="col-12">
-  <div class="form-check form-switch">
-    <input type="hidden" name="use_custom_languages" value="0">
-
-    <input
-      type="checkbox"
-      name="use_custom_languages"
-      value="1"
-      id="use_custom_languages"
-      class="form-check-input"
-      {{ (int) $useCustomLanguages === 1 ? 'checked' : '' }}
-    >
-
-    <label class="form-check-label" for="use_custom_languages">
-      กำหนดภาษาเฉพาะสำหรับตู้นี้
-    </label>
+    <h6 class="mb-1">ตั้งค่าภาษาหน้าตู้</h6>
+    <p class="text-muted mb-0">
+      หากไม่กำหนดภาษาเฉพาะ ระบบจะใช้ค่าภาษากลางจากเมนูตั้งค่าภาษา
+    </p>
   </div>
-</div>
 
-<div class="col-12" id="machineLanguageWrapper">
-  <div class="card border shadow-none mb-0">
-    <div class="card-body">
-      <div class="row g-3">
+  @php
+    $machineLanguageSettings = collect();
 
-        <div class="col-md-8">
-          <label class="form-label">
-            ภาษาที่เปิดใช้บนตู้นี้
-          </label>
+    if (isset($machine)) {
+        $machineLanguageSettings =
+            $machine->frontendMachineLanguageSettings ?? collect();
 
-          <div class="row g-2">
-            @foreach ($frontendLanguages as $language)
-              <div class="col-md-4">
-                <div class="form-check">
-                  <input
-                    type="checkbox"
-                    name="machine_language_ids[]"
-                    value="{{ $language->id }}"
-                    id="machine_language_{{ $language->id }}"
-                    class="form-check-input machine-language-checkbox"
-                    {{ in_array((string) $language->id, $selectedMachineLanguageIds) ? 'checked' : '' }}
-                  >
+        if (! $machineLanguageSettings instanceof \Illuminate\Support\Collection) {
+            $machineLanguageSettings = collect($machineLanguageSettings);
+        }
+    }
 
-                  <label
-                    class="form-check-label"
-                    for="machine_language_{{ $language->id }}"
-                  >
-                    {{ $language->native_name }}
-                    <small class="text-muted">({{ $language->code }})</small>
-                  </label>
+    $useCustomLanguages = old(
+        'use_custom_languages',
+        $machineLanguageSettings->count() > 0 ? 1 : 0
+    );
+
+    $selectedMachineLanguageIds = old(
+        'machine_language_ids',
+        $machineLanguageSettings
+            ->pluck('language_id')
+            ->map(fn ($id) => (string) $id)
+            ->toArray()
+    );
+
+    $defaultMachineLanguageId = old(
+        'default_machine_language_id',
+        optional(
+            $machineLanguageSettings->firstWhere('is_default', true)
+        )->language_id
+    );
+  @endphp
+
+  <div class="col-12">
+    <div class="form-check form-switch">
+      <input
+        type="hidden"
+        name="use_custom_languages"
+        value="0"
+      >
+
+      <input
+        type="checkbox"
+        name="use_custom_languages"
+        value="1"
+        id="use_custom_languages"
+        class="form-check-input"
+        {{ (int) $useCustomLanguages === 1 ? 'checked' : '' }}
+      >
+
+      <label
+        class="form-check-label"
+        for="use_custom_languages"
+      >
+        กำหนดภาษาเฉพาะสำหรับตู้นี้
+      </label>
+    </div>
+  </div>
+
+  <div class="col-12" id="machineLanguageWrapper">
+    <div class="card border shadow-none mb-0">
+      <div class="card-body">
+        <div class="row g-3">
+
+          <div class="col-md-8">
+            <label class="form-label">
+              ภาษาที่เปิดใช้บนตู้นี้
+            </label>
+
+            <div class="row g-2">
+              @foreach ($frontendLanguages as $language)
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      name="machine_language_ids[]"
+                      value="{{ $language->id }}"
+                      id="machine_language_{{ $language->id }}"
+                      class="form-check-input machine-language-checkbox"
+                      {{ in_array((string) $language->id, $selectedMachineLanguageIds) ? 'checked' : '' }}
+                    >
+
+                    <label
+                      class="form-check-label"
+                      for="machine_language_{{ $language->id }}"
+                    >
+                      {{ $language->native_name }}
+                      <small class="text-muted">
+                        ({{ $language->code }})
+                      </small>
+                    </label>
+                  </div>
                 </div>
+              @endforeach
+            </div>
+
+            <div class="form-text">
+              เลือกได้สูงสุด 3 ภาษา
+            </div>
+
+            @error('machine_language_ids')
+              <div class="text-danger small mt-1">
+                {{ $message }}
               </div>
-            @endforeach
+            @enderror
           </div>
 
-          <div class="form-text">
-            เลือกได้สูงสุด 3 ภาษา
-          </div>
+          <div class="col-md-4">
+            <label class="form-label">
+              ภาษาหลักของตู้นี้
+            </label>
 
-          @error('machine_language_ids')
-  <div class="text-danger small mt-1">{{ $message }}</div>
-@enderror
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">
-            ภาษาหลักของตู้นี้
-          </label>
-
-          <select
-            name="default_machine_language_id"
-            class="form-select @error('default_machine_language_id') is-invalid @enderror"
-          >
-            <option value="">-- เลือกภาษาหลัก --</option>
-
-            @foreach ($frontendLanguages as $language)
-              <option
-                value="{{ $language->id }}"
-                {{ (string) $defaultMachineLanguageId === (string) $language->id ? 'selected' : '' }}
-              >
-                {{ $language->native_name }} ({{ $language->code }})
+            <select
+              name="default_machine_language_id"
+              class="form-select @error('default_machine_language_id') is-invalid @enderror"
+            >
+              <option value="">
+                -- เลือกภาษาหลัก --
               </option>
-            @endforeach
-          </select>
 
-          @error('default_machine_language_id')
-  <div class="invalid-feedback">{{ $message }}</div>
-@enderror
+              @foreach ($frontendLanguages as $language)
+                <option
+                  value="{{ $language->id }}"
+                  {{ (string) $defaultMachineLanguageId === (string) $language->id ? 'selected' : '' }}
+                >
+                  {{ $language->native_name }}
+                  ({{ $language->code }})
+                </option>
+              @endforeach
+            </select>
+
+            @error('default_machine_language_id')
+              <div class="invalid-feedback">
+                {{ $message }}
+              </div>
+            @enderror
+          </div>
+
         </div>
-
       </div>
     </div>
   </div>
-</div>
+
   <div class="col-12">
     <label class="form-label">หมายเหตุ</label>
     <textarea
@@ -477,7 +543,11 @@
 
   <div class="col-12">
     <div class="form-check form-switch">
-      <input type="hidden" name="is_active" value="0">
+      <input
+        type="hidden"
+        name="is_active"
+        value="0"
+      >
 
       <input
         type="checkbox"
@@ -488,14 +558,20 @@
         {{ old('is_active', isset($machine) ? (int) $machine->is_active : 1) ? 'checked' : '' }}
       >
 
-      <label class="form-check-label" for="is_active">
+      <label
+        class="form-check-label"
+        for="is_active"
+      >
         เปิดใช้งานตู้นี้
       </label>
     </div>
   </div>
 
   <div class="col-12 d-flex justify-content-end gap-2">
-    <a href="{{ route('machines.index') }}" class="btn btn-label-secondary">
+    <a
+      href="{{ route('machines.index') }}"
+      class="btn btn-label-secondary"
+    >
       ยกเลิก
     </a>
 
@@ -506,24 +582,98 @@
   </div>
 
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const useCustomLanguages = document.getElementById('use_custom_languages');
-  const wrapper = document.getElementById('machineLanguageWrapper');
-  const checkboxes = document.querySelectorAll('.machine-language-checkbox');
+  const useCustomLanguages =
+    document.getElementById('use_custom_languages');
+
+  const wrapper =
+    document.getElementById('machineLanguageWrapper');
+
+  const checkboxes =
+    document.querySelectorAll('.machine-language-checkbox');
+
+  const machineGroupSelect =
+    document.getElementById('machine_group_id');
+
+  const tankProductSelects =
+    document.querySelectorAll('.machine-tank-product');
+
+  const groupProductMap = @json($machineGroupProductIds);
 
   function toggleMachineLanguages() {
-    if (!useCustomLanguages || !wrapper) return;
+    if (!useCustomLanguages || !wrapper) {
+      return;
+    }
 
-    wrapper.classList.toggle('d-none', !useCustomLanguages.checked);
+    wrapper.classList.toggle(
+      'd-none',
+      !useCustomLanguages.checked
+    );
   }
 
-  useCustomLanguages?.addEventListener('change', toggleMachineLanguages);
+  function filterTankProducts(resetInvalidSelection = false) {
+    const groupId = machineGroupSelect?.value || '';
+
+    tankProductSelects.forEach(function (select) {
+      const currentValue = select.value;
+      const allowedProductIds = (groupProductMap[groupId] || [])
+        .map(String);
+
+      const productOptions = select.querySelectorAll(
+        'option[data-product-option="1"]'
+      );
+
+      productOptions.forEach(function (option) {
+        const allowed = groupId !== ''
+          && allowedProductIds.includes(String(option.value));
+
+        option.hidden = !allowed;
+        option.disabled = !allowed;
+      });
+
+      const firstOption = select.querySelector('option[value=""]');
+
+      if (firstOption) {
+        firstOption.textContent = groupId === ''
+          ? '-- เลือกกลุ่มตู้ก่อน --'
+          : (
+              allowedProductIds.length > 0
+                ? '-- เลือกน้ำยา --'
+                : '-- กลุ่มนี้ยังไม่มีสินค้าที่กำหนดราคา --'
+            );
+      }
+
+      if (
+        resetInvalidSelection
+        && currentValue !== ''
+        && !allowedProductIds.includes(String(currentValue))
+      ) {
+        select.value = '';
+      }
+
+      select.disabled = groupId === ''
+        || allowedProductIds.length === 0;
+    });
+  }
+
+  machineGroupSelect?.addEventListener('change', function () {
+    filterTankProducts(true);
+  });
+
+  useCustomLanguages?.addEventListener(
+    'change',
+    toggleMachineLanguages
+  );
+
   toggleMachineLanguages();
 
   checkboxes.forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
-      const checked = document.querySelectorAll('.machine-language-checkbox:checked');
+      const checked = document.querySelectorAll(
+        '.machine-language-checkbox:checked'
+      );
 
       if (checked.length > 3) {
         this.checked = false;
@@ -531,5 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  filterTankProducts(false);
 });
 </script>
