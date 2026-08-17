@@ -361,6 +361,18 @@
                     'title' => 'ข้อความปุ่มส่ง OTP',
                     'description' => 'Send OTP Button',
                 ],
+                [
+                    'number' => 4,
+                    'key' => 'phone_verify_page.resend_otp_button',
+                    'title' => 'ข้อความปุ่มขอ OTP ใหม่',
+                    'description' => 'Resend OTP Button',
+                ],
+                [
+                    'number' => 5,
+                    'key' => 'phone_verify_page.confirm_button',
+                    'title' => 'ข้อความปุ่มยืนยัน',
+                    'description' => 'Confirm Button',
+                ],
             ],
         ];
 
@@ -392,7 +404,7 @@
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
         $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
-        $phonePreviewImage = asset('assets/img/frontend-preview/phone-preview.png');
+        $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -694,7 +706,7 @@
                         </div>
 
                         <div class="text-muted mt-2">
-                            แก้ไขเฉพาะหัวข้อกรอกเบอร์โทร ข้อความกำกับช่องเบอร์โทร และปุ่มส่ง OTP
+                            แก้ไขหัวข้อกรอกเบอร์โทร ข้อความกำกับช่องเบอร์โทร ปุ่มส่ง OTP ปุ่มขอ OTP ใหม่ และปุ่มยืนยัน
                         </div>
                     </div>
 
@@ -705,7 +717,7 @@
                                     <div class="translation-preview-wrap">
                                         <img
                                             src="{{ $phonePreviewImage }}"
-                                            alt="ตัวอย่างหน้ากรอกเบอร์โทรศัพท์"
+                                            alt="ตัวอย่างหน้ากรอกเบอร์โทรศัพท์และยืนยัน OTP"
                                             class="translation-preview-image"
                                         >
                                     </div>
