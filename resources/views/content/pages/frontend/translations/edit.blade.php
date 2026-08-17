@@ -341,6 +341,27 @@
                     'description' => 'Confirm Button',
                 ],
             ],
+
+            'PHONE_VERIFY' => [
+                [
+                    'number' => 1,
+                    'key' => 'phone_verify_page.title',
+                    'title' => 'หัวข้อกรอกเบอร์โทรศัพท์',
+                    'description' => 'Phone Page Title',
+                ],
+                [
+                    'number' => 2,
+                    'key' => 'phone_verify_page.phone_label',
+                    'title' => 'ข้อความกรุณากรอกหมายเลขโทรศัพท์',
+                    'description' => 'Phone Number Label',
+                ],
+                [
+                    'number' => 3,
+                    'key' => 'phone_verify_page.send_otp_button',
+                    'title' => 'ข้อความปุ่มส่ง OTP',
+                    'description' => 'Send OTP Button',
+                ],
+            ],
         ];
 
         $translationKeysByKey = collect($translationKeys)->keyBy('key');
@@ -366,10 +387,12 @@
         $homeRows = $buildRows($keyMap['HOME']);
         $selectRows = $buildRows($keyMap['SELECT_PRODUCT']);
         $summaryRows = $buildRows($keyMap['ORDER_SUMMARY']);
+        $phoneRows = $buildRows($keyMap['PHONE_VERIFY']);
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/final-order-summary-translation-preview.png');
+        $phonePreviewImage = asset('assets/img/frontend-preview/phone-verify-translation-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -659,10 +682,71 @@
                     </div>
                 </div>
 
+
+                {{-- =========================================================
+                PHONE VERIFY
+                ========================================================== --}}
+                <div class="card translation-page-card mt-4">
+                    <div class="card-header">
+                        <div class="page-section-title">
+                            <span class="badge bg-label-success">PHONE VERIFY</span>
+                            <h4 class="mb-0">หน้ากรอกเบอร์โทรศัพท์</h4>
+                        </div>
+
+                        <div class="text-muted mt-2">
+                            แก้ไขเฉพาะหัวข้อกรอกเบอร์โทร ข้อความกำกับช่องเบอร์โทร และปุ่มส่ง OTP
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-lg-9">
+                                <div class="translation-preview-stage">
+                                    <div class="translation-preview-wrap">
+                                        <img
+                                            src="{{ $phonePreviewImage }}"
+                                            alt="ตัวอย่างหน้ากรอกเบอร์โทรศัพท์"
+                                            class="translation-preview-image"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="translation-legend-box">
+                                    <h5 class="fw-bold">หมายเหตุ</h5>
+
+                                    <p class="text-muted">
+                                        เลขกำกับในภาพ คือข้อความที่สามารถแก้ไขได้
+                                    </p>
+
+                                    <div class="d-flex flex-column gap-3">
+                                        @foreach ($phoneRows as $row)
+                                            <div class="d-flex align-items-start">
+                                                <span class="legend-number">{{ $row['number'] }}</span>
+                                                <div>
+                                                    <div class="fw-semibold">{{ $row['title'] }}</div>
+                                                    <div class="text-muted mt-1">({{ $row['key'] }})</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        @include('content.pages.frontend.translations.partials.translation-table', [
+                            'rows' => $phoneRows,
+                        ])
+                    </div>
+                </div>
+
                 <div class="translation-footer-bar">
                     <div class="d-flex justify-content-between align-items-center gap-3">
                         <div class="text-muted">
-                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() }} รายการ
+                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() + $phoneRows->count() }} รายการ
                         </div>
 
                         <div class="d-flex gap-2">
