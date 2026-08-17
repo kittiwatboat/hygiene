@@ -448,6 +448,12 @@
                     'title' => 'ข้าม',
                     'description' => 'Skip Button',
                 ],
+                [
+                    'number' => 10,
+                    'key' => 'member_page.registration_success_message',
+                    'title' => 'สมัครสมาชิกสำเร็จ',
+                    'description' => 'Registration Success Message',
+                ],
             ],
         ];
 
@@ -479,7 +485,7 @@
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
         $memberPreviewImage = asset('assets/img/frontend-preview/member-check-preview.png');
     @endphp
@@ -844,7 +850,7 @@
                         </div>
 
                         <div class="text-muted mt-2">
-                            แก้ไขข้อความหน้าพบสมาชิก ไม่พบสมาชิก และป๊อปอัปสมัครสมาชิก
+                            แก้ไขข้อความหน้าพบสมาชิก ไม่พบสมาชิก ป๊อปอัปสมัครสมาชิก และข้อความสมัครสมาชิกสำเร็จ
                         </div>
                     </div>
 
