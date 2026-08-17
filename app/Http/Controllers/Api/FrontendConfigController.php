@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\FrontendLanguage;
+use App\Models\FrontendMachineLanguageSetting;
 use App\Models\FrontendPage;
 use App\Models\FrontendTheme;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,9 @@ use Throwable;
 use App\Models\Machine;
 use Illuminate\Http\Request;
 use App\Models\FrontendTranslation;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
 
 class FrontendConfigController extends Controller
 {
@@ -51,181 +55,167 @@ class FrontendConfigController extends Controller
     }
 
     public function theme(Request $request): JsonResponse
-{
-    try {
-        $validated = $request->validate([
-            'serial_number' => ['required', 'string', 'max:255'],
-            'model' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:100'],
-        ]);
+    {
+        try {
+            $validated = $request->validate([
+                'serial_number' => ['required', 'string', 'max:255'],
+                'model' => ['required', 'string', 'max:255'],
+                'code' => ['required', 'string', 'max:100'],
+            ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | หาเครื่องจากข้อมูลที่ตู้ส่งมา
-        |--------------------------------------------------------------------------
-        | ต้องตรงทั้ง Serial Number + รุ่นตู้ + รหัสตู้
-        |--------------------------------------------------------------------------
-        */
-        $machine = Machine::query()
-            ->with([
-                'group.theme',
-            ])
-            ->where('serial_number', $validated['serial_number'])
-            ->where('model', $validated['model'])
-            ->where('code', $validated['code'])
-            ->where('is_active', true)
-            ->first();
-
-        if (!$machine) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบข้อมูลเครื่องที่ตรงกับ Serial Number, รุ่นตู้ และรหัสตู้',
-                'data' => null,
-            ], 404);
-        }
-
-        $group = $machine->group;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Theme ลำดับแรก: Theme ของกลุ่มเครื่อง
-        |--------------------------------------------------------------------------
-        */
-        $theme = null;
-        $themeSource = null;
-
-        if (
-            $group &&
-            (bool) $group->is_active &&
-            $group->theme &&
-            (bool) $group->theme->is_active
-        ) {
-            $theme = $group->theme;
-            $themeSource = 'machine_group';
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Fallback: Theme สำรอง
-        |--------------------------------------------------------------------------
-        */
-        if (!$theme) {
-            $theme = FrontendTheme::query()
+            /*
+            |--------------------------------------------------------------------------
+            | หาเครื่องจาก Serial Number + รุ่นตู้ + รหัสตู้
+            |--------------------------------------------------------------------------
+            */
+            $machine = Machine::query()
+                ->with([
+                    'group.theme',
+                ])
+                ->where('serial_number', $validated['serial_number'])
+                ->where('model', $validated['model'])
+                ->where('code', $validated['code'])
                 ->where('is_active', true)
-                ->where('is_default', true)
                 ->first();
 
-            $themeSource = $theme
-                ? 'default_theme'
-                : null;
-        }
+            if (!$machine) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่พบข้อมูลเครื่องที่ตรงกับ Serial Number, รุ่นตู้ และรหัสตู้',
+                    'data' => null,
+                ], 404);
+            }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Fallback สุดท้าย: Theme active ล่าสุด
-        |--------------------------------------------------------------------------
-        */
-        if (!$theme) {
-            $theme = FrontendTheme::query()
-                ->where('is_active', true)
-                ->orderByDesc('updated_at')
-                ->orderByDesc('id')
-                ->first();
+            $group = $machine->group;
 
-            $themeSource = $theme
-                ? 'latest_active_theme'
-                : null;
-        }
+            /*
+            |--------------------------------------------------------------------------
+            | Theme: ใช้ของ Machine Group ก่อน
+            |--------------------------------------------------------------------------
+            */
+            $theme = null;
+            $themeSource = null;
 
-        if (!$theme) {
+            if (
+                $group &&
+                (bool) $group->is_active &&
+                $group->theme &&
+                (bool) $group->theme->is_active
+            ) {
+                $theme = $group->theme;
+                $themeSource = 'machine_group';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Fallback: Default Theme
+            |--------------------------------------------------------------------------
+            */
+            if (!$theme) {
+                $theme = FrontendTheme::query()
+                    ->where('is_active', true)
+                    ->where('is_default', true)
+                    ->first();
+
+                $themeSource = $theme
+                    ? 'default_theme'
+                    : null;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Fallback สุดท้าย: Theme active ล่าสุด
+            |--------------------------------------------------------------------------
+            */
+            if (!$theme) {
+                $theme = FrontendTheme::query()
+                    ->where('is_active', true)
+                    ->orderByDesc('updated_at')
+                    ->orderByDesc('id')
+                    ->first();
+
+                $themeSource = $theme
+                    ? 'latest_active_theme'
+                    : null;
+            }
+
+            if (!$theme) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่พบ Theme ที่สามารถใช้งานได้',
+                    'data' => [
+                        'machine' => [
+                            'id' => $machine->id,
+                            'code' => $machine->code,
+                            'serial_number' => $machine->serial_number,
+                            'model' => $machine->model,
+                        ],
+                        'machine_group' => $group ? [
+                            'id' => $group->id,
+                            'name' => $group->name,
+                            'code' => $group->code,
+                        ] : null,
+                        'theme' => null,
+                    ],
+                ], 404);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | ภาษา + คำแปลของตู้นี้
+            |--------------------------------------------------------------------------
+            | 1. ถ้าตู้กำหนดภาษาเฉพาะไว้ ใช้เฉพาะภาษาของตู้นั้น
+            | 2. ถ้าไม่ได้กำหนด ใช้ภาษาที่ active ทั้งหมด
+            | 3. Default ของตู้ใช้ frontend_machine_language_settings.is_default
+            | 4. แต่ละภาษาจะมี translations ของตัวเอง
+            |--------------------------------------------------------------------------
+            */
+            $languageData = $this->getMachineLanguagesWithTranslations(
+                $machine
+            );
+
             return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบ Theme ที่สามารถใช้งานได้',
+                'success' => true,
+                'message' => 'ดึงข้อมูล Theme ภาษา และคำแปลของเครื่องสำเร็จ',
                 'data' => [
                     'machine' => [
                         'id' => $machine->id,
+                        'name' => $machine->name,
                         'code' => $machine->code,
                         'serial_number' => $machine->serial_number,
                         'model' => $machine->model,
+                        'machine_group_id' => $machine->machine_group_id,
                     ],
+
                     'machine_group' => $group ? [
                         'id' => $group->id,
                         'name' => $group->name,
                         'code' => $group->code,
+                        'frontend_theme_id' => $group->frontend_theme_id,
+                        'is_active' => (bool) $group->is_active,
                     ] : null,
-                    'theme' => null,
+
+                    'theme_source' => $themeSource,
+
+                    'theme' => $this->formatTheme($theme),
+
+                    'languages' => $languageData,
                 ],
-            ], 404);
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ข้อมูลระบุเครื่องไม่ครบถ้วน',
+                'errors' => $exception->errors(),
+            ], 422);
+        } catch (Throwable $exception) {
+            return $this->errorResponse(
+                'Frontend machine theme API error',
+                'ไม่สามารถดึงข้อมูล Theme ของเครื่องได้',
+                $exception
+            );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | ภาษา
-        |--------------------------------------------------------------------------
-        | ใช้ logic เดิมของ API เพื่อไม่ให้ frontend ที่ใช้งานอยู่พัง
-        |--------------------------------------------------------------------------
-        */
-        $languages = FrontendLanguage::query()
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
-
-        $defaultLanguage = $languages->first();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'ดึงข้อมูล Theme ของเครื่องสำเร็จ',
-            'data' => [
-                'machine' => [
-                    'id' => $machine->id,
-                    'name' => $machine->name,
-                    'code' => $machine->code,
-                    'serial_number' => $machine->serial_number,
-                    'model' => $machine->model,
-                    'machine_group_id' => $machine->machine_group_id,
-                ],
-
-                'machine_group' => $group ? [
-                    'id' => $group->id,
-                    'name' => $group->name,
-                    'code' => $group->code,
-                    'frontend_theme_id' => $group->frontend_theme_id,
-                    'is_active' => (bool) $group->is_active,
-                ] : null,
-
-                'theme_source' => $themeSource,
-
-                'theme' => $this->formatTheme($theme),
-
-                'languages' => [
-                    'default' => $defaultLanguage
-                        ? $this->formatLanguage($defaultLanguage)
-                        : null,
-
-                    'items' => $languages
-                        ->map(
-                            fn (FrontendLanguage $language) =>
-                                $this->formatLanguage($language)
-                        )
-                        ->values(),
-                ],
-            ],
-        ]);
-    } catch (\Illuminate\Validation\ValidationException $exception) {
-        return response()->json([
-            'success' => false,
-            'message' => 'ข้อมูลระบุเครื่องไม่ครบถ้วน',
-            'errors' => $exception->errors(),
-        ], 422);
-    } catch (Throwable $exception) {
-        return $this->errorResponse(
-            'Frontend machine theme API error',
-            'ไม่สามารถดึงข้อมูล Theme ของเครื่องได้',
-            $exception
-        );
     }
-}
 
     public function pages(): JsonResponse
     {
@@ -326,8 +316,7 @@ class FrontendConfigController extends Controller
             ->orderBy('id')
             ->get();
 
-        $defaultLanguage = $languages->firstWhere('is_default', true)
-            ?? $languages->first();
+        $defaultLanguage = $languages->first();
 
         return [
             'theme' => $theme ? $this->formatTheme($theme) : null,
@@ -421,9 +410,181 @@ class FrontendConfigController extends Controller
             'flag' => $language->flag ?? null,
             'flag_url' => $language->flag_url ?? null,
             'sort_order' => (int) ($language->sort_order ?? 0),
-            'is_default' => (bool) ($language->is_default ?? false),
             'is_active' => (bool) ($language->is_active ?? true),
         ];
+    }
+
+    private function getMachineLanguagesWithTranslations(
+        Machine $machine
+    ): array {
+        /*
+        |--------------------------------------------------------------------------
+        | ดูก่อนว่าตู้นี้มีการกำหนดภาษาเฉพาะหรือไม่
+        |--------------------------------------------------------------------------
+        */
+        $machineLanguageSettings = FrontendMachineLanguageSetting::query()
+            ->with('language')
+            ->where('machine_id', $machine->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->filter(function ($setting) {
+                return $setting->language
+                    && (bool) $setting->language->is_active;
+            })
+            ->values();
+
+        $usesCustomLanguages = $machineLanguageSettings->isNotEmpty();
+
+        if ($usesCustomLanguages) {
+            $languages = $machineLanguageSettings
+                ->pluck('language')
+                ->filter()
+                ->values();
+
+            $defaultSetting = $machineLanguageSettings
+                ->firstWhere('is_default', true);
+
+            $defaultLanguage = $defaultSetting?->language
+                ?? $languages->first();
+        } else {
+            $languages = FrontendLanguage::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get();
+
+            /*
+            |--------------------------------------------------------------------------
+            | frontend_languages ไม่มี is_default
+            | fallback เป็นภาษาตัวแรกตาม sort_order
+            |--------------------------------------------------------------------------
+            */
+            $defaultLanguage = $languages->first();
+        }
+
+        $translationsByLanguage =
+            $this->getTranslationsForLanguages($languages);
+
+        $items = $languages
+            ->map(function (FrontendLanguage $language) use (
+                $translationsByLanguage,
+                $defaultLanguage
+            ) {
+                $data = $this->formatLanguage($language);
+
+                $data['is_default'] = $defaultLanguage
+                    ? (int) $defaultLanguage->id === (int) $language->id
+                    : false;
+
+                $data['translations'] =
+                    $translationsByLanguage[
+                        (int) $language->id
+                    ] ?? [];
+
+                return $data;
+            })
+            ->values();
+
+        $default = null;
+
+        if ($defaultLanguage) {
+            $default = $this->formatLanguage($defaultLanguage);
+            $default['is_default'] = true;
+            $default['translations'] =
+                $translationsByLanguage[
+                    (int) $defaultLanguage->id
+                ] ?? [];
+        }
+
+        return [
+            'use_custom_languages' => $usesCustomLanguages,
+            'default' => $default,
+            'items' => $items,
+        ];
+    }
+
+    private function getTranslationsForLanguages(
+        Collection $languages
+    ): array {
+        if ($languages->isEmpty()) {
+            return [];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | โหลด Translation Key ที่เปิดใช้งานทั้งหมด
+        |--------------------------------------------------------------------------
+        */
+        $keys = DB::table('frontend_translation_keys')
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get([
+                'id',
+                'key',
+                'default_value',
+            ]);
+
+        if ($keys->isEmpty()) {
+            return [];
+        }
+
+        $languageIds = $languages
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | ดึงคำแปลของทุกภาษาที่ตู้นี้ใช้ใน query เดียว
+        |--------------------------------------------------------------------------
+        */
+        $translationRows = DB::table('frontend_translations')
+            ->whereIn('language_id', $languageIds)
+            ->whereIn(
+                'translation_key_id',
+                $keys->pluck('id')
+            )
+            ->get([
+                'language_id',
+                'translation_key_id',
+                'value',
+            ])
+            ->groupBy('language_id');
+
+        $result = [];
+
+        foreach ($languages as $language) {
+            $languageId = (int) $language->id;
+
+            $rows = collect(
+                $translationRows->get(
+                    $languageId,
+                    collect()
+                )
+            )->keyBy('translation_key_id');
+
+            $result[$languageId] = $keys
+                ->mapWithKeys(function ($key) use ($rows) {
+                    $translation = $rows->get($key->id);
+
+                    $value = (
+                        $translation &&
+                        $translation->value !== null &&
+                        $translation->value !== ''
+                    )
+                        ? $translation->value
+                        : $key->default_value;
+
+                    return [
+                        $key->key => $value,
+                    ];
+                })
+                ->all();
+        }
+
+        return $result;
     }
 
     private function errorResponse(
