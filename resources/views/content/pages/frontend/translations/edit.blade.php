@@ -420,36 +420,48 @@
                 ],
                 [
                     'number' => 5,
+                    'key' => 'member_page.discount_label',
+                    'title' => 'คำว่า ลด',
+                    'description' => 'Discount Label',
+                ],
+                [
+                    'number' => 6,
+                    'key' => 'member_page.currency_unit',
+                    'title' => 'คำว่า บาท',
+                    'description' => 'Currency Unit',
+                ],
+                [
+                    'number' => 7,
                     'key' => 'member_page.no_redeem_option',
                     'title' => 'ไม่แลกแต้ม',
                     'description' => 'No Redeem Option',
                 ],
                 [
-                    'number' => 6,
+                    'number' => 8,
                     'key' => 'member_page.back_button',
                     'title' => 'ย้อนกลับ',
                     'description' => 'Back Button',
                 ],
                 [
-                    'number' => 7,
+                    'number' => 9,
                     'key' => 'member_page.confirm_button',
                     'title' => 'ตกลง',
                     'description' => 'Confirm Button',
                 ],
                 [
-                    'number' => 8,
+                    'number' => 10,
                     'key' => 'member_page.not_found_message',
                     'title' => 'ไม่พบข้อมูลสมาชิก',
                     'description' => 'Member Not Found Message',
                 ],
                 [
-                    'number' => 9,
+                    'number' => 11,
                     'key' => 'member_page.skip_button',
                     'title' => 'ข้าม',
                     'description' => 'Skip Button',
                 ],
                 [
-                    'number' => 10,
+                    'number' => 12,
                     'key' => 'member_page.registration_success_message',
                     'title' => 'สมัครสมาชิกสำเร็จ',
                     'description' => 'Registration Success Message',
@@ -485,7 +497,7 @@
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
         $memberPreviewImage = asset('assets/img/frontend-preview/member-check-preview.png');
     @endphp
