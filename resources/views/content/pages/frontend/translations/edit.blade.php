@@ -369,7 +369,7 @@
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/final-order-summary-translation-preview.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
     @endphp
 
     <div class="row g-4">
