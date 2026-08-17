@@ -467,6 +467,117 @@
                     'description' => 'Registration Success Message',
                 ],
             ],
+
+            'PAYMENT' => [
+                [
+                    'number' => 1,
+                    'key' => 'payment_page.product_list_title',
+                    'title' => 'รายการสินค้า',
+                    'description' => 'Product List Title',
+                ],
+                [
+                    'number' => 2,
+                    'key' => 'payment_page.summary_title',
+                    'title' => 'สรุปรายการ',
+                    'description' => 'Summary Title',
+                ],
+                [
+                    'number' => 3,
+                    'key' => 'payment_page.quantity_label',
+                    'title' => 'จำนวน',
+                    'description' => 'Quantity Label',
+                ],
+                [
+                    'number' => 4,
+                    'key' => 'payment_page.price_label',
+                    'title' => 'ราคา',
+                    'description' => 'Price Label',
+                ],
+                [
+                    'number' => 5,
+                    'key' => 'payment_page.promotion_discount_label',
+                    'title' => 'ส่วนลดโปรโมชั่น',
+                    'description' => 'Promotion Discount Label',
+                ],
+                [
+                    'number' => 6,
+                    'key' => 'payment_page.net_total_label',
+                    'title' => 'ยอดรวมสุทธิ',
+                    'description' => 'Net Total Label',
+                ],
+                [
+                    'number' => 7,
+                    'key' => 'payment_page.promptpay_label',
+                    'title' => 'พร้อมเพย์',
+                    'description' => 'PromptPay Label',
+                ],
+                [
+                    'number' => 8,
+                    'key' => 'payment_page.credit_debit_label',
+                    'title' => 'บัตรเครดิต / เดบิต',
+                    'description' => 'Credit / Debit Label',
+                ],
+                [
+                    'number' => 9,
+                    'key' => 'payment_page.truemoney_label',
+                    'title' => 'ทรูมันนี่ วอลเล็ต',
+                    'description' => 'TrueMoney Wallet Label',
+                ],
+                [
+                    'number' => 10,
+                    'key' => 'payment_page.shopeepay_label',
+                    'title' => 'ShopeePay',
+                    'description' => 'ShopeePay Label',
+                ],
+                [
+                    'number' => 11,
+                    'key' => 'payment_page.back_button',
+                    'title' => 'ย้อนกลับ',
+                    'description' => 'Back Button',
+                ],
+                [
+                    'number' => 12,
+                    'key' => 'payment_page.confirm_button',
+                    'title' => 'ตกลง',
+                    'description' => 'Confirm Button',
+                ],
+                [
+                    'number' => 13,
+                    'key' => 'payment_page.qr_instruction',
+                    'title' => 'สแกน QR Code เพื่อชำระเงิน',
+                    'description' => 'QR Payment Instruction',
+                ],
+                [
+                    'number' => 14,
+                    'key' => 'payment_page.expires_in_label',
+                    'title' => 'หมดอายุใน',
+                    'description' => 'Expires In Label',
+                ],
+                [
+                    'number' => 15,
+                    'key' => 'payment_page.minute_unit',
+                    'title' => 'นาที',
+                    'description' => 'Minute Unit',
+                ],
+                [
+                    'number' => 16,
+                    'key' => 'payment_page.success_message',
+                    'title' => 'การชำระเงินสำเร็จ',
+                    'description' => 'Payment Success Message',
+                ],
+                [
+                    'number' => 17,
+                    'key' => 'payment_page.failed_message',
+                    'title' => 'การชำระเงินไม่สำเร็จ',
+                    'description' => 'Payment Failed Message',
+                ],
+                [
+                    'number' => 18,
+                    'key' => 'payment_page.retry_message',
+                    'title' => 'กรุณาทำรายการอีกครั้ง',
+                    'description' => 'Retry Message',
+                ],
+            ],
         ];
 
         $translationKeysByKey = collect($translationKeys)->keyBy('key');
@@ -494,12 +605,14 @@
         $summaryRows = $buildRows($keyMap['ORDER_SUMMARY']);
         $phoneRows = $buildRows($keyMap['PHONE_VERIFY']);
         $memberRows = $buildRows($keyMap['MEMBER_CHECK']);
+        $paymentRows = $buildRows($keyMap['PAYMENT']);
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
         $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
         $memberPreviewImage = asset('assets/img/frontend-preview/member-check-preview.png');
+        $paymentPreviewImage = asset('assets/img/frontend-preview/payment-translation-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -912,10 +1025,72 @@
                     </div>
                 </div>
 
+
+                {{-- =========================================================
+                PAYMENT
+                ========================================================== --}}
+                <div class="card translation-page-card mt-4">
+                    <div class="card-header">
+                        <div class="page-section-title">
+                            <span class="badge bg-label-success">PAYMENT</span>
+                            <h4 class="mb-0">หน้าชำระเงิน</h4>
+                        </div>
+
+                        <div class="text-muted mt-2">
+                            แก้ไขข้อความรายการสินค้า จำนวน ราคา ส่วนลด ยอดรวม ช่องทางชำระเงิน QR Payment และข้อความผลลัพธ์การชำระเงิน
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-lg-9">
+                                <div class="translation-preview-stage">
+                                    <div class="translation-preview-wrap">
+                                        <img
+                                            src="{{ $paymentPreviewImage }}"
+                                            alt="ตัวอย่างหน้าชำระเงิน"
+                                            class="translation-preview-image"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="translation-legend-box">
+                                    <h5 class="fw-bold">หมายเหตุ</h5>
+
+                                    <p class="text-muted">
+                                        เลขกำกับในภาพ คือข้อความที่สามารถแก้ไขได้
+                                    </p>
+
+                                    <div class="d-flex flex-column gap-3">
+                                        @foreach ($paymentRows as $row)
+                                            <div class="d-flex align-items-start">
+                                                <span class="legend-number">{{ $row['number'] }}</span>
+
+                                                <div>
+                                                    <div class="fw-semibold">{{ $row['title'] }}</div>
+                                                    <div class="text-muted mt-1">({{ $row['key'] }})</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        @include('content.pages.frontend.translations.partials.translation-table', [
+                            'rows' => $paymentRows,
+                        ])
+                    </div>
+                </div>
+
                 <div class="translation-footer-bar">
                     <div class="d-flex justify-content-between align-items-center gap-3">
                         <div class="text-muted">
-                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() + $phoneRows->count() + $memberRows->count() }} รายการ
+                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() + $phoneRows->count() + $memberRows->count() + $paymentRows->count() }} รายการ
                         </div>
 
                         <div class="d-flex gap-2">
