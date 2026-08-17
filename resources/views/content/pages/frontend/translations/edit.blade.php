@@ -391,8 +391,8 @@
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/final-order-summary-translation-preview.png');
-        $phonePreviewImage = asset('assets/img/frontend-preview/phone-verify-translation-preview.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
+        $phonePreviewImage = asset('assets/img/frontend-preview/phone-preview.png');
     @endphp
 
     <div class="row g-4">
