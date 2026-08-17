@@ -373,6 +373,24 @@
                     'title' => 'ข้อความปุ่มยืนยัน',
                     'description' => 'Confirm Button',
                 ],
+                [
+                    'number' => 6,
+                    'key' => 'phone_verify_page.otp_success_message',
+                    'title' => 'ข้อความยืนยัน OTP สำเร็จ',
+                    'description' => 'OTP Success Message',
+                ],
+                [
+                    'number' => 7,
+                    'key' => 'phone_verify_page.otp_failed_message',
+                    'title' => 'ข้อความยืนยัน OTP ไม่สำเร็จ',
+                    'description' => 'OTP Failed Message',
+                ],
+                [
+                    'number' => 8,
+                    'key' => 'phone_verify_page.otp_retry_message',
+                    'title' => 'ข้อความกรุณาลองใหม่',
+                    'description' => 'OTP Retry Message',
+                ],
             ],
         ];
 
@@ -706,7 +724,7 @@
                         </div>
 
                         <div class="text-muted mt-2">
-                            แก้ไขหัวข้อกรอกเบอร์โทร ข้อความกำกับช่องเบอร์โทร ปุ่มส่ง OTP ปุ่มขอ OTP ใหม่ และปุ่มยืนยัน
+                            แก้ไขหัวข้อกรอกเบอร์โทร ข้อความกำกับช่องเบอร์โทร ปุ่ม OTP และข้อความผลลัพธ์ทั้งสำเร็จ/ไม่สำเร็จ
                         </div>
                     </div>
 
