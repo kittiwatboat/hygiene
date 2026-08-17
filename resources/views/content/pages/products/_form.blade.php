@@ -147,10 +147,7 @@
       </label>
     </div>
   </div>
-@include('content.pages.products.partials.product-group-prices', [
-    'machineGroups' => $machineGroups,
-    'product' => $product ?? null,
-])
+
   <div class="col-12 d-flex justify-content-end gap-2">
     <a href="{{ route('products.index') }}" class="btn btn-label-secondary">
       ยกเลิก
