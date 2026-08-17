@@ -404,7 +404,7 @@
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
         $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
-        $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-preview.png');
+        $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -702,7 +702,7 @@
                     <div class="card-header">
                         <div class="page-section-title">
                             <span class="badge bg-label-success">PHONE VERIFY</span>
-                            <h4 class="mb-0">หน้ากรอกเบอร์โทรศัพท์</h4>
+                            <h4 class="mb-0">ยืนยันเบอร์โทรศัพท์ / OTP</h4>
                         </div>
 
                         <div class="text-muted mt-2">
@@ -717,7 +717,7 @@
                                     <div class="translation-preview-wrap">
                                         <img
                                             src="{{ $phonePreviewImage }}"
-                                            alt="ตัวอย่างหน้ากรอกเบอร์โทรศัพท์และยืนยัน OTP"
+                                            alt="ตัวอย่างหน้ากรอกเบอร์โทรศัพท์ ยืนยัน OTP และผลลัพธ์ OTP"
                                             class="translation-preview-image"
                                         >
                                     </div>
