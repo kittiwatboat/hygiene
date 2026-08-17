@@ -392,6 +392,63 @@
                     'description' => 'OTP Retry Message',
                 ],
             ],
+
+            'MEMBER_CHECK' => [
+                [
+                    'number' => 1,
+                    'key' => 'member_page.welcome_title',
+                    'title' => 'ยินดีต้อนรับสมาชิก ไอ.พี แฟมิลี่',
+                    'description' => 'Member Welcome Title',
+                ],
+                [
+                    'number' => 2,
+                    'key' => 'member_page.use_points_title',
+                    'title' => 'เลือกใช้แต้ม แลกส่วนลด',
+                    'description' => 'Use Points Title',
+                ],
+                [
+                    'number' => 3,
+                    'key' => 'member_page.redeem_invite_text',
+                    'title' => 'เชิญชวนกดแลกแต้ม รับส่วนลด',
+                    'description' => 'Redeem Invite Text',
+                ],
+                [
+                    'number' => 4,
+                    'key' => 'member_page.points_unit',
+                    'title' => 'แต้ม',
+                    'description' => 'Points Unit',
+                ],
+                [
+                    'number' => 5,
+                    'key' => 'member_page.no_redeem_option',
+                    'title' => 'ไม่แลกแต้ม',
+                    'description' => 'No Redeem Option',
+                ],
+                [
+                    'number' => 6,
+                    'key' => 'member_page.back_button',
+                    'title' => 'ย้อนกลับ',
+                    'description' => 'Back Button',
+                ],
+                [
+                    'number' => 7,
+                    'key' => 'member_page.confirm_button',
+                    'title' => 'ตกลง',
+                    'description' => 'Confirm Button',
+                ],
+                [
+                    'number' => 8,
+                    'key' => 'member_page.not_found_message',
+                    'title' => 'ไม่พบข้อมูลสมาชิก',
+                    'description' => 'Member Not Found Message',
+                ],
+                [
+                    'number' => 9,
+                    'key' => 'member_page.skip_button',
+                    'title' => 'ข้าม',
+                    'description' => 'Skip Button',
+                ],
+            ],
         ];
 
         $translationKeysByKey = collect($translationKeys)->keyBy('key');
@@ -418,11 +475,13 @@
         $selectRows = $buildRows($keyMap['SELECT_PRODUCT']);
         $summaryRows = $buildRows($keyMap['ORDER_SUMMARY']);
         $phoneRows = $buildRows($keyMap['PHONE_VERIFY']);
+        $memberRows = $buildRows($keyMap['MEMBER_CHECK']);
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
         $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
+        $memberPreviewImage = asset('assets/img/frontend-preview/member-check-preview.png');
     @endphp
 
     <div class="row g-4">
@@ -773,10 +832,72 @@
                     </div>
                 </div>
 
+
+                {{-- =========================================================
+                MEMBER CHECK
+                ========================================================== --}}
+                <div class="card translation-page-card mt-4">
+                    <div class="card-header">
+                        <div class="page-section-title">
+                            <span class="badge bg-label-primary">MEMBER</span>
+                            <h4 class="mb-0">หน้าตรวจสอบสมาชิก</h4>
+                        </div>
+
+                        <div class="text-muted mt-2">
+                            แก้ไขข้อความหน้าพบสมาชิก ไม่พบสมาชิก และป๊อปอัปสมัครสมาชิก
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-lg-9">
+                                <div class="translation-preview-stage">
+                                    <div class="translation-preview-wrap">
+                                        <img
+                                            src="{{ $memberPreviewImage }}"
+                                            alt="ตัวอย่างหน้าตรวจสอบสมาชิก"
+                                            class="translation-preview-image"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="translation-legend-box">
+                                    <h5 class="fw-bold">หมายเหตุ</h5>
+
+                                    <p class="text-muted">
+                                        เลขกำกับในภาพ คือข้อความที่สามารถแก้ไขได้
+                                    </p>
+
+                                    <div class="d-flex flex-column gap-3">
+                                        @foreach ($memberRows as $row)
+                                            <div class="d-flex align-items-start">
+                                                <span class="legend-number">{{ $row['number'] }}</span>
+
+                                                <div>
+                                                    <div class="fw-semibold">{{ $row['title'] }}</div>
+                                                    <div class="text-muted mt-1">({{ $row['key'] }})</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        @include('content.pages.frontend.translations.partials.translation-table', [
+                            'rows' => $memberRows,
+                        ])
+                    </div>
+                </div>
+
                 <div class="translation-footer-bar">
                     <div class="d-flex justify-content-between align-items-center gap-3">
                         <div class="text-muted">
-                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() + $phoneRows->count() }} รายการ
+                            ทั้งหมด {{ $homeRows->count() + $selectRows->count() + $summaryRows->count() + $phoneRows->count() + $memberRows->count() }} รายการ
                         </div>
 
                         <div class="d-flex gap-2">
