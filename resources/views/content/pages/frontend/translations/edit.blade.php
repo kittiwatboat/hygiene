@@ -403,7 +403,7 @@
 
         $homePreviewImage = asset('assets/img/frontend/home/home-translation-preview.png');
         $selectPreviewImage = asset('assets/img/frontend/product/select-product-translation-preview.png');
-        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png.png');
+        $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
     @endphp
 
