@@ -202,33 +202,139 @@ public function create()
 
     /**
      * ดาวน์โหลด Excel Template สำหรับ Import สินค้า/น้ำยา
+     *
+     * รูปแบบใหม่อ้างอิงไฟล์ "สินค้า.xlsx"
+     * Sheet: สินค้า
+     * Columns A:J:
+     * ลำดับ, รหัสสินค้า, ชื่อสินค้า, ประเภทสินค้า, ราคา,
+     * หน่วย, จำนวนคงเหลือ, LOT การผลิต, สถานะ, หมายเหตุ
      */
     public function importTemplate()
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('products_import');
+        $sheet->setTitle('สินค้า');
 
         $headers = [
-            'code',
-            'name',
-            'type',
-            'unit',
-            'description',
-            'is_active',
+            'ลำดับ',
+            'รหัสสินค้า',
+            'ชื่อสินค้า',
+            'ประเภทสินค้า',
+            'ราคา',
+            'หน่วย',
+            'จำนวนคงเหลือ',
+            'LOT การผลิต',
+            'สถานะ',
+            'หมายเหตุ',
         ];
 
         $sheet->fromArray($headers, null, 'A1');
-        $sheet->fromArray([
-            ['BH-001', 'น้ำยาปรับผ้านุ่ม', 'น้ำยาปรับผ้านุ่ม', 'ลิตร', 'น้ำยาปรับผ้านุ่ม', 1],
-            ['DT-001', 'น้ำยาซักผ้า', 'น้ำยาซักผ้า', 'ลิตร', 'น้ำยาซักผ้า', 1],
-        ], null, 'A2');
 
-        foreach (range('A', 'F') as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+        // เตรียมแถวตัวอย่าง 1-50 เหมือนไฟล์ที่ใช้งานจริง
+        for ($row = 2; $row <= 51; $row++) {
+            $sheet->setCellValue('A' . $row, $row - 1);
+            $sheet->setCellValue('I' . $row, 'ใช้งาน');
+        }
+
+        // หมายเหตุด้านขวาของ Template
+        $sheet->setCellValue('L1', 'หมายเหตุ');
+        $sheet->setCellValue('L2', 'LOT การผลิต');
+        $sheet->setCellValue('M2', 'กรอกสำหรับน้ำยาซักผ้า');
+        $sheet->setCellValue('L3', 'น้ำยาปรับผ้านุ่ม');
+        $sheet->setCellValue('M3', 'ช่อง LOT สามารถเว้นว่างได้');
+
+        // Sheet รายการตัวเลือก สำหรับ Dropdown
+        $optionSheet = $spreadsheet->createSheet();
+        $optionSheet->setTitle('รายการตัวเลือก');
+
+        $optionSheet->fromArray([
+            ['ประเภทสินค้า', 'สถานะ', 'หน่วย'],
+            ['น้ำยาซักผ้า', 'ใช้งาน', 'ขวด'],
+            ['น้ำยาปรับผ้านุ่ม', 'ไม่ใช้งาน', 'ถุง'],
+            [null, 'สินค้าหมด', 'แกลลอน'],
+            [null, null, 'ชิ้น'],
+        ], null, 'A1');
+
+        // Dropdown: ประเภทสินค้า
+        for ($row = 2; $row <= 51; $row++) {
+            $typeValidation = $sheet->getCell('D' . $row)->getDataValidation();
+            $typeValidation->setType(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST
+            );
+            $typeValidation->setErrorStyle(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP
+            );
+            $typeValidation->setAllowBlank(true);
+            $typeValidation->setShowDropDown(true);
+            $typeValidation->setFormula1("'รายการตัวเลือก'!$A$2:$A$3");
+
+            // Dropdown: หน่วย
+            $unitValidation = $sheet->getCell('F' . $row)->getDataValidation();
+            $unitValidation->setType(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST
+            );
+            $unitValidation->setErrorStyle(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP
+            );
+            $unitValidation->setAllowBlank(true);
+            $unitValidation->setShowDropDown(true);
+            $unitValidation->setFormula1("'รายการตัวเลือก'!$C$2:$C$5");
+
+            // Dropdown: สถานะ
+            $statusValidation = $sheet->getCell('I' . $row)->getDataValidation();
+            $statusValidation->setType(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST
+            );
+            $statusValidation->setErrorStyle(
+                \PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP
+            );
+            $statusValidation->setAllowBlank(false);
+            $statusValidation->setShowDropDown(true);
+            $statusValidation->setFormula1("'รายการตัวเลือก'!$B$2:$B$4");
+        }
+
+        // รูปแบบ Header
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(
+            \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+        );
+        $sheet->getStyle('A1:J1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D9EAF7');
+
+        $optionSheet->getStyle('A1:C1')->getFont()->setBold(true);
+        $optionSheet->getStyle('A1:C1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D9EAF7');
+
+        // กำหนดความกว้างคอลัมน์ให้อ่านง่าย
+        $widths = [
+            'A' => 10,
+            'B' => 18,
+            'C' => 30,
+            'D' => 22,
+            'E' => 14,
+            'F' => 14,
+            'G' => 16,
+            'H' => 20,
+            'I' => 16,
+            'J' => 30,
+            'L' => 22,
+            'M' => 36,
+        ];
+
+        foreach ($widths as $column => $width) {
+            $sheet->getColumnDimension($column)->setWidth($width);
+        }
+
+        foreach (['A', 'B', 'C'] as $column) {
+            $optionSheet->getColumnDimension($column)->setWidth(22);
         }
 
         $sheet->freezePane('A2');
+
+        // กลับมาเปิด Sheet สินค้าเป็นหน้าแรก
+        $spreadsheet->setActiveSheetIndex(0);
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
@@ -239,10 +345,17 @@ public function create()
     }
 
     /**
-     * Import Excel สินค้า/น้ำยา
+     * Import Excel สินค้า/น้ำยา รูปแบบใหม่
      *
-     * Header ที่รองรับ:
-     * code, name, type, unit, description, is_active
+     * Header ที่รับจาก Sheet "สินค้า":
+     * ลำดับ, รหัสสินค้า, ชื่อสินค้า, ประเภทสินค้า, ราคา,
+     * หน่วย, จำนวนคงเหลือ, LOT การผลิต, สถานะ, หมายเหตุ
+     *
+     * หมายเหตุ:
+     * ตาราง products ปัจจุบันมี field:
+     * code, name, type, unit, description, image, is_active
+     * ดังนั้น ราคา / จำนวนคงเหลือ / LOT การผลิต จะอ่านไฟล์ได้
+     * แต่ยังไม่บันทึกลง products จนกว่าจะมีโครงสร้าง DB ที่รองรับ
      */
     public function import(Request $request)
     {
@@ -255,9 +368,24 @@ public function create()
         ]);
 
         try {
-            $spreadsheet = IOFactory::load($request->file('file')->getRealPath());
-            $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray(null, true, true, false);
+            $spreadsheet = IOFactory::load(
+                $request->file('file')->getRealPath()
+            );
+
+            // ใช้ Sheet ชื่อ "สินค้า" ถ้ามี ไม่เช่นนั้นใช้ Sheet แรก
+            $sheet = $spreadsheet->getSheetByName('สินค้า')
+                ?? $spreadsheet->getActiveSheet();
+
+            $highestRow = max(1, (int) $sheet->getHighestDataRow());
+
+            // อ่านเฉพาะ A:J เท่านั้น เพราะด้านขวา L:M เป็นหมายเหตุ Template
+            $rows = $sheet->rangeToArray(
+                'A1:J' . $highestRow,
+                null,
+                true,
+                true,
+                false
+            );
 
             if (count($rows) < 2) {
                 return back()->withErrors([
@@ -266,72 +394,112 @@ public function create()
             }
 
             $header = array_map(
-                fn ($value) => strtolower(trim((string) $value)),
+                fn ($value) => $this->normalizeExcelHeader($value),
                 $rows[0]
             );
 
             $requiredHeaders = [
-                'code',
-                'name',
-                'type',
-                'unit',
-                'description',
-                'is_active',
+                'ลำดับ',
+                'รหัสสินค้า',
+                'ชื่อสินค้า',
+                'ประเภทสินค้า',
+                'ราคา',
+                'หน่วย',
+                'จำนวนคงเหลือ',
+                'LOT การผลิต',
+                'สถานะ',
+                'หมายเหตุ',
             ];
 
-            $missingHeaders = array_values(array_diff($requiredHeaders, $header));
-
-            if (!empty($missingHeaders)) {
+            if ($header !== $requiredHeaders) {
                 return back()->withErrors([
-                    'file' => 'Header ในไฟล์ไม่ครบ: ' . implode(', ', $missingHeaders),
+                    'file' => 'รูปแบบ Header ไม่ตรงกับ Template กรุณาใช้ไฟล์ Template ล่าสุดของระบบ',
                 ]);
             }
 
-            $columnMap = array_flip($header);
             $preparedRows = [];
             $rowErrors = [];
 
             foreach (array_slice($rows, 1) as $index => $row) {
                 $excelRow = $index + 2;
 
-                $data = [
-                    'code' => $this->excelValue($row[$columnMap['code']] ?? null),
-                    'name' => $this->excelValue($row[$columnMap['name']] ?? null),
-                    'type' => $this->excelValue($row[$columnMap['type']] ?? null),
-                    'unit' => $this->excelValue($row[$columnMap['unit']] ?? null),
-                    'description' => $this->excelValue($row[$columnMap['description']] ?? null),
-                    'is_active' => $this->normalizeExcelBoolean(
-                        $row[$columnMap['is_active']] ?? null
-                    ),
-                ];
+                $code = $this->excelValue($row[1] ?? null);
+                $name = $this->excelValue($row[2] ?? null);
+                $typeText = $this->excelValue($row[3] ?? null);
+                $price = $this->excelValue($row[4] ?? null);
+                $unit = $this->excelValue($row[5] ?? null);
+                $stock = $this->excelValue($row[6] ?? null);
+                $lot = $this->excelValue($row[7] ?? null);
+                $statusText = $this->excelValue($row[8] ?? null);
+                $remark = $this->excelValue($row[9] ?? null);
 
-                // ข้ามแถวว่างทั้งหมด
+                // Template มีเลขลำดับ + สถานะเตรียมไว้ทุกแถว
+                // ถ้าไม่มีข้อมูลสินค้าเลย ให้ข้ามแถวนั้น
                 if (
-                    $data['code'] === null &&
-                    $data['name'] === null &&
-                    $data['type'] === null &&
-                    $data['unit'] === null &&
-                    $data['description'] === null
+                    $code === null &&
+                    $name === null &&
+                    $typeText === null &&
+                    $price === null &&
+                    $unit === null &&
+                    $stock === null &&
+                    $lot === null &&
+                    $remark === null
                 ) {
                     continue;
                 }
 
+                $type = $this->normalizeProductType($typeText);
+                $isActive = $this->normalizeProductStatus($statusText);
+
+                $data = [
+                    'code' => $code,
+                    'name' => $name,
+                    'type' => $type,
+                    'unit' => $unit,
+                    'description' => $remark,
+                    'is_active' => $isActive,
+                ];
+
                 $validator = Validator::make($data, [
                     'code' => ['nullable', 'string', 'max:100'],
                     'name' => ['required', 'string', 'max:255'],
-                    'type' => ['nullable', 'string', 'max:100'],
+                    'type' => ['nullable', Rule::in([
+                        'detergent',
+                        'softener',
+                        'disinfectant',
+                        'other',
+                    ])],
                     'unit' => ['required', 'string', 'max:50'],
                     'description' => ['nullable', 'string'],
                     'is_active' => ['required', 'boolean'],
                 ], [
-                    'name.required' => 'กรุณาระบุชื่อสินค้า/น้ำยา',
+                    'name.required' => 'กรุณาระบุชื่อสินค้า',
+                    'type.in' => 'ประเภทสินค้าต้องเป็นค่าที่มีในรายการตัวเลือก',
                     'unit.required' => 'กรุณาระบุหน่วย',
-                    'is_active.required' => 'กรุณาระบุสถานะ is_active เป็น 1 หรือ 0',
-                    'is_active.boolean' => 'is_active ต้องเป็น 1 หรือ 0',
+                    'is_active.required' => 'สถานะต้องเป็น ใช้งาน / ไม่ใช้งาน / สินค้าหมด',
                 ]);
 
                 if ($validator->fails()) {
-                    $rowErrors[] = 'แถว ' . $excelRow . ': ' . implode(', ', $validator->errors()->all());
+                    $rowErrors[] = 'แถว ' . $excelRow . ': '
+                        . implode(', ', $validator->errors()->all());
+                    continue;
+                }
+
+                // ตรวจราคา ถ้ามีการกรอก
+                if ($price !== null && !is_numeric(str_replace(',', '', $price))) {
+                    $rowErrors[] = 'แถว ' . $excelRow . ': ราคาต้องเป็นตัวเลข';
+                    continue;
+                }
+
+                // ตรวจจำนวนคงเหลือ ถ้ามีการกรอก
+                if ($stock !== null && !is_numeric(str_replace(',', '', $stock))) {
+                    $rowErrors[] = 'แถว ' . $excelRow . ': จำนวนคงเหลือต้องเป็นตัวเลข';
+                    continue;
+                }
+
+                // น้ำยาซักผ้าต้องกรอก LOT ตามหมายเหตุใน Template
+                if ($type === 'detergent' && $lot === null) {
+                    $rowErrors[] = 'แถว ' . $excelRow . ': น้ำยาซักผ้าต้องกรอก LOT การผลิต';
                     continue;
                 }
 
@@ -342,10 +510,10 @@ public function create()
             }
 
             if (!empty($rowErrors)) {
-                return back()
-                    ->withErrors([
-                        'file' => "Import ไม่สำเร็จ กรุณาแก้ไขข้อมูลใน Excel ก่อน\n" . implode("\n", array_slice($rowErrors, 0, 20)),
-                    ]);
+                return back()->withErrors([
+                    'file' => "Import ไม่สำเร็จ กรุณาแก้ไขข้อมูลใน Excel ก่อน\n"
+                        . implode("\n", array_slice($rowErrors, 0, 20)),
+                ]);
             }
 
             if (empty($preparedRows)) {
@@ -357,7 +525,11 @@ public function create()
             $created = 0;
             $updated = 0;
 
-            DB::transaction(function () use ($preparedRows, &$created, &$updated) {
+            DB::transaction(function () use (
+                $preparedRows,
+                &$created,
+                &$updated
+            ) {
                 foreach ($preparedRows as $item) {
                     $data = $item['data'];
                     $code = $data['code'] ?? null;
@@ -437,6 +609,54 @@ public function create()
         $value = trim((string) $value);
 
         return $value === '' ? null : $value;
+    }
+
+    private function normalizeExcelHeader($value): string
+    {
+        $value = trim((string) $value);
+
+        // ตัด BOM กรณีมาจาก CSV/Excel บางโปรแกรม
+        return preg_replace('/^\\xEF\\xBB\\xBF/', '', $value) ?? $value;
+    }
+
+    private function normalizeProductType(?string $value): ?string
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return match ($value) {
+            'น้ำยาซักผ้า', 'detergent' => 'detergent',
+            'น้ำยาปรับผ้านุ่ม', 'softener' => 'softener',
+            'น้ำยาฆ่าเชื้อ', 'disinfectant' => 'disinfectant',
+            'อื่น ๆ', 'อื่นๆ', 'other' => 'other',
+            default => '__invalid__',
+        };
+    }
+
+    private function normalizeProductStatus(?string $value): ?bool
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        $value = strtolower(trim($value));
+
+        if (in_array($value, ['ใช้งาน', '1', 'true', 'active'], true)) {
+            return true;
+        }
+
+        if (in_array(
+            $value,
+            ['ไม่ใช้งาน', 'สินค้าหมด', '0', 'false', 'inactive'],
+            true
+        )) {
+            return false;
+        }
+
+        return null;
     }
 
     private function normalizeExcelBoolean($value): ?bool
