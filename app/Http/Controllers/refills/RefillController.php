@@ -78,7 +78,7 @@ class RefillController extends Controller
             ->orderBy('tank_no')
             ->get();
 
-        return view('content.pages.refills.create', compact(
+        return view('content.pages.refill.create', compact(
             'machineGroups',
             'machines',
             'tanks'
