@@ -123,7 +123,7 @@
                     >
 
                     @error('file')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback" style="white-space: pre-line;">{{ $message }}</div>
                     @enderror
 
                     <div class="form-text mt-2">
@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="form-text mt-1 text-warning">
-                        LOT การผลิต: บังคับกรอกสำหรับน้ำยาซักผ้า ส่วนน้ำยาปรับผ้านุ่มสามารถเว้นว่างได้
+                        LOT การผลิตสามารถเว้นว่างได้ ระบบจะยัง Import สินค้าได้ตามปกติ
                     </div>
                 </div>
 

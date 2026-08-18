@@ -241,7 +241,7 @@ public function create()
         $sheet->setCellValue('L2', 'LOT การผลิต');
         $sheet->setCellValue('M2', 'กรอกสำหรับน้ำยาซักผ้า');
         $sheet->setCellValue('L3', 'น้ำยาปรับผ้านุ่ม');
-        $sheet->setCellValue('M3', 'ช่อง LOT สามารถเว้นว่างได้');
+        $sheet->setCellValue('M3', 'LOT การผลิตสามารถเว้นว่างได้ ระบบจะรับไฟล์ได้ตามปกติ');
 
         // Sheet รายการตัวเลือก สำหรับ Dropdown
         $optionSheet = $spreadsheet->createSheet();
@@ -354,7 +354,7 @@ public function create()
      * หมายเหตุ:
      * ตาราง products ปัจจุบันมี field:
      * code, name, type, unit, description, image, is_active
-     * ดังนั้น ราคา / จำนวนคงเหลือ / LOT การผลิต จะอ่านไฟล์ได้
+     * ดังนั้น ราคา / จำนวนคงเหลือ / LOT การผลิต จะอ่านไฟล์ได้ โดย LOT สามารถเว้นว่างได้
      * แต่ยังไม่บันทึกลง products จนกว่าจะมีโครงสร้าง DB ที่รองรับ
      */
     public function import(Request $request)
@@ -494,12 +494,6 @@ public function create()
                 // ตรวจจำนวนคงเหลือ ถ้ามีการกรอก
                 if ($stock !== null && !is_numeric(str_replace(',', '', $stock))) {
                     $rowErrors[] = 'แถว ' . $excelRow . ': จำนวนคงเหลือต้องเป็นตัวเลข';
-                    continue;
-                }
-
-                // น้ำยาซักผ้าต้องกรอก LOT ตามหมายเหตุใน Template
-                if ($type === 'detergent' && $lot === null) {
-                    $rowErrors[] = 'แถว ' . $excelRow . ': น้ำยาซักผ้าต้องกรอก LOT การผลิต';
                     continue;
                 }
 
