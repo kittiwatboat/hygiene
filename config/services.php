@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'thaibulksms' => [
+        'key' => env('THAIBULKSMS_KEY'),
+        'secret' => env('THAIBULKSMS_SECRET'),
+    ],
 ];

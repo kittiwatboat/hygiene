@@ -3,19 +3,24 @@
 namespace App\Http\Controllers\Api\Kiosk;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class KioskOtpController extends Controller
 {
+    private const REQUEST_URL = 'https://otp.thaibulksms.com/v2/otp/request';
+    private const VERIFY_URL  = 'https://otp.thaibulksms.com/v2/otp/verify';
+
     /**
-     * Temporary Mock OTP
-     *
-     * DEV/UAT only:
-     * OTP = 123456
+     * เก็บ token ของ ThaiBulkSMS ฝั่ง server
+     * เพื่อไม่ต้องส่ง token ให้ frontend
      */
-    private const MOCK_OTP = '123456';
+    private const TOKEN_CACHE_MINUTES = 10;
 
     public function send(Request $request): JsonResponse
     {
@@ -30,21 +35,92 @@ class KioskOtpController extends Controller
             'phone.regex' => 'หมายเลขโทรศัพท์ต้องเป็นตัวเลข 10 หลักและขึ้นต้นด้วย 0',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'ส่ง OTP สำเร็จ',
-            'data' => [
-                'phone' => $validated['phone'],
-                'otp_length' => 6,
-                'expires_in_seconds' => 300,
+        $key = (string) config('services.thaibulksms.key');
+        $secret = (string) config('services.thaibulksms.secret');
 
-                /*
-                 * Temporary DEV/UAT only.
-                 * ตอนเชื่อม SMS จริง ให้เอา field นี้ออก
-                 */
-                'mock_otp' => self::MOCK_OTP,
-            ],
-        ]);
+        if ($key === '' || $secret === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'ยังไม่ได้ตั้งค่า ThaiBulkSMS API',
+            ], 500);
+        }
+
+        try {
+            $response = Http::acceptJson()
+                ->asJson()
+                ->timeout(15)
+                ->retry(2, 300)
+                ->post(self::REQUEST_URL, [
+                    'key' => $key,
+                    'secret' => $secret,
+                    'msisdn' => $validated['phone'],
+                ]);
+
+            $body = $response->json();
+
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $this->providerMessage(
+                        $body,
+                        'ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่'
+                    ),
+                    'provider_status' => $response->status(),
+                ], 422);
+            }
+
+            /*
+             * ThaiBulkSMS v2 จะคืน token จาก Request OTP
+             * รองรับทั้ง token root และ data.token เผื่อ response wrapper
+             */
+            $token = data_get($body, 'token')
+                ?? data_get($body, 'data.token');
+
+            if (!$token) {
+                report(new \RuntimeException(
+                    'ThaiBulkSMS Request OTP succeeded but token was missing.'
+                ));
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ได้รับข้อมูล OTP จากผู้ให้บริการไม่ครบถ้วน',
+                ], 502);
+            }
+
+            Cache::put(
+                $this->cacheKey($validated['phone']),
+                [
+                    'token' => (string) $token,
+                    'phone' => $validated['phone'],
+                    'requested_at' => now()->toIso8601String(),
+                ],
+                now()->addMinutes(self::TOKEN_CACHE_MINUTES)
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ส่ง OTP สำเร็จ',
+                'data' => [
+                    'phone' => $validated['phone'],
+                    'otp_length' => 6,
+                    'next_step' => 'otp',
+                ],
+            ]);
+        } catch (ConnectionException $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่สามารถเชื่อมต่อระบบส่ง OTP ได้ กรุณาลองใหม่',
+            ], 503);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดระหว่างส่ง OTP',
+            ], 500);
+        }
     }
 
     public function verify(Request $request): JsonResponse
@@ -66,26 +142,112 @@ class KioskOtpController extends Controller
             'otp.digits' => 'OTP ต้องมี 6 หลัก',
         ]);
 
-        if ((string) $validated['otp'] !== self::MOCK_OTP) {
+        $key = (string) config('services.thaibulksms.key');
+        $secret = (string) config('services.thaibulksms.secret');
+
+        if ($key === '' || $secret === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'ยังไม่ได้ตั้งค่า ThaiBulkSMS API',
+            ], 500);
+        }
+
+        $cached = Cache::get(
+            $this->cacheKey($validated['phone'])
+        );
+
+        if (!$cached || empty($cached['token'])) {
             throw ValidationException::withMessages([
                 'otp' => [
-                    'OTP ไม่ถูกต้อง กรุณาลองใหม่',
+                    'ไม่พบคำขอ OTP หรือ OTP หมดอายุ กรุณาขอ OTP ใหม่',
                 ],
             ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'ยืนยัน OTP สำเร็จ',
-            'data' => [
-                'phone' => $validated['phone'],
-                'verified' => true,
+        try {
+            $response = Http::acceptJson()
+                ->asJson()
+                ->timeout(15)
+                ->retry(2, 300)
+                ->post(self::VERIFY_URL, [
+                    'token' => $cached['token'],
+                    'key' => $key,
+                    'secret' => $secret,
+                    'pin' => (string) $validated['otp'],
+                ]);
 
-                /*
-                 * frontend ใช้ค่านี้เพื่อเปลี่ยนไป STEP MEMBER
-                 */
-                'next_step' => 'member',
-            ],
-        ]);
+            $body = $response->json();
+
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $this->providerMessage(
+                        $body,
+                        'OTP ไม่ถูกต้อง กรุณาลองใหม่'
+                    ),
+                    'errors' => [
+                        'otp' => [
+                            $this->providerMessage(
+                                $body,
+                                'OTP ไม่ถูกต้อง กรุณาลองใหม่'
+                            ),
+                        ],
+                    ],
+                    'provider_status' => $response->status(),
+                ], 422);
+            }
+
+            /*
+             * ยืนยันสำเร็จแล้ว token นี้ไม่ควรนำกลับมาใช้ซ้ำ
+             */
+            Cache::forget(
+                $this->cacheKey($validated['phone'])
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'ยืนยัน OTP สำเร็จ',
+                'data' => [
+                    'phone' => $validated['phone'],
+                    'verified' => true,
+                    'next_step' => 'member',
+                ],
+            ]);
+        } catch (ConnectionException $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่สามารถเชื่อมต่อระบบตรวจสอบ OTP ได้ กรุณาลองใหม่',
+            ], 503);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดระหว่างตรวจสอบ OTP',
+            ], 500);
+        }
+    }
+
+    private function cacheKey(string $phone): string
+    {
+        return 'kiosk:otp:thaibulksms:' . $phone;
+    }
+
+    private function providerMessage(
+        mixed $body,
+        string $fallback
+    ): string {
+        if (!is_array($body)) {
+            return $fallback;
+        }
+
+        return (string) (
+            data_get($body, 'message')
+            ?? data_get($body, 'error.message')
+            ?? data_get($body, 'error')
+            ?? $fallback
+        );
     }
 }
