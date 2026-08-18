@@ -7,16 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Refill extends Model
 {
     protected $fillable = [
-        'machine_id',
-        'machine_tank_id',
-        'product_id',
-        'before_liters',
-        'refill_liters',
-        'after_liters',
-        'refill_by',
-        'refill_at',
-        'remark',
-    ];
+    'machine_id',
+    'machine_tank_id',
+    'product_id',
+    'production_lot',
+    'before_liters',
+    'refill_liters',
+    'after_liters',
+    'refill_by',
+    'refill_at',
+    'remark',
+];
+
 
     protected $casts = [
         'before_liters' => 'decimal:2',
