@@ -46,21 +46,22 @@ Route::get('/test-product-api', function () {
     ]);
 });
 });
-Route::post('/otp/send', [KioskOtpController::class, 'send']);
+
+Route::prefix('kiosk')->group(function () {
+    Route::post(
+        '/customers/check',
+        [KioskCustomerController::class, 'check']
+    );
+
+    Route::get(
+        '/machines/{machine}/products',
+        [KioskProductController::class, 'index']
+    );
+
+    Route::post(
+        '/quote',
+        [KioskQuoteController::class, 'calculate']
+    );
+    Route::post('/otp/send', [KioskOtpController::class, 'send']);
 Route::post('/otp/verify', [KioskOtpController::class, 'verify']);
-// Route::prefix('kiosk')->group(function () {
-//     Route::post(
-//         '/customers/check',
-//         [KioskCustomerController::class, 'check']
-//     );
-
-//     Route::get(
-//         '/machines/{machine}/products',
-//         [KioskProductController::class, 'index']
-//     );
-
-//     Route::post(
-//         '/quote',
-//         [KioskQuoteController::class, 'calculate']
-//     );
-// });
+});
