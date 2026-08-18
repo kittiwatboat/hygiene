@@ -266,7 +266,7 @@ public function create()
             );
             $typeValidation->setAllowBlank(true);
             $typeValidation->setShowDropDown(true);
-            $typeValidation->setFormula1("'รายการตัวเลือก'!$A$2:$A$3");
+            $typeValidation->setFormula1("'รายการตัวเลือก'!\$A\$2:\$A\$3");
 
             // Dropdown: หน่วย
             $unitValidation = $sheet->getCell('F' . $row)->getDataValidation();
@@ -278,7 +278,7 @@ public function create()
             );
             $unitValidation->setAllowBlank(true);
             $unitValidation->setShowDropDown(true);
-            $unitValidation->setFormula1("'รายการตัวเลือก'!$C$2:$C$5");
+            $unitValidation->setFormula1("'รายการตัวเลือก'!\$C\$2:\$C\$5");
 
             // Dropdown: สถานะ
             $statusValidation = $sheet->getCell('I' . $row)->getDataValidation();
@@ -290,7 +290,7 @@ public function create()
             );
             $statusValidation->setAllowBlank(false);
             $statusValidation->setShowDropDown(true);
-            $statusValidation->setFormula1("'รายการตัวเลือก'!$B$2:$B$4");
+            $statusValidation->setFormula1("'รายการตัวเลือก'!\$B\$2:\$B\$4");
         }
 
         // รูปแบบ Header
