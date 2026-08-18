@@ -594,7 +594,7 @@
         $summaryPreviewImage = asset('assets/img/frontend-preview/order-summary-preview-only.png');
         $phonePreviewImage = asset('assets/img/frontend-preview/phone-otp-4screens-preview.png');
         $memberPreviewImage = asset('assets/img/frontend-preview/member-check-preview.png');
-        $paymentPreviewImage = asset('assets/img/frontend-preview/payment-translation-preview.png');
+        $paymentPreviewImage = asset('assets/img/frontend-preview/payment-translation-preview-v2.png');
     @endphp
 
     <div class="row g-4">
