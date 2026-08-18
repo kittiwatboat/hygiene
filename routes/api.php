@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Kiosk\KioskProductController;
 use App\Http\Controllers\Api\Kiosk\KioskQuoteController;
 // use App\Http\Controllers\Api\Frontend\MachineThemeController;
 use App\Http\Controllers\Api\Frontend\MachineProductController;
+use App\Http\Controllers\Api\Kiosk\KioskOtpController;
 
 
 Route::prefix('frontend')->group(function () {
@@ -45,6 +46,8 @@ Route::get('/test-product-api', function () {
     ]);
 });
 });
+Route::post('/otp/send', [KioskOtpController::class, 'send']);
+Route::post('/otp/verify', [KioskOtpController::class, 'verify']);
 // Route::prefix('kiosk')->group(function () {
 //     Route::post(
 //         '/customers/check',
