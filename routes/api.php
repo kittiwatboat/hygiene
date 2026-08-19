@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Kiosk\KioskQuoteController;
 // use App\Http\Controllers\Api\Frontend\MachineThemeController;
 use App\Http\Controllers\Api\Frontend\MachineProductController;
 use App\Http\Controllers\Api\Kiosk\KioskOtpController;
+use App\Http\Controllers\Api\Kiosk\KioskSelectionController;
 
 
 Route::prefix('frontend')->group(function () {
@@ -63,5 +64,7 @@ Route::prefix('kiosk')->group(function () {
         [KioskQuoteController::class, 'calculate']
     );
     Route::post('/otp/send', [KioskOtpController::class, 'send']);
-Route::post('/otp/verify', [KioskOtpController::class, 'verify']);
+    Route::post('/otp/verify', [KioskOtpController::class, 'verify']);
+    Route::post('/selection/confirm', [KioskSelectionController::class, 'confirm']);
+
 });
