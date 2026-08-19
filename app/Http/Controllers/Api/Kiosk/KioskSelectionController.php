@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Kiosk;
 use App\Http\Controllers\Controller;
 use App\Models\KioskSelection;
 use App\Models\Machine;
+use App\Models\MachineTank;
 use App\Models\ProductGroupPrice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,24 +20,45 @@ class KioskSelectionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'serial_number' => ['required', 'string', 'max:255'],
-                'model' => ['required', 'string', 'max:255'],
-                'code' => ['required', 'string', 'max:100'],
                 'items' => ['required', 'array', 'min:1', 'max:4'],
                 'items.*.tank_id' => ['required', 'integer'],
                 'items.*.price_option_id' => ['required', 'integer'],
                 'items.*.quantity' => ['nullable', 'integer', 'min:1', 'max:10'],
+            ], [
+                'items.required' => 'กรุณาเลือกสินค้า/น้ำยา',
+                'items.array' => 'รูปแบบรายการสินค้าไม่ถูกต้อง',
+                'items.min' => 'กรุณาเลือกสินค้า/น้ำยาอย่างน้อย 1 รายการ',
+                'items.*.tank_id.required' => 'ไม่พบช่องน้ำยาที่เลือก',
+                'items.*.price_option_id.required' => 'ไม่พบราคาหรือปริมาตรที่เลือก',
             ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | หา Machine จาก tank_id ที่เลือก
+            |--------------------------------------------------------------------------
+            | ไม่ต้องส่ง serial_number / model / code ซ้ำ
+            */
+            $firstTank = MachineTank::query()
+                ->with('machine.group')
+                ->where('is_active', 1)
+                ->find((int) $validated['items'][0]['tank_id']);
+
+            if (!$firstTank || !$firstTank->machine) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่พบตู้หรือช่องน้ำยาที่เลือก',
+                ], 404);
+            }
 
             $machine = Machine::query()
                 ->with([
                     'group',
-                    'tanks' => fn ($q) => $q->where('is_active', 1)->orderBy('tank_no'),
+                    'tanks' => fn ($q) => $q
+                        ->where('is_active', 1)
+                        ->orderBy('tank_no'),
                     'tanks.product',
                 ])
-                ->where('serial_number', $validated['serial_number'])
-                ->where('model', $validated['model'])
-                ->where('code', $validated['code'])
+                ->where('id', $firstTank->machine_id)
                 ->where('is_active', 1)
                 ->first();
 
@@ -55,8 +77,8 @@ class KioskSelectionController extends Controller
             }
 
             $tanks = $machine->tanks->keyBy('id');
-            $selectedItems = collect();
 
+            $selectedItems = collect();
             $subtotal = 0.0;
             $productDiscount = 0.0;
             $netTotal = 0.0;
@@ -66,7 +88,9 @@ class KioskSelectionController extends Controller
 
                 if (!$tank) {
                     throw ValidationException::withMessages([
-                        "items.{$index}.tank_id" => ['ช่องน้ำยาที่เลือกไม่อยู่ในเครื่องนี้'],
+                        "items.{$index}.tank_id" => [
+                            'ช่องน้ำยาที่เลือกไม่อยู่ในเครื่องนี้',
+                        ],
                     ]);
                 }
 
@@ -74,7 +98,9 @@ class KioskSelectionController extends Controller
 
                 if (!$product || !(bool) $product->is_active) {
                     throw ValidationException::withMessages([
-                        "items.{$index}.tank_id" => ['สินค้าในช่องน้ำยานี้ไม่สามารถใช้งานได้'],
+                        "items.{$index}.tank_id" => [
+                            'สินค้าในช่องน้ำยานี้ไม่สามารถใช้งานได้',
+                        ],
                     ]);
                 }
 
@@ -117,21 +143,17 @@ class KioskSelectionController extends Controller
                     'tank_id' => $tank->id,
                     'tank_no' => (int) $tank->tank_no,
                     'tank_name' => $tank->tank_name,
-
                     'product_id' => $product->id,
                     'product_code' => $product->code,
                     'product_name' => $product->name,
                     'product_type' => $product->type,
                     'product_unit' => $product->unit,
-                    'product_image' => $product->image,
                     'product_image_url' => $product->image
                         ? asset('assets/img/products/' . $product->image)
                         : null,
-
                     'price_option_id' => $priceOption->id,
                     'amount_ml' => (int) $priceOption->amount_ml,
                     'quantity' => $quantity,
-
                     'normal_unit_price' => round($normalUnitPrice, 2),
                     'special_unit_price' => $specialUnitPrice !== null
                         ? round($specialUnitPrice, 2)
@@ -207,13 +229,6 @@ class KioskSelectionController extends Controller
             ], 404);
         }
 
-        if ($selection->expires_at && $selection->expires_at->isPast()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'รายการสินค้าที่เลือกหมดอายุ กรุณาเลือกสินค้าใหม่',
-            ], 410);
-        }
-
         $selection->update([
             'phone' => $validated['phone'],
             'status' => 'phone_attached',
@@ -228,91 +243,6 @@ class KioskSelectionController extends Controller
                 'items' => $selection->items,
                 'summary' => $selection->summary,
                 'next_step' => 'otp',
-            ],
-        ]);
-    }
-
-    public function updateMemberResult(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'selection_token' => ['required', 'uuid'],
-            'phone' => ['required', 'string', 'regex:/^0[0-9]{9}$/'],
-            'member_found' => ['required', 'boolean'],
-            'member_id' => ['nullable', 'integer'],
-        ]);
-
-        $selection = KioskSelection::query()
-            ->where('selection_token', $validated['selection_token'])
-            ->first();
-
-        if (!$selection) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบรายการสินค้าที่เลือก',
-            ], 404);
-        }
-
-        if ($selection->phone && $selection->phone !== $validated['phone']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'เบอร์โทรไม่ตรงกับรายการสินค้าที่เลือก',
-            ], 422);
-        }
-
-        $memberFound = (bool) $validated['member_found'];
-
-        $selection->update([
-            'phone' => $validated['phone'],
-            'member_found' => $memberFound,
-            'member_id' => $memberFound ? ($validated['member_id'] ?? null) : null,
-            'status' => $memberFound ? 'member_found' : 'member_not_found',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => $memberFound ? 'พบข้อมูลสมาชิก' : 'ไม่พบข้อมูลสมาชิก',
-            'data' => [
-                'selection_token' => $selection->selection_token,
-                'phone' => $selection->phone,
-                'member' => [
-                    'found' => $selection->member_found,
-                    'member_id' => $selection->member_id,
-                ],
-                'items' => $selection->items,
-                'summary' => $selection->summary,
-                'next_step' => 'member',
-            ],
-        ]);
-    }
-
-    public function show(string $selectionToken): JsonResponse
-    {
-        $selection = KioskSelection::query()
-            ->where('selection_token', $selectionToken)
-            ->first();
-
-        if (!$selection) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่พบรายการสินค้าที่เลือก',
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'selection_token' => $selection->selection_token,
-                'machine_id' => $selection->machine_id,
-                'machine_group_id' => $selection->machine_group_id,
-                'phone' => $selection->phone,
-                'otp_verified' => $selection->otp_verified,
-                'member' => [
-                    'found' => $selection->member_found,
-                    'member_id' => $selection->member_id,
-                ],
-                'items' => $selection->items,
-                'summary' => $selection->summary,
-                'status' => $selection->status,
             ],
         ]);
     }
