@@ -202,13 +202,16 @@ class KioskSelectionController extends Controller
                 'errors' => $exception->errors(),
             ], 422);
         } catch (Throwable $exception) {
-            report($exception);
+    report($exception);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'ไม่สามารถบันทึกรายการสินค้าได้',
-            ], 500);
-        }
+    return response()->json([
+        'success' => false,
+        'message' => 'ไม่สามารถบันทึกรายการสินค้าได้',
+        'error' => $exception->getMessage(),
+        'file' => $exception->getFile(),
+        'line' => $exception->getLine(),
+    ], 500);
+}
     }
 
     public function attachPhone(Request $request): JsonResponse
