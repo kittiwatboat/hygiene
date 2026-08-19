@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\Kiosk;
 
 use App\Http\Controllers\Controller;
+use App\Models\KioskSelection;
 use App\Models\Machine;
 use App\Models\ProductGroupPrice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -23,9 +26,6 @@ class KioskSelectionController extends Controller
                 'items.*.tank_id' => ['required', 'integer'],
                 'items.*.price_option_id' => ['required', 'integer'],
                 'items.*.quantity' => ['nullable', 'integer', 'min:1', 'max:10'],
-            ], [
-                'items.required' => 'กรุณาเลือกสินค้า/น้ำยา',
-                'items.min' => 'กรุณาเลือกสินค้า/น้ำยาอย่างน้อย 1 รายการ',
             ]);
 
             $machine = Machine::query()
@@ -44,7 +44,6 @@ class KioskSelectionController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'ไม่พบข้อมูลเครื่อง',
-                    'data' => null,
                 ], 404);
             }
 
@@ -52,12 +51,12 @@ class KioskSelectionController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'เครื่องนี้ยังไม่ได้กำหนดกลุ่มตู้',
-                    'data' => null,
                 ], 422);
             }
 
             $tanks = $machine->tanks->keyBy('id');
             $selectedItems = collect();
+
             $subtotal = 0.0;
             $productDiscount = 0.0;
             $netTotal = 0.0;
@@ -88,19 +87,23 @@ class KioskSelectionController extends Controller
 
                 if (!$priceOption) {
                     throw ValidationException::withMessages([
-                        "items.{$index}.price_option_id" => ['ปริมาตรหรือราคาที่เลือกไม่ถูกต้องสำหรับสินค้านี้'],
+                        "items.{$index}.price_option_id" => [
+                            'ปริมาตรหรือราคาที่เลือกไม่ถูกต้องสำหรับสินค้านี้',
+                        ],
                     ]);
                 }
 
                 $quantity = (int) ($input['quantity'] ?? 1);
+
                 $normalUnitPrice = (float) $priceOption->price;
                 $specialUnitPrice = $priceOption->special_price !== null
                     ? (float) $priceOption->special_price
                     : null;
 
-                $unitPrice = ($specialUnitPrice !== null && $specialUnitPrice < $normalUnitPrice)
-                    ? $specialUnitPrice
-                    : $normalUnitPrice;
+                $unitPrice = (
+                    $specialUnitPrice !== null &&
+                    $specialUnitPrice < $normalUnitPrice
+                ) ? $specialUnitPrice : $normalUnitPrice;
 
                 $normalLineTotal = $normalUnitPrice * $quantity;
                 $lineTotal = $unitPrice * $quantity;
@@ -114,6 +117,7 @@ class KioskSelectionController extends Controller
                     'tank_id' => $tank->id,
                     'tank_no' => (int) $tank->tank_no,
                     'tank_name' => $tank->tank_name,
+
                     'product_id' => $product->id,
                     'product_code' => $product->code,
                     'product_name' => $product->name,
@@ -123,45 +127,50 @@ class KioskSelectionController extends Controller
                     'product_image_url' => $product->image
                         ? asset('assets/img/products/' . $product->image)
                         : null,
+
                     'price_option_id' => $priceOption->id,
                     'amount_ml' => (int) $priceOption->amount_ml,
                     'quantity' => $quantity,
+
                     'normal_unit_price' => round($normalUnitPrice, 2),
-                    'special_unit_price' => $specialUnitPrice !== null ? round($specialUnitPrice, 2) : null,
+                    'special_unit_price' => $specialUnitPrice !== null
+                        ? round($specialUnitPrice, 2)
+                        : null,
                     'unit_price' => round($unitPrice, 2),
                     'discount' => round($lineDiscount, 2),
                     'line_total' => round($lineTotal, 2),
                 ]);
             }
 
+            $summary = [
+                'total_items' => (int) $selectedItems->sum('quantity'),
+                'subtotal' => round($subtotal, 2),
+                'product_discount' => round($productDiscount, 2),
+                'promotion_discount' => 0.00,
+                'points_discount' => 0.00,
+                'net_total_before_member' => round($netTotal, 2),
+            ];
+
+            $selection = DB::transaction(function () use ($machine, $selectedItems, $summary) {
+                return KioskSelection::create([
+                    'selection_token' => (string) Str::uuid(),
+                    'machine_id' => $machine->id,
+                    'machine_group_id' => $machine->machine_group_id,
+                    'items' => $selectedItems->values()->all(),
+                    'summary' => $summary,
+                    'status' => 'selected',
+                    'expires_at' => now()->addMinutes(30),
+                ]);
+            });
+
             return response()->json([
                 'success' => true,
-                'message' => 'ยืนยันรายการสินค้าที่เลือกสำเร็จ',
+                'message' => 'บันทึกรายการสินค้าที่เลือกสำเร็จ',
                 'data' => [
-                    'machine' => [
-                        'id' => $machine->id,
-                        'code' => $machine->code,
-                        'name' => $machine->name,
-                        'serial_number' => $machine->serial_number,
-                        'model' => $machine->model,
-                        'machine_group_id' => $machine->machine_group_id,
-                    ],
-                    'machine_group' => [
-                        'id' => $machine->group->id,
-                        'code' => $machine->group->code,
-                        'name' => $machine->group->name,
-                    ],
-                    'items' => $selectedItems->values(),
-                    'summary' => [
-                        'total_items' => (int) $selectedItems->sum('quantity'),
-                        'subtotal' => round($subtotal, 2),
-                        'product_discount' => round($productDiscount, 2),
-                        'promotion_discount' => 0.00,
-                        'points_discount' => 0.00,
-                        'net_total_before_member' => round($netTotal, 2),
-                    ],
+                    'selection_token' => $selection->selection_token,
+                    'items' => $selection->items,
+                    'summary' => $selection->summary,
                     'next_step' => 'phone',
-                    'after_otp_step' => 'member',
                 ],
             ]);
         } catch (ValidationException $exception) {
@@ -175,8 +184,136 @@ class KioskSelectionController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'ไม่สามารถยืนยันรายการสินค้าได้',
+                'message' => 'ไม่สามารถบันทึกรายการสินค้าได้',
             ], 500);
         }
+    }
+
+    public function attachPhone(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'selection_token' => ['required', 'uuid'],
+            'phone' => ['required', 'string', 'regex:/^0[0-9]{9}$/'],
+        ]);
+
+        $selection = KioskSelection::query()
+            ->where('selection_token', $validated['selection_token'])
+            ->first();
+
+        if (!$selection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบรายการสินค้าที่เลือก',
+            ], 404);
+        }
+
+        if ($selection->expires_at && $selection->expires_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'รายการสินค้าที่เลือกหมดอายุ กรุณาเลือกสินค้าใหม่',
+            ], 410);
+        }
+
+        $selection->update([
+            'phone' => $validated['phone'],
+            'status' => 'phone_attached',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'บันทึกเบอร์โทรกับรายการสินค้าสำเร็จ',
+            'data' => [
+                'selection_token' => $selection->selection_token,
+                'phone' => $selection->phone,
+                'items' => $selection->items,
+                'summary' => $selection->summary,
+                'next_step' => 'otp',
+            ],
+        ]);
+    }
+
+    public function updateMemberResult(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'selection_token' => ['required', 'uuid'],
+            'phone' => ['required', 'string', 'regex:/^0[0-9]{9}$/'],
+            'member_found' => ['required', 'boolean'],
+            'member_id' => ['nullable', 'integer'],
+        ]);
+
+        $selection = KioskSelection::query()
+            ->where('selection_token', $validated['selection_token'])
+            ->first();
+
+        if (!$selection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบรายการสินค้าที่เลือก',
+            ], 404);
+        }
+
+        if ($selection->phone && $selection->phone !== $validated['phone']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เบอร์โทรไม่ตรงกับรายการสินค้าที่เลือก',
+            ], 422);
+        }
+
+        $memberFound = (bool) $validated['member_found'];
+
+        $selection->update([
+            'phone' => $validated['phone'],
+            'member_found' => $memberFound,
+            'member_id' => $memberFound ? ($validated['member_id'] ?? null) : null,
+            'status' => $memberFound ? 'member_found' : 'member_not_found',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $memberFound ? 'พบข้อมูลสมาชิก' : 'ไม่พบข้อมูลสมาชิก',
+            'data' => [
+                'selection_token' => $selection->selection_token,
+                'phone' => $selection->phone,
+                'member' => [
+                    'found' => $selection->member_found,
+                    'member_id' => $selection->member_id,
+                ],
+                'items' => $selection->items,
+                'summary' => $selection->summary,
+                'next_step' => 'member',
+            ],
+        ]);
+    }
+
+    public function show(string $selectionToken): JsonResponse
+    {
+        $selection = KioskSelection::query()
+            ->where('selection_token', $selectionToken)
+            ->first();
+
+        if (!$selection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบรายการสินค้าที่เลือก',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'selection_token' => $selection->selection_token,
+                'machine_id' => $selection->machine_id,
+                'machine_group_id' => $selection->machine_group_id,
+                'phone' => $selection->phone,
+                'otp_verified' => $selection->otp_verified,
+                'member' => [
+                    'found' => $selection->member_found,
+                    'member_id' => $selection->member_id,
+                ],
+                'items' => $selection->items,
+                'summary' => $selection->summary,
+                'status' => $selection->status,
+            ],
+        ]);
     }
 }

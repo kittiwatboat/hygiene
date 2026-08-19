@@ -65,6 +65,9 @@ Route::prefix('kiosk')->group(function () {
     );
     Route::post('/otp/send', [KioskOtpController::class, 'send']);
     Route::post('/otp/verify', [KioskOtpController::class, 'verify']);
-    Route::post('/selection/confirm', [KioskSelectionController::class, 'confirm']);
 
+    Route::post('/selection/confirm', [KioskSelectionController::class, 'confirm']);
+    Route::post('/selection/phone', [KioskSelectionController::class, 'attachPhone']);
+    Route::post('/selection/member-result', [KioskSelectionController::class, 'updateMemberResult']);
+    Route::get('/selection/{selectionToken}', [KioskSelectionController::class, 'show']);
 });
