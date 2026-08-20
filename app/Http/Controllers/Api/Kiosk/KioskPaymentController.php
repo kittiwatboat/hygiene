@@ -27,7 +27,6 @@ class KioskPaymentController extends Controller
         ]);
 
         $selection = KioskSelection::query()
-            ->with('machine.group')
             ->where('selection_token', $validated['selection_token'])
             ->first();
 
