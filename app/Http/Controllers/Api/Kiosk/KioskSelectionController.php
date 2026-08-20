@@ -319,4 +319,148 @@ class KioskSelectionController extends Controller
         ], 500);
     }
 }
+public function updateMemberResult(Request $request): JsonResponse
+{
+    try {
+        $validated = $request->validate([
+            'selection_token' => [
+                'required',
+                'uuid',
+            ],
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{9}$/',
+            ],
+            'member_found' => [
+                'required',
+                'boolean',
+            ],
+            'member_id' => [
+                'nullable',
+                'integer',
+            ],
+        ], [
+            'selection_token.required' =>
+                'ไม่พบ Selection Token',
+
+            'phone.required' =>
+                'กรุณาระบุเบอร์โทรศัพท์',
+
+            'phone.regex' =>
+                'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง',
+
+            'member_found.required' =>
+                'กรุณาระบุผลการตรวจสอบสมาชิก',
+        ]);
+
+        $selection = KioskSelection::query()
+            ->where(
+                'selection_token',
+                $validated['selection_token']
+            )
+            ->first();
+
+        if (!$selection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบรายการสินค้าที่เลือก',
+            ], 404);
+        }
+
+        if (
+            $selection->expires_at &&
+            $selection->expires_at->isPast()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'รายการสินค้าที่เลือกหมดอายุ กรุณาเลือกสินค้าใหม่',
+            ], 410);
+        }
+
+        if (
+            $selection->phone &&
+            $selection->phone !== $validated['phone']
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'เบอร์โทรไม่ตรงกับรายการสินค้าที่เลือก',
+            ], 422);
+        }
+
+        $memberFound = (bool) $validated['member_found'];
+
+        $selection->update([
+            'phone' => $validated['phone'],
+
+            'member_found' => $memberFound,
+
+            'member_id' => $memberFound
+                ? ($validated['member_id'] ?? null)
+                : null,
+
+            'status' => $memberFound
+                ? 'member_found'
+                : 'member_not_found',
+        ]);
+
+        return response()->json([
+            'success' => true,
+
+            'message' => $memberFound
+                ? 'พบข้อมูลสมาชิก'
+                : 'ไม่พบข้อมูลสมาชิก',
+
+            'data' => [
+                'selection_token' =>
+                    $selection->selection_token,
+
+                'phone' =>
+                    $selection->phone,
+
+                'member' => [
+                    'found' =>
+                        $selection->member_found,
+
+                    'member_id' =>
+                        $selection->member_id,
+                ],
+
+                'items' =>
+                    $selection->items ?? [],
+
+                'summary' =>
+                    $selection->summary ?? [],
+
+                'status' =>
+                    $selection->status,
+
+                'next_step' =>
+                    'member',
+            ],
+        ]);
+    } catch (ValidationException $exception) {
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'ข้อมูลการตรวจสอบสมาชิกไม่ถูกต้อง',
+            'errors' =>
+                $exception->errors(),
+        ], 422);
+    } catch (Throwable $exception) {
+        report($exception);
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'ไม่สามารถบันทึกผลการตรวจสอบสมาชิกได้',
+            'error' =>
+                $exception->getMessage(),
+            'line' =>
+                $exception->getLine(),
+        ], 500);
+    }
+}
 }
