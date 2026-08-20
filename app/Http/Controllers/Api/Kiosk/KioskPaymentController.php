@@ -17,7 +17,12 @@ class KioskPaymentController extends Controller
     {
         $validated = $request->validate([
             'selection_token' => ['required', 'uuid'],
-            'payment_method' => ['nullable', 'string', 'in:promptpay'],
+            'payment_method' => ['required', 'string', 'in:1,2,3'],
+        ], [
+            'selection_token.required' => 'ไม่พบ Selection Token',
+            'selection_token.uuid' => 'รูปแบบ Selection Token ไม่ถูกต้อง',
+            'payment_method.required' => 'กรุณาเลือกช่องทางการชำระเงิน',
+            'payment_method.in' => 'ช่องทางการชำระเงินไม่ถูกต้อง',
         ]);
 
         $selection = KioskSelection::query()
@@ -54,8 +59,11 @@ class KioskPaymentController extends Controller
             ], 422);
         }
 
+        $paymentMethod = (string) $validated['payment_method'];
+
         $existing = KioskPayment::query()
             ->where('kiosk_selection_id', $selection->id)
+            ->where('payment_method', $paymentMethod)
             ->where('status', 'pending')
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
@@ -77,7 +85,7 @@ class KioskPaymentController extends Controller
         $reference2 = $selection->phone ?: $selection->selection_token;
 
         $payload = [
-            'channel' => (string) config('services.ipone.channel', '2'),
+            'channel' => $paymentMethod,
             'reference1' => $reference1,
             'reference2' => $reference2,
             'terminalId' => (string) config('services.ipone.terminal_id'),
@@ -98,7 +106,7 @@ class KioskPaymentController extends Controller
                 'selection_token' => $selection->selection_token,
                 'phone' => $selection->phone,
                 'provider' => 'ipone',
-                'payment_method' => $validated['payment_method'] ?? 'promptpay',
+                'payment_method' => $paymentMethod,
                 'order_id' => $orderId,
                 'reference1' => $reference1,
                 'reference2' => $reference2,
@@ -192,6 +200,9 @@ class KioskPaymentController extends Controller
                     'selection_token' => $payment->selection_token,
                     'trx_id' => $payment->provider_transaction_id,
                     'amount' => (float) $payment->amount,
+                    'payment_method' => $payment->payment_method,
+                    'payment_method_label' =>
+                        $this->paymentMethodLabel((string) $payment->payment_method),
                     'status' => $payment->status,
                     'qr_content' => $payment->qr_data,
                     'expires_at' => optional($payment->expires_at)->toIso8601String(),
@@ -424,12 +435,24 @@ class KioskPaymentController extends Controller
         ]);
     }
 
+    private function paymentMethodLabel(string $method): string
+    {
+        return match ($method) {
+            '1' => 'Alipay',
+            '2' => 'PromptPay',
+            '3' => 'WeChat Pay',
+            default => 'Unknown',
+        };
+    }
+
     private function formatPayment(KioskPayment $payment): array
     {
         return [
             'payment_token' => $payment->payment_token,
             'selection_token' => $payment->selection_token,
             'payment_method' => $payment->payment_method,
+            'payment_method_label' =>
+                $this->paymentMethodLabel((string) $payment->payment_method),
             'order_id' => $payment->order_id,
             'reference1' => $payment->reference1,
             'reference2' => $payment->reference2,
