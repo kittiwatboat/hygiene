@@ -249,4 +249,74 @@ class KioskSelectionController extends Controller
             ],
         ]);
     }
+    public function show(string $selectionToken): JsonResponse
+{
+    try {
+        $selection = KioskSelection::query()
+            ->where('selection_token', $selectionToken)
+            ->first();
+
+        if (!$selection) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบรายการสินค้าที่เลือก',
+            ], 404);
+        }
+
+        if (
+            $selection->expires_at &&
+            $selection->expires_at->isPast()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'รายการสินค้าที่เลือกหมดอายุ',
+                'data' => [
+                    'selection_token' => $selection->selection_token,
+                    'status' => $selection->status,
+                    'expires_at' => $selection->expires_at,
+                ],
+            ], 410);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ดึงข้อมูลรายการสินค้าสำเร็จ',
+            'data' => [
+                'selection_token' => $selection->selection_token,
+
+                'machine_id' => $selection->machine_id,
+                'machine_group_id' => $selection->machine_group_id,
+
+                'phone' => $selection->phone,
+
+                'otp_verified' => (bool) $selection->otp_verified,
+
+                'member' => [
+                    'found' => $selection->member_found,
+                    'member_id' => $selection->member_id,
+                ],
+
+                'items' => $selection->items ?? [],
+
+                'summary' => $selection->summary ?? [],
+
+                'status' => $selection->status,
+
+                'expires_at' => $selection->expires_at,
+            ],
+        ]);
+    } catch (Throwable $exception) {
+        report($exception);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'ไม่สามารถดึงข้อมูลรายการสินค้าได้',
+
+            // เปิดไว้ตอน debug ก่อน
+            'error' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ], 500);
+    }
+}
 }
