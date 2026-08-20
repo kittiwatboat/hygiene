@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KioskPayment;
 use App\Models\KioskSelection;
 use App\Models\Machine;
+use App\Models\MachineGroup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -42,6 +43,49 @@ class KioskPaymentController extends Controller
                 'success' => false,
                 'message' => 'รายการสินค้าที่เลือกหมดอายุ กรุณาเลือกสินค้าใหม่',
             ], 410);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Machine / Machine Group
+        |--------------------------------------------------------------------------
+        | KioskSelection ไม่มี relation machine()
+        | จึงใช้ machine_id และ machine_group_id ที่บันทึกอยู่ใน selection โดยตรง
+        */
+        $machine = Machine::query()
+            ->where('id', $selection->machine_id)
+            ->first();
+
+        if (!$machine) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบข้อมูลเครื่องของรายการนี้',
+            ], 422);
+        }
+
+        $machineGroup = MachineGroup::query()
+            ->where('id', $selection->machine_group_id)
+            ->first();
+
+        if (!$machineGroup) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบข้อมูลกลุ่มเครื่องของรายการนี้',
+            ], 422);
+        }
+
+        if (blank($machine->code)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เครื่องนี้ยังไม่ได้กำหนด Code สำหรับ Terminal ID',
+            ], 422);
+        }
+
+        if (blank($machineGroup->code)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'กลุ่มเครื่องนี้ยังไม่ได้กำหนด Code สำหรับ Salesman Code',
+            ], 422);
         }
 
         $summary = $selection->summary ?? [];
