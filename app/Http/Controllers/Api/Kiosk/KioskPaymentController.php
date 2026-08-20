@@ -185,21 +185,49 @@ class KioskPaymentController extends Controller
             $body = $response->json();
 
             if (!$response->successful()) {
-                $payment->update([
-                    'status' => 'failed',
-                    'provider_status' => (string) $response->status(),
-                    'provider_response' => is_array($body)
-                        ? $body
-                        : ['raw' => $response->body()],
-                ]);
+    $providerJson = $response->json();
+    $providerRaw = $response->body();
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'ไม่สามารถสร้าง QR ชำระเงินได้',
-                    'provider_status' => $response->status(),
-                    'provider_response' => $body,
-                ], 422);
-            }
+    $payment->update([
+        'status' => 'failed',
+        'provider_status' => (string) $response->status(),
+
+        'provider_response' => is_array($providerJson)
+            ? $providerJson
+            : [
+                'raw' => $providerRaw,
+            ],
+    ]);
+
+    return response()->json([
+        'success' => false,
+        'message' => 'ไม่สามารถสร้าง QR ชำระเงินได้',
+
+        'debug' => [
+            'gateway_url' => $gatewayUrl ?? (
+                rtrim(
+                    (string) config('services.ipone.base_url'),
+                    '/'
+                )
+                . '/api/PaymentGateway/BAYQRGeneration'
+            ),
+
+            'request_body' => $payload,
+
+            'provider_http_status' =>
+                $response->status(),
+
+            'provider_headers' =>
+                $response->headers(),
+
+            'provider_json' =>
+                $providerJson,
+
+            'provider_raw' =>
+                $providerRaw,
+        ],
+    ], 422);
+}
 
             $isSuccess =
                 (int) data_get($body, 'statuscode') === 200
