@@ -286,7 +286,10 @@ class KioskPaymentController extends Controller
             $status = 'pending';
             $paidAt = null;
 
-            if ($providerSuccess === 'true') {
+            if (
+                $providerSuccess === 'true'
+                && $providerMessage === 'payment completed'
+            ) {
                 $status = 'paid';
                 $paidAt = now();
             } elseif (
@@ -304,10 +307,7 @@ class KioskPaymentController extends Controller
                 || str_contains($providerMessage, 'cancelled')
             ) {
                 $status = 'cancelled';
-            } elseif (
-                $providerSuccess === 'false'
-                && $providerMessage !== ''
-            ) {
+            } else {
                 $status = 'failed';
             }
 
@@ -371,6 +371,11 @@ class KioskPaymentController extends Controller
 
                     'expires_at' =>
                         optional($payment->expires_at)->toIso8601String(),
+
+                    'next_step' =>
+                        $payment->status === 'paid'
+                            ? 'dispense'
+                            : 'payment',
                 ],
             ]);
         } catch (Throwable $e) {
