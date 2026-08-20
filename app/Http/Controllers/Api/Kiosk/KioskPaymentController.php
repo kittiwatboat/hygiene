@@ -129,27 +129,25 @@ class KioskPaymentController extends Controller
         $reference1 = 'KS' . str_pad((string) $selection->id, 8, '0', STR_PAD_LEFT);
         $reference2 = $selection->phone ?: $selection->selection_token;
 
+        /*
+        |--------------------------------------------------------------------------
+        | TEST PAYLOAD
+        |--------------------------------------------------------------------------
+        | ใช้ข้อมูล static เพื่อตัดปัจจัยจาก DB ออกก่อน
+        | หลังทดสอบ IP-One สำเร็จ ค่อยกลับไปใช้ค่าจาก Machine / Machine Group
+        */
         $payload = [
-            'amount' => number_format($amount, 2, '.', ''),
-            'channel' => $paymentMethod,
-
+            'channel' => '2',
+            'reference1' => 'C0001025',
+            'reference2' => 'INV2024001',
+            'terminalId' => 'TERM001',
+            'amount' => '1.00',
+            'remark' => 'Pay BAY Bank',
+            'salemancode' => 'SALE01',
+            'orderid' => 'ORD202408001',
             'metadata' => json_encode([
-                'selection_token' => $selection->selection_token,
-                'payment_token' => $paymentToken,
-                'machine_id' => $machine->id,
-                'machine_group_id' => $machineGroup->id,
+                'source' => 'VansalesApp',
             ], JSON_UNESCAPED_UNICODE),
-
-            'orderid' => $orderId,
-            'reference1' => $reference1,
-            'reference2' => $reference2,
-            'remark' => 'Hygiene Kiosk',
-
-            // code ของกลุ่มเครื่อง
-            'salemancode' => (string) $machineGroup->code,
-
-            // code ของเครื่อง
-            'terminalId' => (string) $machine->code,
         ];
 
         try {
@@ -169,6 +167,13 @@ class KioskPaymentController extends Controller
                 'request_payload' => $payload,
             ]);
 
+            $gatewayUrl =
+                rtrim(
+                    (string) config('services.ipone.base_url'),
+                    '/'
+                )
+                . '/api/PaymentGateway/BAYQRGeneration';
+
             $response = Http::withBasicAuth(
                     (string) config('services.ipone.username'),
                     (string) config('services.ipone.password')
@@ -177,57 +182,38 @@ class KioskPaymentController extends Controller
                 ->asJson()
                 ->timeout(20)
                 ->post(
-                    rtrim((string) config('services.ipone.base_url'), '/')
-                    . '/api/PaymentGateway/BAYQRGeneration',
+                    $gatewayUrl,
                     $payload
                 );
 
             $body = $response->json();
+            $rawBody = $response->body();
 
             if (!$response->successful()) {
-    $providerJson = $response->json();
-    $providerRaw = $response->body();
+                $payment->update([
+                    'status' => 'failed',
+                    'provider_status' => (string) $response->status(),
+                    'provider_response' => is_array($body)
+                        ? $body
+                        : [
+                            'raw' => $rawBody,
+                        ],
+                ]);
 
-    $payment->update([
-        'status' => 'failed',
-        'provider_status' => (string) $response->status(),
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ไม่สามารถสร้าง QR ชำระเงินได้',
 
-        'provider_response' => is_array($providerJson)
-            ? $providerJson
-            : [
-                'raw' => $providerRaw,
-            ],
-    ]);
-
-    return response()->json([
-        'success' => false,
-        'message' => 'ไม่สามารถสร้าง QR ชำระเงินได้',
-
-        'debug' => [
-            'gateway_url' => $gatewayUrl ?? (
-                rtrim(
-                    (string) config('services.ipone.base_url'),
-                    '/'
-                )
-                . '/api/PaymentGateway/BAYQRGeneration'
-            ),
-
-            'request_body' => $payload,
-
-            'provider_http_status' =>
-                $response->status(),
-
-            'provider_headers' =>
-                $response->headers(),
-
-            'provider_json' =>
-                $providerJson,
-
-            'provider_raw' =>
-                $providerRaw,
-        ],
-    ], 422);
-}
+                    'debug' => [
+                        'gateway_url' => $gatewayUrl,
+                        'request_body' => $payload,
+                        'provider_http_status' => $response->status(),
+                        'provider_headers' => $response->headers(),
+                        'provider_json' => $body,
+                        'provider_raw' => $rawBody,
+                    ],
+                ], 422);
+            }
 
             $isSuccess =
                 (int) data_get($body, 'statuscode') === 200
@@ -276,6 +262,11 @@ class KioskPaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'สร้าง QR ชำระเงินสำเร็จ',
+                'debug' => [
+                    'gateway_url' => $gatewayUrl,
+                    'request_body' => $payload,
+                    'provider_http_status' => $response->status(),
+                ],
                 'data' => [
                     'payment_token' => $payment->payment_token,
                     'selection_token' => $payment->selection_token,
