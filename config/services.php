@@ -39,4 +39,12 @@ return [
         'key' => env('THAIBULKSMS_KEY'),
         'secret' => env('THAIBULKSMS_SECRET'),
     ],
+    'ipone' => [
+    'base_url' => env('IPONE_BASE_URL'),
+    'username' => env('IPONE_USERNAME'),
+    'password' => env('IPONE_PASSWORD'),
+    'terminal_id' => env('IPONE_TERMINAL_ID'),
+    'saleman_code' => env('IPONE_SALEMAN_CODE'),
+    'channel' => env('IPONE_CHANNEL', '2'),
+],
 ];
