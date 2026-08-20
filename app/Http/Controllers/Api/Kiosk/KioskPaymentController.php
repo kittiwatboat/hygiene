@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Kiosk;
 use App\Http\Controllers\Controller;
 use App\Models\KioskPayment;
 use App\Models\KioskSelection;
+use App\Models\Machine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -26,6 +27,7 @@ class KioskPaymentController extends Controller
         ]);
 
         $selection = KioskSelection::query()
+            ->with('machine.group')
             ->where('selection_token', $validated['selection_token'])
             ->first();
 
@@ -85,18 +87,26 @@ class KioskPaymentController extends Controller
         $reference2 = $selection->phone ?: $selection->selection_token;
 
         $payload = [
-            'channel' => $paymentMethod,
-            'reference1' => $reference1,
-            'reference2' => $reference2,
-            'terminalId' => (string) config('services.ipone.terminal_id'),
             'amount' => number_format($amount, 2, '.', ''),
-            'remark' => 'Hygiene Kiosk',
-            'salemancode' => (string) config('services.ipone.saleman_code'),
-            'orderId' => $orderId,
+            'channel' => $paymentMethod,
+
             'metadata' => json_encode([
                 'selection_token' => $selection->selection_token,
                 'payment_token' => $paymentToken,
+                'machine_id' => $machine->id,
+                'machine_group_id' => $machineGroup->id,
             ], JSON_UNESCAPED_UNICODE),
+
+            'orderid' => $orderId,
+            'reference1' => $reference1,
+            'reference2' => $reference2,
+            'remark' => 'Hygiene Kiosk',
+
+            // code ของกลุ่มเครื่อง
+            'salemancode' => (string) $machineGroup->code,
+
+            // code ของเครื่อง
+            'terminalId' => (string) $machine->code,
         ];
 
         try {
