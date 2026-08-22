@@ -159,20 +159,18 @@ class KioskPaymentController extends Controller
                 'provider' => 'ipone',
                 'payment_method' => $paymentMethod,
                 'order_id' => $orderId,
-                'reference1' => 'C0001025',
-                'reference2' => 'INV2024001',
+                'reference1' => $reference1,
+                'reference2' => $reference2,
                 'amount' => $amount,
                 'status' => 'pending',
                 'expires_at' => now()->addMinutes(15),
                 'request_payload' => $payload,
             ]);
 
-            $gatewayUrl =
-                rtrim(
-                    (string) config('services.ipone.base_url'),
-                    '/'
-                )
-                . '/api/PaymentGateway/BAYQRGeneration';
+            $gatewayUrl = rtrim(
+                (string) config('services.ipone.base_url'),
+                '/'
+            );
 
             $response = Http::withBasicAuth(
                     (string) config('services.ipone.username'),
